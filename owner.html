@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Owner Dashboard</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="app"><header><h1>Owner Dashboard</h1><button class="small" onclick="logout()">Logout</button></header><main>
+<section class="card"><h2>Restaurant</h2><div id="ownerRestaurant">Loading...</div></section>
+<section class="card"><h2>Menu</h2><input id="catName" placeholder="Category name"><button onclick="addCategory()">Add Category</button><input id="itemName" placeholder="Item name"><input id="itemPrice" type="number" placeholder="Price"><button onclick="addItem()">Add Item</button><div id="menu"></div></section>
+<section class="card"><h2>Orders</h2><div id="orders">Loading...</div></section>
+<section class="card"><h2>Recharge</h2><p>Monthly plan: ₹199</p><button onclick="requestRecharge()">Request Recharge</button><p id="rechargeMsg"></p></section>
+</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>

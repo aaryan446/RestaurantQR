@@ -1,0 +1,7 @@
+<!doctype html>
+<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>RestaurantQR Admin</title><link rel="stylesheet" href="style.css"></head>
+<body><div class="app"><header><h1>Admin Dashboard</h1><button class="small" onclick="logout()">Logout</button></header><main>
+<section class="card"><h2>Add Restaurant</h2><input id="rname" placeholder="Restaurant name"><input id="ownerName" placeholder="Owner name"><input id="phone" placeholder="Phone"><button onclick="addRestaurant()">Create Restaurant</button><p id="msg"></p></section>
+<section class="card"><h2>Restaurants</h2><div id="restaurants">Loading...</div></section>
+</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
