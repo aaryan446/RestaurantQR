@@ -1,7 +1,753 @@
-<!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>RestaurantQR Admin</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="app"><header><h1>Admin Dashboard</h1><button class="small" onclick="logout()">Logout</button></header><main>
-<section class="card"><h2>Add Restaurant</h2><input id="rname" placeholder="Restaurant name"><input id="ownerName" placeholder="Owner name"><input id="phone" placeholder="Phone"><button onclick="addRestaurant()">Create Restaurant</button><p id="msg"></p></section>
-<section class="card"><h2>Restaurants</h2><div id="restaurants">Loading...</div></section>
-</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RestaurantQR - Admin</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+
+        <button class="small" type="button" onclick="logout()">
+            Logout
+        </button>
+
+        <h1>RestaurantQR</h1>
+        <p>Admin Dashboard</p>
+
+    </header>
+
+    <main>
+
+        <!-- ADD RESTAURANT -->
+
+        <section class="card">
+
+            <h2>Add Restaurant</h2>
+
+            <label>Restaurant Name</label>
+
+            <input
+                id="restaurantName"
+                type="text"
+                placeholder="Restaurant name"
+            >
+
+            <label>Owner Name</label>
+
+            <input
+                id="ownerName"
+                type="text"
+                placeholder="Owner name"
+            >
+
+            <label>Owner Phone</label>
+
+            <input
+                id="ownerPhone"
+                type="tel"
+                placeholder="Phone number"
+            >
+
+            <button
+                id="addRestaurantBtn"
+                type="button"
+                onclick="createRestaurant()"
+            >
+                Add Restaurant
+            </button>
+
+            <div
+                id="restaurantMessage"
+                class="message"
+            ></div>
+
+        </section>
+
+
+        <!-- OVERVIEW -->
+
+        <section class="card">
+
+            <h2>Overview</h2>
+
+            <div id="adminStats">
+                Loading...
+            </div>
+
+        </section>
+
+
+        <!-- RESTAURANTS -->
+
+        <section class="card">
+
+            <h2>Restaurants</h2>
+
+            <div id="restaurantList">
+                Loading restaurants...
+            </div>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="app.js"></script>
+
+
+<script>
+
+let restaurants = [];
+
+
+/* =====================================================
+   CREATE RESTAURANT
+===================================================== */
+
+async function createRestaurant() {
+
+    if (!checkSupabase()) return;
+
+    const name =
+        document.getElementById("restaurantName").value.trim();
+
+    const ownerName =
+        document.getElementById("ownerName").value.trim();
+
+    const ownerPhone =
+        document.getElementById("ownerPhone").value.trim();
+
+    if (!name) {
+
+        showMessage(
+            "restaurantMessage",
+            "Restaurant name डालें।"
+        );
+
+        return;
+    }
+
+    const button =
+        document.getElementById("addRestaurantBtn");
+
+    button.disabled = true;
+    button.textContent = "Creating...";
+
+    try {
+
+        const baseSlug =
+            name
+                .toLowerCase()
+                .replace(/[^a-z0-9]+/g, "-")
+                .replace(/^-+|-+$/g, "");
+
+        const slug =
+            (baseSlug || "restaurant") +
+            "-" +
+            Math.random()
+                .toString(36)
+                .substring(2, 8);
+
+
+        const result =
+            await db
+                .from("restaurants")
+                .insert({
+
+                    name: name,
+
+                    owner_name:
+                        ownerName || null,
+
+                    phone:
+                        ownerPhone || null,
+
+                    slug: slug,
+
+                    monthly_price: 199,
+
+                    subscription_status:
+                        "pending",
+
+                    is_active: true,
+
+                    customer_qr_active: true
+
+                })
+                .select()
+                .single();
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        showMessage(
+            "restaurantMessage",
+            "Restaurant successfully created."
+        );
+
+
+        document.getElementById("restaurantName").value = "";
+        document.getElementById("ownerName").value = "";
+        document.getElementById("ownerPhone").value = "";
+
+
+        await loadRestaurants();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        showMessage(
+            "restaurantMessage",
+            "❌ " + (error.message || "Restaurant create नहीं हुआ।")
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+        button.textContent = "Add Restaurant";
+
+    }
+}
+
+
+/* =====================================================
+   LOAD RESTAURANTS
+===================================================== */
+
+async function loadRestaurants() {
+
+    const container =
+        document.getElementById("restaurantList");
+
+    const stats =
+        document.getElementById("adminStats");
+
+
+    if (!checkSupabase()) {
+
+        container.innerHTML =
+            "❌ Supabase connection नहीं है।";
+
+        return;
+    }
+
+
+    container.innerHTML =
+        "Restaurants load हो रहे हैं...";
+
+
+    try {
+
+        const result =
+            await db
+                .from("restaurants")
+                .select("*")
+                .order(
+                    "created_at",
+                    {
+                        ascending: false
+                    }
+                );
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        restaurants =
+            result.data || [];
+
+
+        renderRestaurants();
+
+        updateStats();
+
+    }
+
+    catch (error) {
+
+        console.error(
+            "LOAD RESTAURANTS ERROR:",
+            error
+        );
+
+
+        container.innerHTML = `
+
+            <div class="restaurant-card">
+
+                <h3>❌ Restaurant load error</h3>
+
+                <p>
+                    ${escapeHTML(
+                        error.message ||
+                        "Unknown error"
+                    )}
+                </p>
+
+                <p>
+                    Code:
+                    ${escapeHTML(
+                        error.code ||
+                        "N/A"
+                    )}
+                </p>
+
+            </div>
+
+        `;
+
+
+        if (stats) {
+
+            stats.innerHTML =
+                "❌ Dashboard data load नहीं हुआ।";
+
+        }
+
+    }
+}
+
+
+/* =====================================================
+   RENDER RESTAURANTS
+===================================================== */
+
+function renderRestaurants() {
+
+    const container =
+        document.getElementById("restaurantList");
+
+
+    if (!restaurants.length) {
+
+        container.innerHTML =
+            "<p>अभी कोई restaurant नहीं है।</p>";
+
+        return;
+    }
+
+
+    container.innerHTML =
+        restaurants
+            .map(function (restaurant) {
+
+                const subscription =
+                    restaurant.subscription_status ||
+                    "pending";
+
+
+                const startDate =
+                    restaurant.subscription_start
+                        ? new Date(
+                            restaurant.subscription_start
+                        ).toLocaleDateString("en-IN")
+                        : "Not active";
+
+
+                const endDate =
+                    restaurant.subscription_end
+                        ? new Date(
+                            restaurant.subscription_end
+                        ).toLocaleDateString("en-IN")
+                        : "Not active";
+
+
+                return `
+
+                <div class="restaurant-card">
+
+                    <h3>
+                        ${escapeHTML(
+                            restaurant.name
+                        )}
+                    </h3>
+
+                    <p>
+                        Owner:
+                        ${escapeHTML(
+                            restaurant.owner_name ||
+                            "Not added"
+                        )}
+                    </p>
+
+                    <p>
+                        Phone:
+                        ${escapeHTML(
+                            restaurant.phone ||
+                            "Not added"
+                        )}
+                    </p>
+
+                    <p>
+                        Subscription:
+                        <strong>
+                            ${escapeHTML(
+                                subscription
+                            )}
+                        </strong>
+                    </p>
+
+                    <p>
+                        Price:
+                        ₹${restaurant.monthly_price || 199}
+                        / month
+                    </p>
+
+                    <p>
+                        Start:
+                        ${startDate}
+                    </p>
+
+                    <p>
+                        End:
+                        ${endDate}
+                    </p>
+
+                    <div class="qr-box">
+
+                        <strong>
+                            Customer QR Token
+                        </strong>
+
+                        <br>
+
+                        ${escapeHTML(
+                            restaurant.customer_qr_token ||
+                            "Not generated"
+                        )}
+
+                    </div>
+
+                    <div class="qr-box">
+
+                        <strong>
+                            Owner QR Token
+                        </strong>
+
+                        <br>
+
+                        ${escapeHTML(
+                            restaurant.owner_qr_token ||
+                            "Not generated"
+                        )}
+
+                    </div>
+
+                    <button
+                        type="button"
+                        onclick="activateSubscription(
+                            '${restaurant.id}',
+                            this
+                        )"
+                    >
+                        ${
+                            subscription === "active"
+                                ? "Renew ₹199 / 1 Month"
+                                : "Activate ₹199 / 1 Month"
+                        }
+                    </button>
+
+
+                    <button
+                        type="button"
+                        onclick="toggleRestaurant(
+                            '${restaurant.id}',
+                            ${restaurant.is_active}
+                        )"
+                    >
+                        ${
+                            restaurant.is_active
+                                ? "Block Restaurant"
+                                : "Activate Restaurant"
+                        }
+                    </button>
+
+
+                    <button
+                        type="button"
+                        class="secondary"
+                        onclick="toggleCustomerQR(
+                            '${restaurant.id}',
+                            ${restaurant.customer_qr_active}
+                        )"
+                    >
+                        ${
+                            restaurant.customer_qr_active
+                                ? "Deactivate Customer QR"
+                                : "Activate Customer QR"
+                        }
+                    </button>
+
+                </div>
+
+                `;
+
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   SUBSCRIPTION
+===================================================== */
+
+async function activateSubscription(id, button) {
+
+    if (!checkSupabase()) return;
+
+    button.disabled = true;
+    button.textContent = "Activating...";
+
+
+    try {
+
+        const start = new Date();
+
+        const end = new Date(start);
+
+        end.setMonth(
+            end.getMonth() + 1
+        );
+
+
+        const result =
+            await db
+                .from("restaurants")
+                .update({
+
+                    monthly_price: 199,
+
+                    subscription_status:
+                        "active",
+
+                    subscription_start:
+                        start.toISOString(),
+
+                    subscription_end:
+                        end.toISOString(),
+
+                    is_active: true
+
+                })
+                .eq(
+                    "id",
+                    id
+                );
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        await loadRestaurants();
+
+
+    }
+
+    catch (error) {
+
+        alert(
+            error.message ||
+            "Subscription activate नहीं हुई।"
+        );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+    }
+}
+
+
+/* =====================================================
+   BLOCK / ACTIVATE
+===================================================== */
+
+async function toggleRestaurant(
+    id,
+    currentStatus
+) {
+
+    if (!checkSupabase()) return;
+
+
+    const result =
+        await db
+            .from("restaurants")
+            .update({
+
+                is_active:
+                    !currentStatus
+
+            })
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (result.error) {
+
+        alert(
+            result.error.message
+        );
+
+        return;
+    }
+
+
+    await loadRestaurants();
+}
+
+
+/* =====================================================
+   CUSTOMER QR
+===================================================== */
+
+async function toggleCustomerQR(
+    id,
+    currentStatus
+) {
+
+    if (!checkSupabase()) return;
+
+
+    const result =
+        await db
+            .from("restaurants")
+            .update({
+
+                customer_qr_active:
+                    !currentStatus
+
+            })
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (result.error) {
+
+        alert(
+            result.error.message
+        );
+
+        return;
+    }
+
+
+    await loadRestaurants();
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats() {
+
+    const total =
+        restaurants.length;
+
+
+    const active =
+        restaurants.filter(
+            function (restaurant) {
+                return restaurant.is_active;
+            }
+        ).length;
+
+
+    const blocked =
+        total - active;
+
+
+    const subscriptionActive =
+        restaurants.filter(
+            function (restaurant) {
+
+                return (
+                    restaurant.subscription_status ===
+                    "active"
+                );
+
+            }
+        ).length;
+
+
+    document.getElementById(
+        "adminStats"
+    ).innerHTML = `
+
+        <p>
+            Total Restaurants:
+            <strong>${total}</strong>
+        </p>
+
+        <p>
+            Active:
+            <strong>${active}</strong>
+        </p>
+
+        <p>
+            Blocked:
+            <strong>${blocked}</strong>
+        </p>
+
+        <p>
+            Active Subscriptions:
+            <strong>${subscriptionActive}</strong>
+        </p>
+
+    `;
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+(async function () {
+
+    const allowed =
+        await protectAdminPage();
+
+
+    if (!allowed) {
+        return;
+    }
+
+
+    await loadRestaurants();
+
+})();
+
+</script>
+
+</body>
+</html>
