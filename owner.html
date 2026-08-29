@@ -1,9 +1,1046 @@
-<!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Owner Dashboard</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="app"><header><h1>Owner Dashboard</h1><button class="small" onclick="logout()">Logout</button></header><main>
-<section class="card"><h2>Restaurant</h2><div id="ownerRestaurant">Loading...</div></section>
-<section class="card"><h2>Menu</h2><input id="catName" placeholder="Category name"><button onclick="addCategory()">Add Category</button><input id="itemName" placeholder="Item name"><input id="itemPrice" type="number" placeholder="Price"><button onclick="addItem()">Add Item</button><div id="menu"></div></section>
-<section class="card"><h2>Orders</h2><div id="orders">Loading...</div></section>
-<section class="card"><h2>Recharge</h2><p>Monthly plan: ₹199</p><button onclick="requestRecharge()">Request Recharge</button><p id="rechargeMsg"></p></section>
-</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>RestaurantQR - Owner</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+
+    <h1>RestaurantQR</h1>
+    <p>Owner Dashboard</p>
+
+</header>
+
+<main>
+
+<!-- OWNER STATUS -->
+
+<section class="card">
+
+    <h2 id="restaurantName">
+        Checking...
+    </h2>
+
+    <p id="ownerName">
+        Owner verify हो रहा है...
+    </p>
+
+    <div id="ownerStatus">
+        QR verify हो रहा है...
+    </div>
+
+</section>
+
+
+<!-- RESTAURANT INFO -->
+
+<section
+    id="dashboard"
+    class="card"
+    style="display:none;"
+>
+
+    <h2>Restaurant Overview</h2>
+
+    <div id="restaurantInfo">
+        Loading...
+    </div>
+
+</section>
+
+
+<!-- RECHARGE -->
+
+<section
+    id="rechargeSection"
+    class="card"
+    style="display:none;"
+>
+
+    <h2>💰 Subscription</h2>
+
+    <div id="subscriptionInfo">
+        Loading...
+    </div>
+
+    <button
+        id="rechargeBtn"
+        type="button"
+        onclick="requestRecharge()"
+    >
+        Recharge ₹199 / 1 Month
+    </button>
+
+    <p id="rechargeMessage"></p>
+
+</section>
+
+
+<!-- MENU -->
+
+<section
+    id="menuSection"
+    class="card"
+    style="display:none;"
+>
+
+    <h2>🍽️ Menu Management</h2>
+
+    <input
+        id="menuName"
+        type="text"
+        placeholder="Item name"
+    >
+
+    <input
+        id="menuPrice"
+        type="number"
+        min="0"
+        placeholder="Price ₹"
+    >
+
+    <button
+        id="saveMenuBtn"
+        type="button"
+        onclick="saveMenuItem()"
+    >
+        Add Menu Item
+    </button>
+
+    <p id="menuMessage"></p>
+
+    <h3>Your Menu</h3>
+
+    <div id="menuList">
+        Loading...
+    </div>
+
+</section>
+
+
+<!-- ORDERS -->
+
+<section
+    id="ordersSection"
+    class="card"
+    style="display:none;"
+>
+
+    <h2>📦 Orders</h2>
+
+    <div id="orders">
+        अभी कोई order नहीं।
+    </div>
+
+</section>
+
+</main>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="app.js"></script>
+
+
+<script>
+
+let ownerRestaurant = null;
+
+let menuItems = [];
+
+let editingMenuId = null;
+
+
+/* =====================================================
+   TOKEN
+===================================================== */
+
+function getOwnerToken() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return params.get("token");
+}
+
+
+/* =====================================================
+   VERIFY OWNER
+===================================================== */
+
+async function verifyOwnerQR() {
+
+    const status =
+        document.getElementById("ownerStatus");
+
+    const token =
+        getOwnerToken();
+
+
+    if (!token) {
+
+        status.innerHTML =
+            "❌ Owner QR token नहीं मिला।";
+
+        return;
+    }
+
+
+    if (!checkSupabase()) {
+
+        status.innerHTML =
+            "❌ Supabase connection नहीं है।";
+
+        return;
+    }
+
+
+    status.innerHTML =
+        "Owner QR verify हो रहा है...";
+
+
+    try {
+
+        const result =
+            await db
+                .from("restaurants")
+                .select("*")
+                .eq(
+                    "owner_qr_token",
+                    token
+                )
+                .maybeSingle();
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        if (!result.data) {
+
+            status.innerHTML =
+                "❌ Invalid Owner QR.";
+
+            return;
+        }
+
+
+        ownerRestaurant =
+            result.data;
+
+
+        if (!ownerRestaurant.is_active) {
+
+            status.innerHTML =
+                "❌ यह restaurant Admin द्वारा blocked है।";
+
+            return;
+        }
+
+
+        if (
+            ownerRestaurant.subscription_status !==
+            "active"
+        ) {
+
+            status.innerHTML =
+                "❌ Subscription active नहीं है।";
+
+            showBasicOwnerInfo();
+
+            return;
+        }
+
+
+        if (
+            ownerRestaurant.subscription_end &&
+            new Date(
+                ownerRestaurant.subscription_end
+            ) < new Date()
+        ) {
+
+            status.innerHTML =
+                "❌ Subscription expire हो गई है।";
+
+            showBasicOwnerInfo();
+
+            return;
+        }
+
+
+        document.getElementById(
+            "restaurantName"
+        ).textContent =
+            ownerRestaurant.name;
+
+
+        document.getElementById(
+            "ownerName"
+        ).textContent =
+            "Owner: " +
+            (
+                ownerRestaurant.owner_name ||
+                "Not added"
+            );
+
+
+        status.innerHTML =
+            "🟢 Owner verified successfully.";
+
+
+        document.getElementById(
+            "dashboard"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "rechargeSection"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "menuSection"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "ordersSection"
+        ).style.display =
+            "block";
+
+
+        showRestaurantInfo();
+
+        showSubscription();
+
+        await loadMenu();
+
+        await loadOrders();
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        status.innerHTML =
+            "❌ Verification error: " +
+            error.message;
+
+    }
+}
+
+
+/* =====================================================
+   BASIC INFO
+===================================================== */
+
+function showBasicOwnerInfo() {
+
+    if (!ownerRestaurant) return;
+
+
+    document.getElementById(
+        "restaurantName"
+    ).textContent =
+        ownerRestaurant.name;
+
+
+    document.getElementById(
+        "ownerName"
+    ).textContent =
+        "Owner: " +
+        (
+            ownerRestaurant.owner_name ||
+            "Not added"
+        );
+
+
+    document.getElementById(
+        "rechargeSection"
+    ).style.display =
+        "block";
+
+
+    showSubscription();
+}
+
+
+/* =====================================================
+   RESTAURANT INFO
+===================================================== */
+
+function showRestaurantInfo() {
+
+    const container =
+        document.getElementById(
+            "restaurantInfo"
+        );
+
+
+    const endDate =
+        ownerRestaurant.subscription_end
+            ? new Date(
+                ownerRestaurant.subscription_end
+            ).toLocaleDateString("en-IN")
+            : "Not available";
+
+
+    container.innerHTML = `
+
+        <p>
+            <strong>Restaurant:</strong>
+            ${escapeHTML(ownerRestaurant.name)}
+        </p>
+
+        <p>
+            <strong>Owner:</strong>
+            ${escapeHTML(
+                ownerRestaurant.owner_name ||
+                "Not added"
+            )}
+        </p>
+
+        <p>
+            <strong>Phone:</strong>
+            ${escapeHTML(
+                ownerRestaurant.phone ||
+                "Not added"
+            )}
+        </p>
+
+        <p>
+            <strong>Valid Till:</strong>
+            ${endDate}
+        </p>
+
+    `;
+}
+
+
+/* =====================================================
+   SUBSCRIPTION
+===================================================== */
+
+function showSubscription() {
+
+    const container =
+        document.getElementById(
+            "subscriptionInfo"
+        );
+
+
+    const status =
+        ownerRestaurant.subscription_status ||
+        "pending";
+
+
+    const endDate =
+        ownerRestaurant.subscription_end
+            ? new Date(
+                ownerRestaurant.subscription_end
+            ).toLocaleDateString("en-IN")
+            : "Not active";
+
+
+    container.innerHTML = `
+
+        <p>
+            Status:
+            <strong>
+                ${escapeHTML(status)}
+            </strong>
+        </p>
+
+        <p>
+            Price:
+            <strong>₹199 / Month</strong>
+        </p>
+
+        <p>
+            Valid Till:
+            <strong>${endDate}</strong>
+        </p>
+
+    `;
+}
+
+
+/* =====================================================
+   RECHARGE REQUEST
+===================================================== */
+
+async function requestRecharge() {
+
+    if (!ownerRestaurant) return;
+
+    const button =
+        document.getElementById(
+            "rechargeBtn"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Request भेजी जा रही है...";
+
+
+    try {
+
+        /*
+         * अभी actual payment gateway नहीं लगाया है।
+         * यह Admin को recharge request भेजने के लिए है।
+         */
+
+        const result =
+            await db
+                .from("recharge_requests")
+                .insert({
+
+                    restaurant_id:
+                        ownerRestaurant.id,
+
+                    amount: 199,
+
+                    status:
+                        "pending"
+
+                });
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        document.getElementById(
+            "rechargeMessage"
+        ).textContent =
+            "✅ Recharge request Admin को भेज दी गई है।";
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+
+        document.getElementById(
+            "rechargeMessage"
+        ).textContent =
+            "❌ " +
+            (
+                error.message ||
+                "Recharge request नहीं भेजी गई।"
+            );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+        button.textContent =
+            "Recharge ₹199 / 1 Month";
+
+    }
+}
+
+
+/* =====================================================
+   LOAD MENU
+===================================================== */
+
+async function loadMenu() {
+
+    const container =
+        document.getElementById(
+            "menuList"
+        );
+
+
+    const result =
+        await db
+            .from("menu_items")
+            .select("*")
+            .eq(
+                "restaurant_id",
+                ownerRestaurant.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (result.error) {
+
+        container.innerHTML =
+            "❌ Menu load error: " +
+            escapeHTML(
+                result.error.message
+            );
+
+        return;
+    }
+
+
+    menuItems =
+        result.data || [];
+
+
+    renderMenu();
+}
+
+
+/* =====================================================
+   RENDER MENU
+===================================================== */
+
+function renderMenu() {
+
+    const container =
+        document.getElementById(
+            "menuList"
+        );
+
+
+    if (!menuItems.length) {
+
+        container.innerHTML =
+            "<p>अभी कोई menu item नहीं है।</p>";
+
+        return;
+    }
+
+
+    container.innerHTML =
+        menuItems
+            .map(function(item) {
+
+                return `
+
+                    <div class="restaurant-card">
+
+                        <h3>
+                            ${escapeHTML(item.name)}
+                        </h3>
+
+                        <p>
+                            ₹${Number(
+                                item.price || 0
+                            ).toFixed(0)}
+                        </p>
+
+                        <button
+                            type="button"
+                            onclick="editMenuItem(
+                                '${item.id}'
+                            )"
+                        >
+                            Edit
+                        </button>
+
+                        <button
+                            type="button"
+                            onclick="deleteMenuItem(
+                                '${item.id}'
+                            )"
+                        >
+                            Delete
+                        </button>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   ADD / UPDATE MENU
+===================================================== */
+
+async function saveMenuItem() {
+
+    if (!ownerRestaurant) return;
+
+
+    const name =
+        document
+            .getElementById("menuName")
+            .value
+            .trim();
+
+
+    const price =
+        Number(
+            document
+                .getElementById("menuPrice")
+                .value
+        );
+
+
+    if (!name) {
+
+        document.getElementById(
+            "menuMessage"
+        ).textContent =
+            "❌ Item name डालें।";
+
+        return;
+    }
+
+
+    if (
+        !Number.isFinite(price) ||
+        price < 0
+    ) {
+
+        document.getElementById(
+            "menuMessage"
+        ).textContent =
+            "❌ सही price डालें।";
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "saveMenuBtn"
+        );
+
+
+    button.disabled = true;
+
+
+    try {
+
+        let result;
+
+
+        if (editingMenuId) {
+
+            result =
+                await db
+                    .from("menu_items")
+                    .update({
+
+                        name: name,
+
+                        price: price
+
+                    })
+                    .eq(
+                        "id",
+                        editingMenuId
+                    );
+
+        }
+
+        else {
+
+            result =
+                await db
+                    .from("menu_items")
+                    .insert({
+
+                        restaurant_id:
+                            ownerRestaurant.id,
+
+                        name: name,
+
+                        price: price
+
+                    });
+
+        }
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        editingMenuId = null;
+
+
+        document.getElementById(
+            "menuName"
+        ).value = "";
+
+
+        document.getElementById(
+            "menuPrice"
+        ).value = "";
+
+
+        button.textContent =
+            "Add Menu Item";
+
+
+        document.getElementById(
+            "menuMessage"
+        ).textContent =
+            "✅ Menu item save हो गया।";
+
+
+        await loadMenu();
+
+    }
+
+    catch (error) {
+
+        document.getElementById(
+            "menuMessage"
+        ).textContent =
+            "❌ " +
+            (
+                error.message ||
+                "Menu save नहीं हुआ।"
+            );
+
+    }
+
+    finally {
+
+        button.disabled = false;
+
+    }
+}
+
+
+/* =====================================================
+   EDIT MENU
+===================================================== */
+
+function editMenuItem(id) {
+
+    const item =
+        menuItems.find(
+            function(menuItem) {
+                return menuItem.id === id;
+            }
+        );
+
+
+    if (!item) return;
+
+
+    editingMenuId =
+        item.id;
+
+
+    document.getElementById(
+        "menuName"
+    ).value =
+        item.name;
+
+
+    document.getElementById(
+        "menuPrice"
+    ).value =
+        item.price;
+
+
+    document.getElementById(
+        "saveMenuBtn"
+    ).textContent =
+        "Update Menu Item";
+
+}
+
+
+/* =====================================================
+   DELETE MENU
+===================================================== */
+
+async function deleteMenuItem(id) {
+
+    if (!confirm("यह menu item delete करना है?")) {
+        return;
+    }
+
+
+    const result =
+        await db
+            .from("menu_items")
+            .delete()
+            .eq(
+                "id",
+                id
+            );
+
+
+    if (result.error) {
+
+        alert(
+            result.error.message
+        );
+
+        return;
+    }
+
+
+    await loadMenu();
+}
+
+
+/* =====================================================
+   LOAD ORDERS
+===================================================== */
+
+async function loadOrders() {
+
+    const container =
+        document.getElementById(
+            "orders"
+        );
+
+
+    const result =
+        await db
+            .from("orders")
+            .select("*")
+            .eq(
+                "restaurant_id",
+                ownerRestaurant.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (result.error) {
+
+        container.innerHTML =
+            "❌ Orders load error: " +
+            escapeHTML(
+                result.error.message
+            );
+
+        return;
+    }
+
+
+    if (!result.data || !result.data.length) {
+
+        container.innerHTML =
+            "अभी कोई order नहीं है।";
+
+        return;
+    }
+
+
+    container.innerHTML =
+        result.data
+            .map(function(order) {
+
+                return `
+
+                    <div class="restaurant-card">
+
+                        <h3>
+                            Order
+                        </h3>
+
+                        <p>
+                            Table:
+                            ${escapeHTML(
+                                order.table_number ||
+                                "-"
+                            )}
+                        </p>
+
+                        <p>
+                            Total:
+                            ₹${Number(
+                                order.total || 0
+                            )}
+                        </p>
+
+                        <p>
+                            Status:
+                            ${escapeHTML(
+                                order.status ||
+                                "pending"
+                            )}
+                        </p>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   ESCAPE HTML
+===================================================== */
+
+function escapeHTML(value) {
+
+    return String(
+        value ?? ""
+    ).replace(
+        /[&<>"']/g,
+        function(character) {
+
+            const map = {
+
+                "&": "&amp;",
+                "<": "&lt;",
+                ">": "&gt;",
+                '"': "&quot;",
+                "'": "&#039;"
+
+            };
+
+            return map[character];
+
+        }
+    );
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+verifyOwnerQR();
+
+</script>
+
+</body>
+
+  </html>
