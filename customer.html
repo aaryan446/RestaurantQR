@@ -1,7 +1,900 @@
-<!doctype html>
-<html lang="hi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Restaurant Menu</title><link rel="stylesheet" href="style.css"></head>
-<body><div class="app"><header><h1 id="restaurantName">Restaurant</h1></header><main>
-<section class="card"><input id="tableNumber" placeholder="Table number"></section><section id="customerMenu">Loading...</section>
-<section class="card"><h2>Cart</h2><div id="cart">Cart empty</div><button onclick="placeOrder()">Place Order</button><p id="orderMsg"></p></section>
-</main></div><script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script><script src="app.js"></script></body></html>
+<!DOCTYPE html>
+<html lang="hi">
+
+<head>
+    <meta charset="UTF-8">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
+
+    <title>RestaurantQR - Customer</title>
+
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<div class="app">
+
+    <header>
+
+        <h1>RestaurantQR</h1>
+
+        <p>Customer Menu</p>
+
+    </header>
+
+
+    <main>
+
+        <!-- RESTAURANT STATUS -->
+
+        <section class="card">
+
+            <h2 id="restaurantName">
+                Restaurant check हो रहा है...
+            </h2>
+
+            <p id="restaurantStatus">
+                QR verify हो रहा है...
+            </p>
+
+        </section>
+
+
+        <!-- CUSTOMER DETAILS -->
+
+        <section
+            id="customerSection"
+            class="card"
+            style="display:none;"
+        >
+
+            <h2>Your Details</h2>
+
+            <label>
+                आपका नाम
+            </label>
+
+            <input
+                id="customerName"
+                type="text"
+                placeholder="अपना नाम डालें"
+                maxlength="100"
+            >
+
+            <label>
+                Table Number
+            </label>
+
+            <input
+                id="tableNumber"
+                type="text"
+                placeholder="जैसे 5"
+                maxlength="20"
+            >
+
+        </section>
+
+
+        <!-- MENU -->
+
+        <section
+            id="menuSection"
+            class="card"
+            style="display:none;"
+        >
+
+            <h2>Menu</h2>
+
+            <div id="menuList">
+                Loading...
+            </div>
+
+        </section>
+
+
+        <!-- CART -->
+
+        <section
+            id="cartSection"
+            class="card"
+            style="display:none;"
+        >
+
+            <h2>Your Cart</h2>
+
+            <div id="cartList">
+                Cart खाली है।
+            </div>
+
+            <h3 id="cartTotal">
+                Total: ₹0
+            </h3>
+
+            <button
+                id="placeOrderBtn"
+                type="button"
+                onclick="placeOrder()"
+            >
+                Place Order
+            </button>
+
+            <div
+                id="orderMessage"
+                class="message"
+            ></div>
+
+        </section>
+
+
+        <!-- ORDER SUCCESS -->
+
+        <section
+            id="orderSuccess"
+            class="card"
+            style="display:none;"
+        >
+
+            <h2>✅ Order Placed</h2>
+
+            <p id="orderSuccessMessage"></p>
+
+        </section>
+
+    </main>
+
+</div>
+
+
+<!-- SUPABASE -->
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<!-- MAIN APP -->
+
+<script src="app.js"></script>
+
+
+<script>
+
+/* =====================================================
+   CUSTOMER DATA
+===================================================== */
+
+let customerRestaurant = null;
+
+let menuItems = [];
+
+let cart = [];
+
+
+/* =====================================================
+   GET CUSTOMER TOKEN
+===================================================== */
+
+function getCustomerToken() {
+
+    const params =
+        new URLSearchParams(
+            window.location.search
+        );
+
+    return params.get("token");
+}
+
+
+/* =====================================================
+   VERIFY CUSTOMER QR
+===================================================== */
+
+async function verifyCustomerQR() {
+
+    const status =
+        document.getElementById(
+            "restaurantStatus"
+        );
+
+
+    const token =
+        getCustomerToken();
+
+
+    if (!token) {
+
+        status.innerHTML =
+            "❌ Customer QR token नहीं मिला।";
+
+        return;
+    }
+
+
+    if (!checkSupabase()) {
+
+        status.innerHTML =
+            "❌ Supabase connection नहीं है।";
+
+        return;
+    }
+
+
+    status.innerHTML =
+        "Restaurant verify हो रहा है...";
+
+
+    try {
+
+        const result =
+            await db
+                .from("restaurants")
+                .select("*")
+                .eq(
+                    "customer_qr_token",
+                    token
+                )
+                .maybeSingle();
+
+
+        if (result.error) {
+            throw result.error;
+        }
+
+
+        if (!result.data) {
+
+            status.innerHTML =
+                "❌ Invalid Customer QR.";
+
+            return;
+        }
+
+
+        customerRestaurant =
+            result.data;
+
+
+        /* ADMIN BLOCK CHECK */
+
+        if (!customerRestaurant.is_active) {
+
+            status.innerHTML =
+                "❌ यह restaurant अभी active नहीं है।";
+
+            return;
+        }
+
+
+        /* CUSTOMER QR CHECK */
+
+        if (
+            !customerRestaurant.customer_qr_active
+        ) {
+
+            status.innerHTML =
+                "❌ Customer QR अभी disabled है।";
+
+            return;
+        }
+
+
+        /* SUBSCRIPTION CHECK */
+
+        if (
+            customerRestaurant.subscription_status !==
+            "active"
+        ) {
+
+            status.innerHTML =
+                "❌ Restaurant subscription active नहीं है।";
+
+            return;
+        }
+
+
+        /* EXPIRY CHECK */
+
+        if (
+            customerRestaurant.subscription_end &&
+            new Date(
+                customerRestaurant.subscription_end
+            ) < new Date()
+        ) {
+
+            status.innerHTML =
+                "❌ Restaurant subscription expire हो गई है।";
+
+            return;
+        }
+
+
+        /* SUCCESS */
+
+        document.getElementById(
+            "restaurantName"
+        ).textContent =
+            customerRestaurant.name;
+
+
+        status.innerHTML =
+            "🟢 Restaurant available";
+
+
+        document.getElementById(
+            "customerSection"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "menuSection"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "cartSection"
+        ).style.display =
+            "block";
+
+
+        await loadMenu();
+
+    } catch (error) {
+
+        console.error(error);
+
+
+        status.innerHTML =
+            "❌ Verification error: " +
+            escapeHTML(
+                error.message
+            );
+
+    }
+}
+
+
+/* =====================================================
+   LOAD MENU
+===================================================== */
+
+async function loadMenu() {
+
+    const container =
+        document.getElementById(
+            "menuList"
+        );
+
+
+    const result =
+        await db
+            .from("menu_items")
+            .select("*")
+            .eq(
+                "restaurant_id",
+                customerRestaurant.id
+            )
+            .order(
+                "created_at",
+                {
+                    ascending: true
+                }
+            );
+
+
+    if (result.error) {
+
+        console.error(
+            result.error
+        );
+
+
+        container.innerHTML =
+            "<p>Menu load नहीं हुई।</p>";
+
+        return;
+    }
+
+
+    menuItems =
+        result.data || [];
+
+
+    renderMenu();
+}
+
+
+/* =====================================================
+   RENDER MENU
+===================================================== */
+
+function renderMenu() {
+
+    const container =
+        document.getElementById(
+            "menuList"
+        );
+
+
+    if (!menuItems.length) {
+
+        container.innerHTML = `
+
+            <p>
+                इस restaurant में अभी menu items नहीं हैं।
+            </p>
+
+            <p>
+                Owner बाद में menu add कर सकता है।
+            </p>
+
+        `;
+
+        return;
+    }
+
+
+    container.innerHTML =
+        menuItems
+            .map(function (item) {
+
+                return `
+
+                    <div class="restaurant-card">
+
+                        <h3>
+                            ${escapeHTML(
+                                item.name ||
+                                "Item"
+                            )}
+                        </h3>
+
+                        <p>
+                            ₹${Number(
+                                item.price || 0
+                            ).toFixed(0)}
+                        </p>
+
+                        <button
+                            type="button"
+                            onclick="addToCart(
+                                '${item.id}'
+                            )"
+                        >
+                            Add to Cart
+                        </button>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+}
+
+
+/* =====================================================
+   ADD TO CART
+===================================================== */
+
+function addToCart(itemId) {
+
+    const item =
+        menuItems.find(
+            function (menuItem) {
+
+                return menuItem.id === itemId;
+
+            }
+        );
+
+
+    if (!item) {
+        return;
+    }
+
+
+    const existing =
+        cart.find(
+            function (cartItem) {
+
+                return cartItem.id === itemId;
+
+            }
+        );
+
+
+    if (existing) {
+
+        existing.quantity += 1;
+
+    } else {
+
+        cart.push({
+
+            id: item.id,
+
+            name: item.name,
+
+            price: Number(
+                item.price || 0
+            ),
+
+            quantity: 1
+
+        });
+
+    }
+
+
+    renderCart();
+}
+
+
+/* =====================================================
+   REMOVE FROM CART
+===================================================== */
+
+function removeFromCart(itemId) {
+
+    const index =
+        cart.findIndex(
+            function (item) {
+
+                return item.id === itemId;
+
+            }
+        );
+
+
+    if (index === -1) {
+        return;
+    }
+
+
+    if (
+        cart[index].quantity > 1
+    ) {
+
+        cart[index].quantity -= 1;
+
+    } else {
+
+        cart.splice(
+            index,
+            1
+        );
+
+    }
+
+
+    renderCart();
+}
+
+
+/* =====================================================
+   RENDER CART
+===================================================== */
+
+function renderCart() {
+
+    const container =
+        document.getElementById(
+            "cartList"
+        );
+
+
+    if (!cart.length) {
+
+        container.innerHTML =
+            "Cart खाली है।";
+
+
+        document.getElementById(
+            "cartTotal"
+        ).textContent =
+            "Total: ₹0";
+
+
+        return;
+    }
+
+
+    let total = 0;
+
+
+    container.innerHTML =
+        cart
+            .map(function (item) {
+
+                const itemTotal =
+                    item.price *
+                    item.quantity;
+
+
+                total += itemTotal;
+
+
+                return `
+
+                    <div class="restaurant-card">
+
+                        <strong>
+                            ${escapeHTML(
+                                item.name
+                            )}
+                        </strong>
+
+                        <p>
+                            ₹${item.price}
+                            ×
+                            ${item.quantity}
+                            =
+                            ₹${itemTotal}
+                        </p>
+
+                        <button
+                            type="button"
+                            onclick="removeFromCart(
+                                '${item.id}'
+                            )"
+                        >
+                            Remove
+                        </button>
+
+                    </div>
+
+                `;
+
+            })
+            .join("");
+
+
+    document.getElementById(
+        "cartTotal"
+    ).textContent =
+        "Total: ₹" +
+        total;
+}
+
+
+/* =====================================================
+   PLACE ORDER
+===================================================== */
+
+async function placeOrder() {
+
+    if (!checkSupabase()) {
+        return;
+    }
+
+
+    if (!customerRestaurant) {
+
+        showMessage(
+            "orderMessage",
+            "Restaurant verify नहीं हुआ।"
+        );
+
+        return;
+    }
+
+
+    if (!cart.length) {
+
+        showMessage(
+            "orderMessage",
+            "पहले cart में item add करें।"
+        );
+
+        return;
+    }
+
+
+    const customerName =
+        document
+            .getElementById(
+                "customerName"
+            )
+            .value
+            .trim();
+
+
+    const tableNumber =
+        document
+            .getElementById(
+                "tableNumber"
+            )
+            .value
+            .trim();
+
+
+    if (!customerName) {
+
+        showMessage(
+            "orderMessage",
+            "कृपया अपना नाम डालें।"
+        );
+
+        return;
+    }
+
+
+    const button =
+        document.getElementById(
+            "placeOrderBtn"
+        );
+
+
+    button.disabled = true;
+
+    button.textContent =
+        "Order भेजा जा रहा है...";
+
+
+    showMessage(
+        "orderMessage",
+        ""
+    );
+
+
+    try {
+
+        /*
+         * Secure Edge Function
+         *
+         * Server restaurant QR,
+         * menu prices और order data
+         * verify करेगा।
+         */
+
+        const response =
+            await fetch(
+                SUPABASE_URL +
+                "/functions/v1/create-order",
+                {
+
+                    method: "POST",
+
+                    headers: {
+
+                        "Content-Type":
+                            "application/json",
+
+                        "apikey":
+                            SUPABASE_ANON_KEY
+
+                    },
+
+                    body: JSON.stringify({
+
+                        customer_qr_token:
+                            getCustomerToken(),
+
+                        customer_name:
+                            customerName,
+
+                        table_number:
+                            tableNumber || null,
+
+                        items:
+                            cart.map(
+                                function (item) {
+
+                                    return {
+
+                                        menu_item_id:
+                                            item.id,
+
+                                        quantity:
+                                            item.quantity
+
+                                    };
+
+                                }
+                            )
+
+                    })
+
+                }
+            );
+
+
+        const data =
+            await response.json();
+
+
+        if (!response.ok) {
+
+            throw new Error(
+                data.error ||
+                data.message ||
+                "Order place नहीं हुआ।"
+            );
+        }
+
+
+        /* SUCCESS */
+
+        cart = [];
+
+        renderCart();
+
+
+        document.getElementById(
+            "orderSuccess"
+        ).style.display =
+            "block";
+
+
+        document.getElementById(
+            "orderSuccessMessage"
+        ).textContent =
+            data.order_id
+                ? "आपका Order ID: " +
+                  data.order_id
+                : "आपका order successfully place हो गया।";
+
+
+        showMessage(
+            "orderMessage",
+            "✅ Order successfully place हो गया।"
+        );
+
+
+        button.textContent =
+            "Order Placed";
+
+
+    } catch (error) {
+
+        console.error(
+            "Place order error:",
+            error
+        );
+
+
+        showMessage(
+            "orderMessage",
+            "❌ " +
+            (
+                error.message ||
+                "Order place नहीं हुआ।"
+            )
+        );
+
+
+        button.disabled = false;
+
+        button.textContent =
+            "Place Order";
+
+        return;
+    }
+
+
+    button.disabled = false;
+
+}
+
+
+/* =====================================================
+   START CUSTOMER
+===================================================== */
+
+document.addEventListener(
+    "DOMContentLoaded",
+    function () {
+
+        verifyCustomerQR();
+
+    }
+);
+
+</script>
+
+</body>
+
+</html>
