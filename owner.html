@@ -1,1046 +1,291 @@
-<!DOCTYPE html>
+        <!DOCTYPE html>
 <html lang="hi">
-
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>RestaurantQR - Owner</title>
-
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RestaurantQR - Owner Dashboard</title>
+<link rel="stylesheet" href="style.css">
+<style>
+:root{
+  --green:#168447; --green2:#eaf7ef; --text:#17201a; --muted:#68736c;
+  --card:#fff; --bg:#f5f7f5; --border:#e5e9e6; --danger:#c73535; --orange:#e98a16;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
+.app{max-width:760px;margin:auto;padding-bottom:85px}
+.topbar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
+.topbar h1{font-size:19px;margin:0}.topbar small{color:var(--muted)}
+.icon-btn{border:0;background:var(--green2);border-radius:12px;padding:10px 12px;font-size:18px}
+.page{padding:16px}
+.hero,.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(20,40,25,.04)}
+.hero{display:flex;gap:14px;align-items:center}
+.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--green2);font-size:27px}
+.hero h2{margin:0 0 4px;font-size:20px}.muted{color:var(--muted);font-size:13px}
+.badge{display:inline-block;margin-top:8px;background:var(--green2);color:var(--green);font-weight:700;padding:6px 10px;border-radius:999px;font-size:12px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.stat{border:1px solid var(--border);border-radius:16px;padding:14px;background:#fff}
+.stat b{display:block;font-size:22px;margin-top:4px}.stat span{font-size:12px;color:var(--muted)}
+.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
+.section-title h2{font-size:17px;margin:0}
+.order-tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{white-space:nowrap;border:1px solid var(--border);background:#fff;border-radius:999px;padding:9px 12px;font-size:12px}.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
+.order{border:1px solid var(--border);border-radius:17px;padding:14px;margin-top:10px}
+.order-head{display:flex;justify-content:space-between;gap:10px}.order h3{margin:0;font-size:15px}.amount{font-size:18px;font-weight:800}
+.status{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#fff3df;color:#a96100}
+.order-actions{display:flex;gap:8px;margin-top:12px}.order-actions button{flex:1;border:1px solid var(--border);background:#fff;border-radius:11px;padding:9px;font-weight:700}.order-actions .primary{background:var(--green);color:#fff;border-color:var(--green)}
+input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;margin:5px 0 10px;font-size:15px}
+button.main{width:100%;padding:12px;border:0;border-radius:12px;background:var(--green);color:#fff;font-weight:800}
+.menu-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);padding:12px 0}.menu-row:last-child{border-bottom:0}.menu-row h3{margin:0;font-size:15px}.menu-actions button{border:0;background:#f0f3f1;border-radius:9px;padding:7px 9px;margin-left:4px}
+.chart{height:130px;display:flex;align-items:end;gap:7px;padding-top:15px}.bar{flex:1;background:#bfe5cc;border-radius:7px 7px 2px 2px;min-height:15px}.sales-total{font-size:27px;font-weight:850}
+.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:20}.bottom button{border:0;background:transparent;font-size:11px;color:var(--muted)}.bottom .selected{color:var(--green);font-weight:800}.plus{width:46px;height:46px;border-radius:50%;background:var(--green)!important;color:#fff!important;font-size:25px!important;margin-top:-20px}
+.hidden{display:none!important}.error{color:var(--danger)}.success{color:var(--green)}
+@media(min-width:700px){.app{padding-left:10px;padding-right:10px}}
+</style>
 </head>
-
 <body>
-
 <div class="app">
 
-<header>
-
-    <h1>RestaurantQR</h1>
-    <p>Owner Dashboard</p>
-
+<header class="topbar">
+  <div>
+    <h1 id="restaurantName">Restaurant</h1>
+    <small id="ownerName">Owner verify हो रहा है...</small>
+  </div>
+  <button class="icon-btn" type="button" onclick="location.reload()">🔔</button>
 </header>
 
-<main>
+<main class="page">
 
-<!-- OWNER STATUS -->
-
-<section class="card">
-
-    <h2 id="restaurantName">
-        Checking...
-    </h2>
-
-    <p id="ownerName">
-        Owner verify हो रहा है...
-    </p>
-
-    <div id="ownerStatus">
-        QR verify हो रहा है...
-    </div>
-
+<section class="hero">
+  <div class="avatar">👨‍🍳</div>
+  <div>
+    <h2>Welcome back!</h2>
+    <div id="heroOwner" class="muted">Owner</div>
+    <span id="statusBadge" class="badge">Checking...</span>
+  </div>
 </section>
 
-
-<!-- RESTAURANT INFO -->
-
-<section
-    id="dashboard"
-    class="card"
-    style="display:none;"
->
-
-    <h2>Restaurant Overview</h2>
-
-    <div id="restaurantInfo">
-        Loading...
-    </div>
-
+<section id="dashboard" class="card hidden">
+  <div class="section-title"><h2>Overview</h2><span class="muted">Today</span></div>
+  <div class="grid">
+    <div class="stat">💰 <span>Total Sales</span><b id="salesTotal">₹0</b></div>
+    <div class="stat">📦 <span>Total Orders</span><b id="ordersTotal">0</b></div>
+    <div class="stat">🆕 <span>New Orders</span><b id="newTotal">0</b></div>
+    <div class="stat">⏱️ <span>Preparing</span><b id="preparingTotal">0</b></div>
+  </div>
 </section>
 
-
-<!-- RECHARGE -->
-
-<section
-    id="rechargeSection"
-    class="card"
-    style="display:none;"
->
-
-    <h2>💰 Subscription</h2>
-
-    <div id="subscriptionInfo">
-        Loading...
-    </div>
-
-    <button
-        id="rechargeBtn"
-        type="button"
-        onclick="requestRecharge()"
-    >
-        Recharge ₹199 / 1 Month
-    </button>
-
-    <p id="rechargeMessage"></p>
-
+<section id="analytics" class="card hidden">
+  <div class="section-title"><h2>📊 Sales Summary</h2><span class="muted">This Week</span></div>
+  <div class="sales-total" id="weekSales">₹0</div>
+  <div class="muted">Total sales from loaded orders</div>
+  <div class="chart" id="salesChart"></div>
 </section>
 
-
-<!-- MENU -->
-
-<section
-    id="menuSection"
-    class="card"
-    style="display:none;"
->
-
-    <h2>🍽️ Menu Management</h2>
-
-    <input
-        id="menuName"
-        type="text"
-        placeholder="Item name"
-    >
-
-    <input
-        id="menuPrice"
-        type="number"
-        min="0"
-        placeholder="Price ₹"
-    >
-
-    <button
-        id="saveMenuBtn"
-        type="button"
-        onclick="saveMenuItem()"
-    >
-        Add Menu Item
-    </button>
-
-    <p id="menuMessage"></p>
-
-    <h3>Your Menu</h3>
-
-    <div id="menuList">
-        Loading...
-    </div>
-
+<section id="ordersSection" class="card hidden">
+  <div class="section-title"><h2>📦 Orders</h2><span class="muted" id="orderCount">0 orders</span></div>
+  <div class="order-tabs">
+    <button class="tab active" onclick="filterOrders('all',this)">All</button>
+    <button class="tab" onclick="filterOrders('new',this)">New</button>
+    <button class="tab" onclick="filterOrders('preparing',this)">Preparing</button>
+    <button class="tab" onclick="filterOrders('ready',this)">Ready</button>
+    <button class="tab" onclick="filterOrders('completed',this)">Completed</button>
+  </div>
+  <div id="orders">Loading...</div>
 </section>
 
+<section id="menuSection" class="card hidden">
+  <div class="section-title"><h2>🍽️ Menu Management</h2></div>
+  <input id="menuName" type="text" placeholder="Item name">
+  <input id="menuPrice" type="number" min="0" placeholder="Price ₹">
+  <button class="main" id="saveMenuBtn" type="button" onclick="saveMenuItem()">Add Menu Item</button>
+  <p id="menuMessage" class="muted"></p>
+  <div id="menuList">Loading...</div>
+</section>
 
-<!-- ORDERS -->
-
-<section
-    id="ordersSection"
-    class="card"
-    style="display:none;"
->
-
-    <h2>📦 Orders</h2>
-
-    <div id="orders">
-        अभी कोई order नहीं।
-    </div>
-
+<section id="subscriptionSection" class="card hidden">
+  <div class="section-title"><h2>💰 Subscription</h2><span class="badge" id="subscriptionBadge">Checking</span></div>
+  <div id="subscriptionInfo" class="muted">Loading...</div>
+  <button class="main" id="rechargeBtn" type="button" onclick="requestRecharge()">Recharge ₹199 / 1 Month</button>
+  <p id="rechargeMessage" class="muted"></p>
 </section>
 
 </main>
 
+<nav class="bottom">
+  <button class="selected" onclick="scrollToId('dashboard')">⌂<br>Dashboard</button>
+  <button onclick="scrollToId('ordersSection')">▣<br>Orders</button>
+  <button class="plus" onclick="scrollToId('menuSection')">+</button>
+  <button onclick="scrollToId('menuSection')">▤<br>Menu</button>
+  <button onclick="scrollToId('subscriptionSection')">◯<br>Profile</button>
+</nav>
 </div>
 
-
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
 <script src="app.js"></script>
-
-
 <script>
+let ownerRestaurant=null, menuItems=[], allOrders=[], editingMenuId=null, activeFilter="all";
 
-let ownerRestaurant = null;
+function getOwnerToken(){return new URLSearchParams(location.search).get("token");}
+function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth"});}
 
-let menuItems = [];
+async function verifyOwnerQR(){
+  const token=getOwnerToken();
+  const badge=document.getElementById("statusBadge");
+  if(!token){badge.textContent="❌ Owner QR token नहीं मिला";return;}
+  if(!checkSupabase()){badge.textContent="❌ Supabase connection नहीं है";return;}
 
-let editingMenuId = null;
+  try{
+    const {data,error}=await db.from("restaurants").select("*").eq("owner_qr_token",token).maybeSingle();
+    if(error)throw error;
+    if(!data){badge.textContent="❌ Invalid Owner QR";return;}
+    ownerRestaurant=data;
 
+    document.getElementById("restaurantName").textContent=data.name||"Restaurant";
+    document.getElementById("ownerName").textContent="Owner: "+(data.owner_name||"Not added");
+    document.getElementById("heroOwner").textContent=(data.owner_name||"Owner")+" • Restaurant Owner";
 
-/* =====================================================
-   TOKEN
-===================================================== */
+    if(!data.is_active){badge.textContent="❌ Admin ने restaurant block किया है";return;}
 
-function getOwnerToken() {
+    const active=data.subscription_status==="active" &&
+      (!data.subscription_end || new Date(data.subscription_end)>=new Date());
 
-    const params =
-        new URLSearchParams(
-            window.location.search
-        );
-
-    return params.get("token");
-}
-
-
-/* =====================================================
-   VERIFY OWNER
-===================================================== */
-
-async function verifyOwnerQR() {
-
-    const status =
-        document.getElementById("ownerStatus");
-
-    const token =
-        getOwnerToken();
-
-
-    if (!token) {
-
-        status.innerHTML =
-            "❌ Owner QR token नहीं मिला।";
-
-        return;
+    if(!active){
+      badge.textContent="⚠️ Subscription inactive";
+      showBasicOwnerInfo();
+      return;
     }
 
-
-    if (!checkSupabase()) {
-
-        status.innerHTML =
-            "❌ Supabase connection नहीं है।";
-
-        return;
-    }
-
-
-    status.innerHTML =
-        "Owner QR verify हो रहा है...";
-
-
-    try {
-
-        const result =
-            await db
-                .from("restaurants")
-                .select("*")
-                .eq(
-                    "owner_qr_token",
-                    token
-                )
-                .maybeSingle();
-
-
-        if (result.error) {
-            throw result.error;
-        }
-
-
-        if (!result.data) {
-
-            status.innerHTML =
-                "❌ Invalid Owner QR.";
-
-            return;
-        }
-
-
-        ownerRestaurant =
-            result.data;
-
-
-        if (!ownerRestaurant.is_active) {
-
-            status.innerHTML =
-                "❌ यह restaurant Admin द्वारा blocked है।";
-
-            return;
-        }
-
-
-        if (
-            ownerRestaurant.subscription_status !==
-            "active"
-        ) {
-
-            status.innerHTML =
-                "❌ Subscription active नहीं है।";
-
-            showBasicOwnerInfo();
-
-            return;
-        }
-
-
-        if (
-            ownerRestaurant.subscription_end &&
-            new Date(
-                ownerRestaurant.subscription_end
-            ) < new Date()
-        ) {
-
-            status.innerHTML =
-                "❌ Subscription expire हो गई है।";
-
-            showBasicOwnerInfo();
-
-            return;
-        }
-
-
-        document.getElementById(
-            "restaurantName"
-        ).textContent =
-            ownerRestaurant.name;
-
-
-        document.getElementById(
-            "ownerName"
-        ).textContent =
-            "Owner: " +
-            (
-                ownerRestaurant.owner_name ||
-                "Not added"
-            );
-
-
-        status.innerHTML =
-            "🟢 Owner verified successfully.";
-
-
-        document.getElementById(
-            "dashboard"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "rechargeSection"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "menuSection"
-        ).style.display =
-            "block";
-
-
-        document.getElementById(
-            "ordersSection"
-        ).style.display =
-            "block";
-
-
-        showRestaurantInfo();
-
-        showSubscription();
-
-        await loadMenu();
-
-        await loadOrders();
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-        status.innerHTML =
-            "❌ Verification error: " +
-            error.message;
-
-    }
-}
-
-
-/* =====================================================
-   BASIC INFO
-===================================================== */
-
-function showBasicOwnerInfo() {
-
-    if (!ownerRestaurant) return;
-
-
-    document.getElementById(
-        "restaurantName"
-    ).textContent =
-        ownerRestaurant.name;
-
-
-    document.getElementById(
-        "ownerName"
-    ).textContent =
-        "Owner: " +
-        (
-            ownerRestaurant.owner_name ||
-            "Not added"
-        );
-
-
-    document.getElementById(
-        "rechargeSection"
-    ).style.display =
-        "block";
-
-
+    badge.textContent="🟢 Owner verified";
+    ["dashboard","analytics","ordersSection","menuSection","subscriptionSection"].forEach(id=>document.getElementById(id).classList.remove("hidden"));
     showSubscription();
-}
-
-
-/* =====================================================
-   RESTAURANT INFO
-===================================================== */
-
-function showRestaurantInfo() {
-
-    const container =
-        document.getElementById(
-            "restaurantInfo"
-        );
-
-
-    const endDate =
-        ownerRestaurant.subscription_end
-            ? new Date(
-                ownerRestaurant.subscription_end
-            ).toLocaleDateString("en-IN")
-            : "Not available";
-
-
-    container.innerHTML = `
-
-        <p>
-            <strong>Restaurant:</strong>
-            ${escapeHTML(ownerRestaurant.name)}
-        </p>
-
-        <p>
-            <strong>Owner:</strong>
-            ${escapeHTML(
-                ownerRestaurant.owner_name ||
-                "Not added"
-            )}
-        </p>
-
-        <p>
-            <strong>Phone:</strong>
-            ${escapeHTML(
-                ownerRestaurant.phone ||
-                "Not added"
-            )}
-        </p>
-
-        <p>
-            <strong>Valid Till:</strong>
-            ${endDate}
-        </p>
-
-    `;
-}
-
-
-/* =====================================================
-   SUBSCRIPTION
-===================================================== */
-
-function showSubscription() {
-
-    const container =
-        document.getElementById(
-            "subscriptionInfo"
-        );
-
-
-    const status =
-        ownerRestaurant.subscription_status ||
-        "pending";
-
-
-    const endDate =
-        ownerRestaurant.subscription_end
-            ? new Date(
-                ownerRestaurant.subscription_end
-            ).toLocaleDateString("en-IN")
-            : "Not active";
-
-
-    container.innerHTML = `
-
-        <p>
-            Status:
-            <strong>
-                ${escapeHTML(status)}
-            </strong>
-        </p>
-
-        <p>
-            Price:
-            <strong>₹199 / Month</strong>
-        </p>
-
-        <p>
-            Valid Till:
-            <strong>${endDate}</strong>
-        </p>
-
-    `;
-}
-
-
-/* =====================================================
-   RECHARGE REQUEST
-===================================================== */
-
-async function requestRecharge() {
-
-    if (!ownerRestaurant) return;
-
-    const button =
-        document.getElementById(
-            "rechargeBtn"
-        );
-
-
-    button.disabled = true;
-
-    button.textContent =
-        "Request भेजी जा रही है...";
-
-
-    try {
-
-        /*
-         * अभी actual payment gateway नहीं लगाया है।
-         * यह Admin को recharge request भेजने के लिए है।
-         */
-
-        const result =
-            await db
-                .from("recharge_requests")
-                .insert({
-
-                    restaurant_id:
-                        ownerRestaurant.id,
-
-                    amount: 199,
-
-                    status:
-                        "pending"
-
-                });
-
-
-        if (result.error) {
-            throw result.error;
-        }
-
-
-        document.getElementById(
-            "rechargeMessage"
-        ).textContent =
-            "✅ Recharge request Admin को भेज दी गई है।";
-
-
-    }
-
-    catch (error) {
-
-        console.error(error);
-
-
-        document.getElementById(
-            "rechargeMessage"
-        ).textContent =
-            "❌ " +
-            (
-                error.message ||
-                "Recharge request नहीं भेजी गई।"
-            );
-
-    }
-
-    finally {
-
-        button.disabled = false;
-
-        button.textContent =
-            "Recharge ₹199 / 1 Month";
-
-    }
-}
-
-
-/* =====================================================
-   LOAD MENU
-===================================================== */
-
-async function loadMenu() {
-
-    const container =
-        document.getElementById(
-            "menuList"
-        );
-
-
-    const result =
-        await db
-            .from("menu_items")
-            .select("*")
-            .eq(
-                "restaurant_id",
-                ownerRestaurant.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: true
-                }
-            );
-
-
-    if (result.error) {
-
-        container.innerHTML =
-            "❌ Menu load error: " +
-            escapeHTML(
-                result.error.message
-            );
-
-        return;
-    }
-
-
-    menuItems =
-        result.data || [];
-
-
-    renderMenu();
-}
-
-
-/* =====================================================
-   RENDER MENU
-===================================================== */
-
-function renderMenu() {
-
-    const container =
-        document.getElementById(
-            "menuList"
-        );
-
-
-    if (!menuItems.length) {
-
-        container.innerHTML =
-            "<p>अभी कोई menu item नहीं है।</p>";
-
-        return;
-    }
-
-
-    container.innerHTML =
-        menuItems
-            .map(function(item) {
-
-                return `
-
-                    <div class="restaurant-card">
-
-                        <h3>
-                            ${escapeHTML(item.name)}
-                        </h3>
-
-                        <p>
-                            ₹${Number(
-                                item.price || 0
-                            ).toFixed(0)}
-                        </p>
-
-                        <button
-                            type="button"
-                            onclick="editMenuItem(
-                                '${item.id}'
-                            )"
-                        >
-                            Edit
-                        </button>
-
-                        <button
-                            type="button"
-                            onclick="deleteMenuItem(
-                                '${item.id}'
-                            )"
-                        >
-                            Delete
-                        </button>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
-}
-
-
-/* =====================================================
-   ADD / UPDATE MENU
-===================================================== */
-
-async function saveMenuItem() {
-
-    if (!ownerRestaurant) return;
-
-
-    const name =
-        document
-            .getElementById("menuName")
-            .value
-            .trim();
-
-
-    const price =
-        Number(
-            document
-                .getElementById("menuPrice")
-                .value
-        );
-
-
-    if (!name) {
-
-        document.getElementById(
-            "menuMessage"
-        ).textContent =
-            "❌ Item name डालें।";
-
-        return;
-    }
-
-
-    if (
-        !Number.isFinite(price) ||
-        price < 0
-    ) {
-
-        document.getElementById(
-            "menuMessage"
-        ).textContent =
-            "❌ सही price डालें।";
-
-        return;
-    }
-
-
-    const button =
-        document.getElementById(
-            "saveMenuBtn"
-        );
-
-
-    button.disabled = true;
-
-
-    try {
-
-        let result;
-
-
-        if (editingMenuId) {
-
-            result =
-                await db
-                    .from("menu_items")
-                    .update({
-
-                        name: name,
-
-                        price: price
-
-                    })
-                    .eq(
-                        "id",
-                        editingMenuId
-                    );
-
-        }
-
-        else {
-
-            result =
-                await db
-                    .from("menu_items")
-                    .insert({
-
-                        restaurant_id:
-                            ownerRestaurant.id,
-
-                        name: name,
-
-                        price: price
-
-                    });
-
-        }
-
-
-        if (result.error) {
-            throw result.error;
-        }
-
-
-        editingMenuId = null;
-
-
-        document.getElementById(
-            "menuName"
-        ).value = "";
-
-
-        document.getElementById(
-            "menuPrice"
-        ).value = "";
-
-
-        button.textContent =
-            "Add Menu Item";
-
-
-        document.getElementById(
-            "menuMessage"
-        ).textContent =
-            "✅ Menu item save हो गया।";
-
-
-        await loadMenu();
-
-    }
-
-    catch (error) {
-
-        document.getElementById(
-            "menuMessage"
-        ).textContent =
-            "❌ " +
-            (
-                error.message ||
-                "Menu save नहीं हुआ।"
-            );
-
-    }
-
-    finally {
-
-        button.disabled = false;
-
-    }
-}
-
-
-/* =====================================================
-   EDIT MENU
-===================================================== */
-
-function editMenuItem(id) {
-
-    const item =
-        menuItems.find(
-            function(menuItem) {
-                return menuItem.id === id;
-            }
-        );
-
-
-    if (!item) return;
-
-
-    editingMenuId =
-        item.id;
-
-
-    document.getElementById(
-        "menuName"
-    ).value =
-        item.name;
-
-
-    document.getElementById(
-        "menuPrice"
-    ).value =
-        item.price;
-
-
-    document.getElementById(
-        "saveMenuBtn"
-    ).textContent =
-        "Update Menu Item";
-
-}
-
-
-/* =====================================================
-   DELETE MENU
-===================================================== */
-
-async function deleteMenuItem(id) {
-
-    if (!confirm("यह menu item delete करना है?")) {
-        return;
-    }
-
-
-    const result =
-        await db
-            .from("menu_items")
-            .delete()
-            .eq(
-                "id",
-                id
-            );
-
-
-    if (result.error) {
-
-        alert(
-            result.error.message
-        );
-
-        return;
-    }
-
-
     await loadMenu();
+    await loadOrders();
+  }catch(e){
+    console.error(e);
+    badge.textContent="❌ Verification error";
+    document.getElementById("heroOwner").textContent=e.message||"Error";
+  }
 }
 
-
-/* =====================================================
-   LOAD ORDERS
-===================================================== */
-
-async function loadOrders() {
-
-    const container =
-        document.getElementById(
-            "orders"
-        );
-
-
-    const result =
-        await db
-            .from("orders")
-            .select("*")
-            .eq(
-                "restaurant_id",
-                ownerRestaurant.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: false
-                }
-            );
-
-
-    if (result.error) {
-
-        container.innerHTML =
-            "❌ Orders load error: " +
-            escapeHTML(
-                result.error.message
-            );
-
-        return;
-    }
-
-
-    if (!result.data || !result.data.length) {
-
-        container.innerHTML =
-            "अभी कोई order नहीं है।";
-
-        return;
-    }
-
-
-    container.innerHTML =
-        result.data
-            .map(function(order) {
-
-                return `
-
-                    <div class="restaurant-card">
-
-                        <h3>
-                            Order
-                        </h3>
-
-                        <p>
-                            Table:
-                            ${escapeHTML(
-                                order.table_number ||
-                                "-"
-                            )}
-                        </p>
-
-                        <p>
-                            Total:
-                            ₹${Number(
-                                order.total || 0
-                            )}
-                        </p>
-
-                        <p>
-                            Status:
-                            ${escapeHTML(
-                                order.status ||
-                                "pending"
-                            )}
-                        </p>
-
-                    </div>
-
-                `;
-
-            })
-            .join("");
+function showBasicOwnerInfo(){
+  document.getElementById("subscriptionSection").classList.remove("hidden");
+  showSubscription();
 }
 
-
-/* =====================================================
-   ESCAPE HTML
-===================================================== */
-
-function escapeHTML(value) {
-
-    return String(
-        value ?? ""
-    ).replace(
-        /[&<>"']/g,
-        function(character) {
-
-            const map = {
-
-                "&": "&amp;",
-                "<": "&lt;",
-                ">": "&gt;",
-                '"': "&quot;",
-                "'": "&#039;"
-
-            };
-
-            return map[character];
-
-        }
-    );
+function showSubscription(){
+  const active=ownerRestaurant.subscription_status==="active";
+  const end=ownerRestaurant.subscription_end?new Date(ownerRestaurant.subscription_end).toLocaleDateString("en-IN"):"Not active";
+  document.getElementById("subscriptionBadge").textContent=active?"Active":"Inactive";
+  document.getElementById("subscriptionInfo").innerHTML=
+    "<p>Status: <strong>"+escapeHTML(ownerRestaurant.subscription_status||"pending")+
+    "</strong></p><p>Price: <strong>₹199 / Month</strong></p><p>Valid Till: <strong>"+end+"</strong></p>";
 }
 
+async function requestRecharge(){
+  if(!ownerRestaurant)return;
+  const btn=document.getElementById("rechargeBtn"); btn.disabled=true; btn.textContent="Request भेजी जा रही है...";
+  try{
+    const {error}=await db.from("recharge_requests").insert({restaurant_id:ownerRestaurant.id,amount:199,status:"pending"});
+    if(error)throw error;
+    document.getElementById("rechargeMessage").textContent="✅ Recharge request Admin को भेज दी गई है।";
+  }catch(e){document.getElementById("rechargeMessage").textContent="❌ "+e.message;}
+  finally{btn.disabled=false;btn.textContent="Recharge ₹199 / 1 Month";}
+}
 
-/* =====================================================
-   START
-===================================================== */
+async function loadMenu(){
+  const {data,error}=await db.from("menu_items").select("*").eq("restaurant_id",ownerRestaurant.id).order("created_at",{ascending:true});
+  if(error){document.getElementById("menuList").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';return;}
+  menuItems=data||[]; renderMenu();
+}
 
-verifyOwnerQR();
+function renderMenu(){
+  const c=document.getElementById("menuList");
+  if(!menuItems.length){c.innerHTML="<p class='muted'>अभी कोई menu item नहीं है।</p>";return;}
+  c.innerHTML=menuItems.map(x=>`
+    <div class="menu-row">
+      <div><h3>${escapeHTML(x.name)}</h3><span class="muted">₹${Number(x.price||0).toFixed(0)}</span></div>
+      <div class="menu-actions">
+        <button onclick="editMenuItem('${x.id}')">Edit</button>
+        <button onclick="deleteMenuItem('${x.id}')">Delete</button>
+      </div>
+    </div>`).join("");
+}
 
+async function saveMenuItem(){
+  if(!ownerRestaurant)return;
+  const name=document.getElementById("menuName").value.trim(), price=Number(document.getElementById("menuPrice").value);
+  if(!name||!Number.isFinite(price)||price<0){document.getElementById("menuMessage").textContent="❌ सही item name और price डालें।";return;}
+  const btn=document.getElementById("saveMenuBtn");btn.disabled=true;
+  try{
+    let result=editingMenuId
+      ? await db.from("menu_items").update({name,price}).eq("id",editingMenuId)
+      : await db.from("menu_items").insert({restaurant_id:ownerRestaurant.id,name,price});
+    if(result.error)throw result.error;
+    editingMenuId=null;document.getElementById("menuName").value="";document.getElementById("menuPrice").value="";
+    btn.textContent="Add Menu Item";document.getElementById("menuMessage").textContent="✅ Menu item save हो गया।";await loadMenu();
+  }catch(e){document.getElementById("menuMessage").textContent="❌ "+e.message;}
+  finally{btn.disabled=false;}
+}
+
+function editMenuItem(id){
+  const x=menuItems.find(i=>i.id===id);if(!x)return;
+  editingMenuId=id;document.getElementById("menuName").value=x.name;document.getElementById("menuPrice").value=x.price;
+  document.getElementById("saveMenuBtn").textContent="Update Menu Item";scrollToId("menuSection");
+}
+async function deleteMenuItem(id){
+  if(!confirm("यह menu item delete करना है?"))return;
+  const {error}=await db.from("menu_items").delete().eq("id",id);
+  if(error){alert(error.message);return;} await loadMenu();
+}
+
+async function loadOrders(){
+  const {data,error}=await db.from("orders").select("*").eq("restaurant_id",ownerRestaurant.id).order("created_at",{ascending:false});
+  if(error){document.getElementById("orders").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';return;}
+  allOrders=data||[];renderOrders();
+  const total=allOrders.reduce((s,o)=>s+Number(o.total_amount||0),0);
+  document.getElementById("salesTotal").textContent="₹"+total.toFixed(0);
+  document.getElementById("ordersTotal").textContent=allOrders.length;
+  document.getElementById("newTotal").textContent=allOrders.filter(o=>o.status==="new").length;
+  document.getElementById("preparingTotal").textContent=allOrders.filter(o=>o.status==="preparing").length;
+  document.getElementById("weekSales").textContent="₹"+total.toFixed(0);
+  document.getElementById("orderCount").textContent=allOrders.length+" orders";
+  renderChart();
+}
+
+function renderChart(){
+  const vals=[0,0,0,0,0,0,0];
+  allOrders.forEach(o=>{const d=new Date(o.created_at||Date.now()).getDay();vals[d]= (vals[d]||0)+Number(o.total_amount||0);});
+  const max=Math.max(...vals,1);
+  document.getElementById("salesChart").innerHTML=vals.map(v=>`<div class="bar" style="height:${Math.max(12,(v/max)*100)}%"></div>`).join("");
+}
+
+function filterOrders(filter,btn){
+  activeFilter=filter;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderOrders();
+}
+
+function renderOrders(){
+  const list=activeFilter==="all"?allOrders:allOrders.filter(o=>(o.status||"new")===activeFilter);
+  const c=document.getElementById("orders");
+  if(!list.length){c.innerHTML="<p class='muted'>इस category में कोई order नहीं है।</p>";return;}
+  c.innerHTML=list.map(o=>`
+    <div class="order">
+      <div class="order-head">
+        <div><h3>Table ${escapeHTML(o.table_number||"-")}</h3><span class="muted">${escapeHTML(o.customer_name||"Customer")} • ${new Date(o.created_at).toLocaleString("en-IN")}</span></div>
+        <div class="amount">₹${Number(o.total_amount||0).toFixed(0)}</div>
+      </div>
+      <span class="status">${escapeHTML(o.status||"new")}</span>
+      <div class="order-actions">
+        ${o.status==="new"?'<button class="primary" onclick="showOrderInfo(\''+o.id+'\')">Accept</button>':''}
+        <button onclick="showOrderInfo('${o.id}')">View</button>
+      </div>
+    </div>`).join("");
+}
+
+function showOrderInfo(id){
+  const o=allOrders.find(x=>x.id===id);if(!o)return;
+  alert("Order ID: "+o.id+"\nTable: "+(o.table_number||"-")+"\nCustomer: "+(o.customer_name||"-")+"\nTotal: ₹"+Number(o.total_amount||0).toFixed(0)+"\nStatus: "+(o.status||"new"));
+}
+
+document.addEventListener("DOMContentLoaded",verifyOwnerQR);
 </script>
-
 </body>
-
-  </html>
+</html>
