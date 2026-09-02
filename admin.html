@@ -1281,3 +1281,194 @@ function printQR(
       canvas.toDataURL(
         "image/png"
       );
+function printQR(elementId,title){
+
+  const box=document.getElementById(elementId);
+
+  if(!box){
+    alert("QR नहीं मिला।");
+    return;
+  }
+
+  const canvas=box.querySelector("canvas");
+  const img=box.querySelector("img");
+
+  let src="";
+
+  if(canvas){
+    src=canvas.toDataURL("image/png");
+  }else if(img){
+    src=img.src;
+  }
+
+  if(!src){
+    alert("QR image तैयार नहीं है।");
+    return;
+  }
+
+  const win=window.open("","_blank");
+
+  if(!win){
+    alert("Popup blocked है।");
+    return;
+  }
+
+  win.document.write(`
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <title>${escapeHTML(title || "Restaurant QR")}</title>
+      <style>
+        body{
+          font-family:Arial,sans-serif;
+          text-align:center;
+          padding:30px;
+        }
+        img{
+          width:300px;
+          height:300px;
+        }
+      </style>
+    </head>
+    <body>
+      <h2>${escapeHTML(title || "Restaurant QR")}</h2>
+      <img src="${src}">
+      <script>
+        window.onload=function(){
+          window.print();
+        };
+      <\/script>
+    </body>
+    </html>
+  `);
+
+  win.document.close();
+}
+
+
+/* =====================================================
+   TOGGLE RESTAURANT
+===================================================== */
+
+async function toggleRestaurant(id,active){
+
+  if(!checkSupabase()) return;
+
+  const {error}=await db
+    .from("restaurants")
+    .update({is_active:active})
+    .eq("id",id);
+
+  if(error){
+    alert("❌ "+error.message);
+    return;
+  }
+
+  await loadRestaurants();
+}
+
+
+/* =====================================================
+   TOGGLE CUSTOMER QR
+===================================================== */
+
+async function toggleCustomerQR(id,active){
+
+  if(!checkSupabase()) return;
+
+  const {error}=await db
+    .from("restaurants")
+    .update({customer_qr_active:active})
+    .eq("id",id);
+
+  if(error){
+    alert("❌ "+error.message);
+    return;
+  }
+
+  await loadRestaurants();
+}
+
+
+/* =====================================================
+   ACTIVATE SUBSCRIPTION
+===================================================== */
+
+async function activateSubscription(id){
+
+  if(!checkSupabase()) return;
+
+  const start=new Date();
+  const end=new Date(start);
+
+  end.setMonth(end.getMonth()+1);
+
+  const {error}=await db
+    .from("restaurants")
+    .update({
+      subscription_status:"active",
+      subscription_start:start.toISOString(),
+      subscription_end:end.toISOString()
+    })
+    .eq("id",id);
+
+  if(error){
+    alert("❌ "+error.message);
+    return;
+  }
+
+  alert("✅ ₹199 subscription activated.");
+
+  await loadRestaurants();
+}
+
+
+/* =====================================================
+   DETAILS
+===================================================== */
+
+function showRestaurantInfo(id){
+
+  const r=restaurants.find(x=>x.id===id);
+
+  if(!r) return;
+
+  alert(
+    "Restaurant: "+(r.name||"-")+
+    "\nOwner: "+(r.owner_name||"-")+
+    "\nPhone: "+(r.phone||"-")+
+    "\nSubscription: "+(r.subscription_status||"pending")
+  );
+}
+
+
+/* =====================================================
+   SAFE JS
+===================================================== */
+
+function safeJS(value){
+
+  return String(value||"")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/"/g,'\\"')
+    .replace(/\n/g," ");
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  async function(){
+
+    const allowed=await protectAdminPage();
+
+    if(!allowed) return;
+
+    await loadRestaurants();
+
+  }
+);
