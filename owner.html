@@ -134,11 +134,21 @@ async function verifyOwnerQR(){
   if(!checkSupabase()){badge.textContent="❌ Supabase connection नहीं है";return;}
 
   try{
-    const {data,error}=await db.from("restaurants").select("*").eq("owner_qr_token",token).maybeSingle();
-    if(error)throw error;
-    if(!data){badge.textContent="❌ Invalid Owner QR";return;}
-    ownerRestaurant=data;
+    const { data: rows, error } = await db.rpc(
+  "get_restaurant_by_owner_qr",
+  { p_token: token }
+);
 
+if (error) throw error;
+
+const data = rows?.[0];
+
+if (!data) {
+  badge.textContent = "❌ Invalid Owner QR";
+  return;
+}
+
+ownerRestaurant = data;
     document.getElementById("restaurantName").textContent=data.name||"Restaurant";
     document.getElementById("ownerName").textContent="Owner: "+(data.owner_name||"Not added");
     document.getElementById("heroOwner").textContent=(data.owner_name||"Owner")+" • Restaurant Owner";
