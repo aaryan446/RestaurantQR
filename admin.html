@@ -9,7 +9,6 @@
 <link rel="stylesheet" href="style.css">
 
 <style>
-
 :root{
   --green:#168447;
   --green-dark:#0e6334;
@@ -161,6 +160,7 @@ button:disabled{
   border-radius:16px;
   padding:14px;
   background:#fff;
+  text-align:center;
 }
 
 .stat span{
@@ -219,6 +219,11 @@ button:disabled{
   color:var(--danger);
 }
 
+.badge.pending{
+  background:#fff3df;
+  color:#a96100;
+}
+
 .info-grid{
   display:grid;
   grid-template-columns:1fr 1fr;
@@ -259,18 +264,21 @@ button:disabled{
 }
 
 .qr-image{
-  min-height:190px;
+  width:180px;
+  height:180px;
+  max-width:100%;
+  margin:auto;
   display:flex;
   justify-content:center;
   align-items:center;
+  background:#fff;
 }
 
 .qr-image canvas,
 .qr-image img{
   width:180px !important;
   height:180px !important;
-  display:block;
-  background:#fff;
+  max-width:100%;
 }
 
 .qr-actions{
@@ -347,30 +355,16 @@ button:disabled{
 
 @media(max-width:600px){
 
+  main{
+    padding:12px;
+  }
+
   .stats{
     grid-template-columns:1fr 1fr 1fr;
   }
 
   .qr-grid{
-    grid-template-columns:1fr 1fr;
-  }
-
-}
-
-@media(max-width:430px){
-
-  .qr-grid{
     grid-template-columns:1fr;
-  }
-
-  .qr-image{
-    min-height:205px;
-  }
-
-  .qr-image canvas,
-  .qr-image img{
-    width:190px !important;
-    height:190px !important;
   }
 
   .actions{
@@ -379,6 +373,21 @@ button:disabled{
 
 }
 
+@media(max-width:380px){
+
+  .stats{
+    gap:6px;
+  }
+
+  .stat{
+    padding:10px 5px;
+  }
+
+  .stat b{
+    font-size:20px;
+  }
+
+}
 </style>
 </head>
 
@@ -391,13 +400,11 @@ button:disabled{
   <button
     class="small"
     type="button"
-    onclick="logout()"
-  >
+    onclick="logout()">
     Logout
   </button>
 
   <h1>RestaurantQR</h1>
-
   <p>Admin Dashboard</p>
 
 </header>
@@ -405,70 +412,59 @@ button:disabled{
 
 <main>
 
-
-<!-- =====================================================
-     ADD RESTAURANT
-===================================================== -->
+<!-- ================= ADD RESTAURANT ================= -->
 
 <section class="card">
 
   <h2>➕ Add Restaurant</h2>
 
-  <label>
-    Restaurant Name
-  </label>
+  <label>Restaurant Name</label>
 
   <input
     id="restaurantName"
     type="text"
     placeholder="Restaurant name"
+    autocomplete="off"
   >
 
-
-  <label>
-    Owner Name
-  </label>
+  <label>Owner Name</label>
 
   <input
     id="ownerName"
     type="text"
     placeholder="Owner name"
+    autocomplete="off"
   >
 
-
-  <label>
-    Owner Phone
-  </label>
+  <label>Owner Phone</label>
 
   <input
     id="ownerPhone"
     type="tel"
     placeholder="Phone number"
+    inputmode="numeric"
+    autocomplete="off"
   >
-
 
   <button
     id="addRestaurantBtn"
     class="main-btn"
     type="button"
-    onclick="createRestaurant()"
-  >
-    Add Restaurant
-  </button>
+    onclick="createRestaurant()">
 
+    Add Restaurant
+
+  </button>
 
   <div
     id="restaurantMessage"
-    class="message"
-  ></div>
+    class="message">
+  </div>
 
 </section>
 
 
-
-<!-- =====================================================
-     OVERVIEW
-===================================================== -->
+<!-- ================= OVERVIEW ================= -->
 
 <section class="card">
 
@@ -477,35 +473,18 @@ button:disabled{
   <div class="stats">
 
     <div class="stat">
-
       <span>Total</span>
-
-      <b id="totalRestaurants">
-        0
-      </b>
-
+      <b id="totalRestaurants">0</b>
     </div>
 
-
     <div class="stat">
-
       <span>Active</span>
-
-      <b id="activeRestaurants">
-        0
-      </b>
-
+      <b id="activeRestaurants">0</b>
     </div>
 
-
     <div class="stat">
-
       <span>Blocked</span>
-
-      <b id="blockedRestaurants">
-        0
-      </b>
-
+      <b id="blockedRestaurants">0</b>
     </div>
 
   </div>
@@ -513,117 +492,126 @@ button:disabled{
 </section>
 
 
-
-<!-- =====================================================
-     RESTAURANTS
-===================================================== -->
+<!-- ================= RESTAURANTS ================= -->
 
 <section class="card">
 
   <h2>🏪 Restaurants</h2>
 
   <div id="restaurantList">
-
     <div class="loading">
       Loading restaurants...
     </div>
-
   </div>
 
 </section>
-
 
 </main>
 
 </div>
 
 
-
-<!-- =====================================================
-     SUPABASE
-===================================================== -->
+<!-- ================= SUPABASE ================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-
-
-<!-- =====================================================
-     MAIN APP
-===================================================== -->
 
 <script src="app.js"></script>
 
 
-<!-- =====================================================
-     QR CODE LIBRARY
-===================================================== -->
+<!-- ================= QR LIBRARY ================= -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 
-
 <script>
 
-"use strict";
-
-
 /* =====================================================
-   VARIABLES
+   GLOBAL
 ===================================================== */
 
 let restaurants = [];
 
+
+/* =====================================================
+   PROJECT URL
+===================================================== */
 
 const PROJECT_BASE_URL =
   "https://aaryan446.github.io/RestaurantQR";
 
 
 /* =====================================================
-   SAFE MESSAGE
+   SAFE TEXT
 ===================================================== */
 
-function adminMessage(
-  message,
-  type=""
-){
+function safeText(value){
 
-  const element =
+  return String(value ?? "");
+
+}
+
+
+/* =====================================================
+   JS SAFE STRING
+===================================================== */
+
+function safeJS(value){
+
+  return safeText(value)
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'")
+    .replace(/"/g,'\\"')
+    .replace(/\n/g," ")
+    .replace(/\r/g," ");
+
+}
+
+
+/* =====================================================
+   MESSAGE
+===================================================== */
+
+function adminMessage(text,type=""){
+
+  const box =
     document.getElementById(
       "restaurantMessage"
     );
 
-  if(!element) return;
+  if(!box) return;
 
-  element.textContent =
-    message;
+  box.textContent = text;
 
-  element.className =
+  box.className =
     "message " + type;
 
 }
 
 
 /* =====================================================
-   QR URL
+   TOKEN GENERATOR
 ===================================================== */
 
-function makeQRURL(
-  page,
-  token
-){
+function generateToken(prefix){
 
-  if(!token){
+  if(
+    window.crypto &&
+    typeof crypto.randomUUID === "function"
+  ){
 
-    return "";
+    return prefix + "_" +
+      crypto
+        .randomUUID()
+        .replace(/-/g,"");
 
   }
 
-  return (
-    PROJECT_BASE_URL +
-    "/" +
-    page +
-    ".html?token=" +
-    encodeURIComponent(token)
-  );
+  return prefix + "_" +
+    Date.now().toString(36) +
+    "_" +
+    Math.random()
+      .toString(36)
+      .substring(2,14);
 
 }
 
@@ -634,49 +622,26 @@ function makeQRURL(
 
 async function createRestaurant(){
 
-  console.log(
-    "createRestaurant() started"
-  );
-
-
-  if(
-    typeof checkSupabase !== "function" ||
-    !checkSupabase()
-  ){
-
-    adminMessage(
-      "❌ Supabase connection नहीं है।",
-      "error"
-    );
-
-    return;
-
-  }
+  if(!checkSupabase()) return;
 
 
   const name =
     document
-      .getElementById(
-        "restaurantName"
-      )
+      .getElementById("restaurantName")
       .value
       .trim();
 
 
   const ownerName =
     document
-      .getElementById(
-        "ownerName"
-      )
+      .getElementById("ownerName")
       .value
       .trim();
 
 
   const ownerPhone =
     document
-      .getElementById(
-        "ownerPhone"
-      )
+      .getElementById("ownerPhone")
       .value
       .trim();
 
@@ -689,7 +654,6 @@ async function createRestaurant(){
     );
 
     return;
-
   }
 
 
@@ -699,85 +663,79 @@ async function createRestaurant(){
     );
 
 
-  button.disabled =
-    true;
+  button.disabled = true;
 
   button.textContent =
     "Creating...";
 
 
-  adminMessage(
-    "Restaurant create हो रहा है..."
-  );
+  adminMessage("");
 
 
   try{
 
-
-    /* -------------------------------------------------
-       SLUG
-    ------------------------------------------------- */
-
     const baseSlug =
       name
         .toLowerCase()
-        .replace(
-          /[^a-z0-9]+/g,
-          "-"
-        )
-        .replace(
-          /^-+|-+$/g,
-          ""
-        );
+        .replace(/[^a-z0-9]+/g,"-")
+        .replace(/^-+|-+$/g,"");
 
 
     const slug =
-      (
-        baseSlug ||
-        "restaurant"
-      ) +
+      (baseSlug || "restaurant") +
       "-" +
       Math.random()
         .toString(36)
         .substring(2,8);
 
 
-    /* -------------------------------------------------
-       DATABASE INSERT
+    /*
+      IMPORTANT:
+      हर restaurant के लिए
+      नया Owner QR token
+      और Customer QR token बनेगा।
+      
+      Token user को dashboard में
+      text के रूप में नहीं दिखाया जाएगा।
+    */
 
-       QR TOKEN DATABASE DEFAULT से generate होंगे.
-    ------------------------------------------------- */
+    const ownerToken =
+      generateToken("owner");
+
+
+    const customerToken =
+      generateToken("customer");
+
 
     const result =
       await db
         .from("restaurants")
         .insert({
 
-          name:
-            name,
+          name:name,
 
           owner_name:
-            ownerName ||
-            null,
+            ownerName || null,
 
           phone:
-            ownerPhone ||
-            null,
+            ownerPhone || null,
 
-          slug:
-            slug,
+          slug:slug,
 
-          monthly_price:
-            199,
+          monthly_price:199,
 
           subscription_status:
             "pending",
 
-          is_active:
-            true,
+          is_active:true,
 
-          customer_qr_active:
-            true
+          customer_qr_active:true,
+
+          owner_qr_token:
+            ownerToken,
+
+          customer_qr_token:
+            customerToken
 
         })
         .select("*")
@@ -791,21 +749,11 @@ async function createRestaurant(){
     }
 
 
-    console.log(
-      "Restaurant created:",
-      result.data
-    );
-
-
     adminMessage(
       "✅ Restaurant successfully created.",
       "success"
     );
 
-
-    /* -------------------------------------------------
-       CLEAR FORM
-    ------------------------------------------------- */
 
     document.getElementById(
       "restaurantName"
@@ -822,15 +770,10 @@ async function createRestaurant(){
     ).value = "";
 
 
-    /* -------------------------------------------------
-       RELOAD
-    ------------------------------------------------- */
-
     await loadRestaurants();
 
 
-  }
-  catch(error){
+  }catch(error){
 
     console.error(
       "CREATE RESTAURANT ERROR:",
@@ -847,11 +790,10 @@ async function createRestaurant(){
       "error"
     );
 
-  }
-  finally{
 
-    button.disabled =
-      false;
+  }finally{
+
+    button.disabled = false;
 
     button.textContent =
       "Add Restaurant";
@@ -861,12 +803,14 @@ async function createRestaurant(){
 }
 
 
-
 /* =====================================================
    LOAD RESTAURANTS
 ===================================================== */
 
 async function loadRestaurants(){
+
+  if(!checkSupabase()) return;
+
 
   const container =
     document.getElementById(
@@ -874,33 +818,11 @@ async function loadRestaurants(){
     );
 
 
-  if(
-    typeof checkSupabase !== "function" ||
-    !checkSupabase()
-  ){
-
-    container.innerHTML =
-      `
-      <div class="empty">
-        ❌ Supabase connection नहीं है।
-      </div>
-      `;
-
-    return;
-
-  }
-
-
   container.innerHTML =
-    `
-    <div class="loading">
-      Restaurants load हो रहे हैं...
-    </div>
-    `;
+    '<div class="loading">Restaurants load हो रहे हैं...</div>';
 
 
   try{
-
 
     const result =
       await db
@@ -925,13 +847,12 @@ async function loadRestaurants(){
       result.data || [];
 
 
-    updateStats();
-
     renderRestaurants();
 
+    updateStats();
 
-  }
-  catch(error){
+
+  }catch(error){
 
     console.error(
       "LOAD RESTAURANTS ERROR:",
@@ -939,13 +860,11 @@ async function loadRestaurants(){
     );
 
 
-    container.innerHTML =
-      `
+    container.innerHTML = `
+
       <div class="empty">
 
-        ❌ Restaurant load नहीं हुआ।
-
-        <br><br>
+        ❌ Restaurant load नहीं हुआ।<br><br>
 
         ${escapeHTML(
           error.message ||
@@ -953,12 +872,12 @@ async function loadRestaurants(){
         )}
 
       </div>
-      `;
+
+    `;
 
   }
 
 }
-
 
 
 /* =====================================================
@@ -973,43 +892,31 @@ function updateStats(){
 
   const active =
     restaurants.filter(
-      function(r){
-
-        return r.is_active === true;
-
-      }
+      r => r.is_active === true
     ).length;
 
 
   const blocked =
     restaurants.filter(
-      function(r){
-
-        return r.is_active === false;
-
-      }
+      r => r.is_active === false
     ).length;
 
 
   document.getElementById(
     "totalRestaurants"
-  ).textContent =
-    total;
+  ).textContent = total;
 
 
   document.getElementById(
     "activeRestaurants"
-  ).textContent =
-    active;
+  ).textContent = active;
 
 
   document.getElementById(
     "blockedRestaurants"
-  ).textContent =
-    blocked;
+  ).textContent = blocked;
 
 }
-
 
 
 /* =====================================================
@@ -1026,458 +933,428 @@ function renderRestaurants(){
 
   if(!restaurants.length){
 
-    container.innerHTML =
-      `
+    container.innerHTML = `
+
       <div class="empty">
+
         अभी कोई restaurant नहीं है।
+
       </div>
-      `;
+
+    `;
 
     return;
-
   }
 
 
   container.innerHTML =
-    restaurants
-      .map(
-        function(r){
+    restaurants.map(function(r){
 
-          const active =
-            r.is_active === true;
+      const active =
+        r.is_active === true;
 
 
-          const customerActive =
-            r.customer_qr_active === true;
+      const customerActive =
+        r.customer_qr_active === true;
 
 
-          const subscription =
-            r.subscription_status ||
-            "pending";
+      const subscription =
+        r.subscription_status ||
+        "pending";
 
 
-          const startDate =
-            r.subscription_start
-              ? new Date(
-                  r.subscription_start
-                ).toLocaleDateString(
-                  "en-IN"
-                )
-              : "Not active";
+      const startDate =
+        r.subscription_start
+          ? new Date(
+              r.subscription_start
+            ).toLocaleDateString("en-IN")
+          : "Not active";
 
 
-          const endDate =
-            r.subscription_end
-              ? new Date(
-                  r.subscription_end
-                ).toLocaleDateString(
-                  "en-IN"
-                )
-              : "Not active";
+      const endDate =
+        r.subscription_end
+          ? new Date(
+              r.subscription_end
+            ).toLocaleDateString("en-IN")
+          : "Not active";
 
 
-          return `
+      /*
+        QR LINK
+      */
 
-          <div
-            class="restaurant-card"
-          >
-
-
-            <!-- HEADER -->
-
-            <div
-              class="restaurant-head"
-            >
-
-              <div>
-
-                <h3>
-                  ${escapeHTML(
-                    r.name
-                  )}
-                </h3>
+      const ownerURL =
+        PROJECT_BASE_URL +
+        "/owner.html?token=" +
+        encodeURIComponent(
+          r.owner_qr_token || ""
+        );
 
 
-                <div
-                  class="owner-info"
-                >
-                  👤 Owner:
-                  ${escapeHTML(
-                    r.owner_name ||
-                    "Not added"
-                  )}
-                </div>
+      const customerURL =
+        PROJECT_BASE_URL +
+        "/customer.html?token=" +
+        encodeURIComponent(
+          r.customer_qr_token || ""
+        );
 
 
-                <div
-                  class="owner-info"
-                >
-                  📞
-                  ${escapeHTML(
-                    r.phone ||
-                    "Not added"
-                  )}
-                </div>
+      return `
 
-              </div>
+      <div class="restaurant-card">
 
+        <!-- HEADER -->
 
-              <span
-                class="badge ${
-                  active
-                    ? "active"
-                    : "blocked"
-                }"
-              >
+        <div class="restaurant-head">
 
-                ${
-                  active
-                    ? "🟢 Active"
-                    : "🔴 Blocked"
-                }
+          <div>
 
-              </span>
+            <h3>
+              ${escapeHTML(
+                r.name || "Restaurant"
+              )}
+            </h3>
 
+            <div class="owner-info">
+              👤 Owner:
+              ${escapeHTML(
+                r.owner_name ||
+                "Not added"
+              )}
             </div>
 
-
-
-            <!-- INFO -->
-
-            <div
-              class="info-grid"
-            >
-
-              <div class="info">
-
-                Subscription
-
-                <strong>
-                  ${escapeHTML(
-                    subscription
-                  )}
-                </strong>
-
-              </div>
-
-
-              <div class="info">
-
-                Price
-
-                <strong>
-                  ₹${Number(
-                    r.monthly_price ||
-                    199
-                  ).toFixed(0)}
-                  / Month
-                </strong>
-
-              </div>
-
-
-              <div class="info">
-
-                Start
-
-                <strong>
-                  ${startDate}
-                </strong>
-
-              </div>
-
-
-              <div class="info">
-
-                Valid Till
-
-                <strong>
-                  ${endDate}
-                </strong>
-
-              </div>
-
+            <div class="owner-info">
+              📞
+              ${escapeHTML(
+                r.phone ||
+                "Not added"
+              )}
             </div>
-
-
-
-            <!-- QR GRID -->
-
-            <div
-              class="qr-grid"
-            >
-
-
-              <!-- OWNER QR -->
-
-              <div
-                class="qr-box"
-              >
-
-                <h4>
-                  🔐 Owner QR
-                </h4>
-
-
-                <div
-                  class="qr-image"
-                  id="ownerQR-${r.id}"
-                >
-                  Loading QR...
-                </div>
-
-
-                <div
-                  class="qr-actions"
-                >
-
-                  <button
-                    type="button"
-                    onclick="
-                      downloadQR(
-                        '${r.id}',
-                        'owner'
-                      )
-                    "
-                  >
-                    📥 Download
-                  </button>
-
-
-                  <button
-                    type="button"
-                    onclick="
-                      printQR(
-                        '${r.id}',
-                        'owner'
-                      )
-                    "
-                  >
-                    🖨️ Print
-                  </button>
-
-                </div>
-
-              </div>
-
-
-
-              <!-- CUSTOMER QR -->
-
-              <div
-                class="qr-box"
-              >
-
-                <h4>
-                  📱 Customer QR
-                </h4>
-
-
-                <div
-                  class="qr-image"
-                  id="customerQR-${r.id}"
-                >
-                  Loading QR...
-                </div>
-
-
-                <div
-                  class="qr-actions"
-                >
-
-                  <button
-                    type="button"
-                    onclick="
-                      downloadQR(
-                        '${r.id}',
-                        'customer'
-                      )
-                    "
-                  >
-                    📥 Download
-                  </button>
-
-
-                  <button
-                    type="button"
-                    onclick="
-                      printQR(
-                        '${r.id}',
-                        'customer'
-                      )
-                    "
-                  >
-                    🖨️ Print
-                  </button>
-
-                </div>
-
-              </div>
-
-
-            </div>
-
-
-
-            <!-- ACTIONS -->
-
-            <div
-              class="actions"
-            >
-
-
-              ${
-                active
-
-                ?
-
-                `
-                <button
-                  class="action-btn red"
-                  type="button"
-                  onclick="
-                    toggleRestaurant(
-                      '${r.id}',
-                      false
-                    )
-                  "
-                >
-                  🚫 Block Restaurant
-                </button>
-                `
-
-                :
-
-                `
-                <button
-                  class="action-btn green"
-                  type="button"
-                  onclick="
-                    toggleRestaurant(
-                      '${r.id}',
-                      true
-                    )
-                  "
-                >
-                  ✅ Activate Restaurant
-                </button>
-                `
-              }
-
-
-
-              ${
-                customerActive
-
-                ?
-
-                `
-                <button
-                  class="action-btn orange"
-                  type="button"
-                  onclick="
-                    toggleCustomerQR(
-                      '${r.id}',
-                      false
-                    )
-                  "
-                >
-                  📱 Customer QR OFF
-                </button>
-                `
-
-                :
-
-                `
-                <button
-                  class="action-btn blue"
-                  type="button"
-                  onclick="
-                    toggleCustomerQR(
-                      '${r.id}',
-                      true
-                    )
-                  "
-                >
-                  📱 Customer QR ON
-                </button>
-                `
-              }
-
-
-
-              <button
-                class="action-btn green"
-                type="button"
-                onclick="
-                  activateSubscription(
-                    '${r.id}'
-                  )
-                "
-              >
-                💰 Activate ₹199
-              </button>
-
-
-
-              <button
-                class="action-btn"
-                type="button"
-                onclick="
-                  showRestaurantInfo(
-                    '${r.id}'
-                  )
-                "
-              >
-                ℹ️ Details
-              </button>
-
-
-            </div>
-
 
           </div>
 
-          `;
 
-        }
-      )
-      .join("");
+          <span class="badge ${
+            active
+              ? "active"
+              : "blocked"
+          }">
+
+            ${
+              active
+                ? "🟢 Active"
+                : "🔴 Blocked"
+            }
+
+          </span>
+
+        </div>
 
 
-  /* -------------------------------------------------
-     CREATE QR AFTER HTML
-  ------------------------------------------------- */
+        <!-- INFORMATION -->
 
-  restaurants.forEach(
-    function(r){
+        <div class="info-grid">
 
-      createQR(
-        "ownerQR-" + r.id,
-        makeQRURL(
-          "owner",
-          r.owner_qr_token
-        )
+          <div class="info">
+
+            Subscription
+
+            <strong>
+              ${escapeHTML(
+                subscription
+              )}
+            </strong>
+
+          </div>
+
+
+          <div class="info">
+
+            Price
+
+            <strong>
+              ₹${Number(
+                r.monthly_price || 199
+              ).toFixed(0)}
+              / Month
+            </strong>
+
+          </div>
+
+
+          <div class="info">
+
+            Start
+
+            <strong>
+              ${startDate}
+            </strong>
+
+          </div>
+
+
+          <div class="info">
+
+            Valid Till
+
+            <strong>
+              ${endDate}
+            </strong>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================= QR ================= -->
+
+        <div class="qr-grid">
+
+
+          <!-- OWNER QR -->
+
+          <div class="qr-box">
+
+            <h4>
+              🔐 Owner QR
+            </h4>
+
+            <div
+              class="qr-image"
+              id="ownerQR-${safeJS(r.id)}">
+            </div>
+
+            <div class="qr-actions">
+
+              <button
+                type="button"
+                onclick="downloadQR(
+                  '${safeJS(r.id)}',
+                  'owner',
+                  '${safeJS(r.name)}'
+                )">
+
+                📥 Download
+
+              </button>
+
+
+              <button
+                type="button"
+                onclick="printQR(
+                  '${safeJS(r.id)}',
+                  'owner',
+                  '${safeJS(r.name)}'
+                )">
+
+                🖨️ Print
+
+              </button>
+
+            </div>
+
+          </div>
+
+
+          <!-- CUSTOMER QR -->
+
+          <div class="qr-box">
+
+            <h4>
+              📱 Customer QR
+            </h4>
+
+            <div
+              class="qr-image"
+              id="customerQR-${safeJS(r.id)}">
+            </div>
+
+            <div class="qr-actions">
+
+              <button
+                type="button"
+                onclick="downloadQR(
+                  '${safeJS(r.id)}',
+                  'customer',
+                  '${safeJS(r.name)}'
+                )">
+
+                📥 Download
+
+              </button>
+
+
+              <button
+                type="button"
+                onclick="printQR(
+                  '${safeJS(r.id)}',
+                  'customer',
+                  '${safeJS(r.name)}'
+                )">
+
+                🖨️ Print
+
+              </button>
+
+            </div>
+
+          </div>
+
+        </div>
+
+
+        <!-- ================= ACTIONS ================= -->
+
+        <div class="actions">
+
+
+          ${
+            active
+
+              ? `
+
+                <button
+                  class="action-btn red"
+                  type="button"
+                  onclick="toggleRestaurant(
+                    '${safeJS(r.id)}',
+                    false
+                  )">
+
+                  🚫 Block Restaurant
+
+                </button>
+
+              `
+
+              : `
+
+                <button
+                  class="action-btn green"
+                  type="button"
+                  onclick="toggleRestaurant(
+                    '${safeJS(r.id)}',
+                    true
+                  )">
+
+                  ✅ Activate Restaurant
+
+                </button>
+
+              `
+          }
+
+
+          ${
+            customerActive
+
+              ? `
+
+                <button
+                  class="action-btn orange"
+                  type="button"
+                  onclick="toggleCustomerQR(
+                    '${safeJS(r.id)}',
+                    false
+                  )">
+
+                  📱 Customer QR OFF
+
+                </button>
+
+              `
+
+              : `
+
+                <button
+                  class="action-btn blue"
+                  type="button"
+                  onclick="toggleCustomerQR(
+                    '${safeJS(r.id)}',
+                    true
+                  )">
+
+                  📱 Customer QR ON
+
+                </button>
+
+              `
+          }
+
+
+          <button
+            class="action-btn green"
+            type="button"
+            onclick="activateSubscription(
+              '${safeJS(r.id)}'
+            )">
+
+            💰 Activate ₹199
+
+          </button>
+
+
+          <button
+            class="action-btn"
+            type="button"
+            onclick="showRestaurantInfo(
+              '${safeJS(r.id)}'
+            )">
+
+            ℹ️ Details
+
+          </button>
+
+
+        </div>
+
+      </div>
+
+      `;
+
+    }).join("");
+
+
+  /*
+    HTML बनने के बाद QR बनाओ
+  */
+
+  restaurants.forEach(function(r){
+
+    const ownerURL =
+      PROJECT_BASE_URL +
+      "/owner.html?token=" +
+      encodeURIComponent(
+        r.owner_qr_token || ""
       );
 
 
-      createQR(
-        "customerQR-" + r.id,
-        makeQRURL(
-          "customer",
-          r.customer_qr_token
-        )
+    const customerURL =
+      PROJECT_BASE_URL +
+      "/customer.html?token=" +
+      encodeURIComponent(
+        r.customer_qr_token || ""
       );
 
-    }
-  );
+
+    createQR(
+      "ownerQR-" + r.id,
+      ownerURL
+    );
+
+
+    createQR(
+      "customerQR-" + r.id,
+      customerURL
+    );
+
+  });
 
 }
 
 
-
 /* =====================================================
-   CREATE QR IMAGE
+   CREATE QR
 ===================================================== */
 
 function createQR(
@@ -1494,21 +1371,17 @@ function createQR(
   if(!element) return;
 
 
-  element.innerHTML =
-    "";
+  element.innerHTML = "";
 
 
   if(
-    typeof QRCode ===
-    "undefined"
+    !url ||
+    !url.includes("token=") ||
+    url.endsWith("token=")
   ){
 
     element.innerHTML =
-      `
-      <div class="empty">
-        ❌ QR library load नहीं हुई।
-      </div>
-      `;
+      '<div class="empty">QR unavailable</div>';
 
     return;
 
@@ -1516,21 +1389,11 @@ function createQR(
 
 
   if(
-    !url ||
-    !url.includes(
-      "token="
-    ) ||
-    url.endsWith(
-      "token="
-    )
+    typeof QRCode === "undefined"
   ){
 
     element.innerHTML =
-      `
-      <div class="empty">
-        ❌ QR token available नहीं है।
-      </div>
-      `;
+      '<div class="empty">QR library load नहीं हुई।</div>';
 
     return;
 
@@ -1542,55 +1405,36 @@ function createQR(
     new QRCode(
       element,
       {
-
         text:url,
-
         width:180,
-
         height:180,
-
         correctLevel:
           QRCode.CorrectLevel.H
-
       }
     );
 
-  }
-  catch(error){
+  }catch(error){
 
     console.error(
       "QR CREATE ERROR:",
       error
     );
 
-
     element.innerHTML =
-      `
-      <div class="empty">
-        ❌ QR create नहीं हुआ।
-      </div>
-      `;
+      '<div class="empty">QR create error</div>';
 
   }
 
 }
 
 
-
 /* =====================================================
    GET QR IMAGE
 ===================================================== */
 
-function getQRSource(
-  id,
-  type
+function getQRDataURL(
+  elementId
 ){
-
-  const elementId =
-    type === "owner"
-      ? "ownerQR-" + id
-      : "customerQR-" + id;
-
 
   const box =
     document.getElementById(
@@ -1602,9 +1446,7 @@ function getQRSource(
 
 
   const canvas =
-    box.querySelector(
-      "canvas"
-    );
+    box.querySelector("canvas");
 
 
   if(canvas){
@@ -1617,12 +1459,10 @@ function getQRSource(
 
 
   const img =
-    box.querySelector(
-      "img"
-    );
+    box.querySelector("img");
 
 
-  if(img){
+  if(img && img.src){
 
     return img.src;
 
@@ -1634,30 +1474,32 @@ function getQRSource(
 }
 
 
-
 /* =====================================================
    DOWNLOAD QR
 ===================================================== */
 
 function downloadQR(
-  id,
-  type
+  restaurantId,
+  type,
+  restaurantName
 ){
 
-  const restaurant =
-    restaurants.find(
-      function(r){
+  const elementId =
+    type === "owner"
+      ? "ownerQR-" + restaurantId
+      : "customerQR-" + restaurantId;
 
-        return r.id === id;
 
-      }
+  const dataURL =
+    getQRDataURL(
+      elementId
     );
 
 
-  if(!restaurant){
+  if(!dataURL){
 
     alert(
-      "Restaurant नहीं मिला।"
+      "❌ QR image तैयार नहीं है।"
     );
 
     return;
@@ -1665,61 +1507,39 @@ function downloadQR(
   }
 
 
-  const src =
-    getQRSource(
-      id,
-      type
-    );
+  const a =
+    document.createElement("a");
 
 
-  if(!src){
-
-    alert(
-      "QR image तैयार नहीं है।"
-    );
-
-    return;
-
-  }
+  a.href =
+    dataURL;
 
 
-  const filename =
-    (
-      restaurant.name ||
+  const cleanName =
+    safeText(
+      restaurantName ||
       "Restaurant"
-    ) +
+    )
+      .replace(
+        /[^a-zA-Z0-9_-]/g,
+        "_"
+      );
+
+
+  a.download =
+    cleanName +
     "-" +
-    (
-      type === "owner"
-        ? "Owner-QR"
-        : "Customer-QR"
-    ) +
-    ".png";
+    type +
+    "-QR.png";
 
 
-  const link =
-    document.createElement(
-      "a"
-    );
+  document.body.appendChild(a);
 
+  a.click();
 
-  link.href =
-    src;
-
-  link.download =
-    filename;
-
-
-  document.body.appendChild(
-    link
-  );
-
-  link.click();
-
-  link.remove();
+  a.remove();
 
 }
-
 
 
 /* =====================================================
@@ -1727,65 +1547,39 @@ function downloadQR(
 ===================================================== */
 
 function printQR(
-  id,
-  type
+  restaurantId,
+  type,
+  restaurantName
 ){
 
-  const restaurant =
-    restaurants.find(
-      function(r){
+  const elementId =
+    type === "owner"
+      ? "ownerQR-" + restaurantId
+      : "customerQR-" + restaurantId;
 
-        return r.id === id;
 
-      }
+  const dataURL =
+    getQRDataURL(
+      elementId
     );
 
 
-  if(!restaurant){
+  if(!dataURL){
 
     alert(
-      "Restaurant नहीं मिला।"
+      "❌ QR image तैयार नहीं है।"
     );
 
     return;
 
   }
-
-
-  const src =
-    getQRSource(
-      id,
-      type
-    );
-
-
-  if(!src){
-
-    alert(
-      "QR image तैयार नहीं है।"
-    );
-
-    return;
-
-  }
-
-
-  const title =
-    (
-      restaurant.name ||
-      "Restaurant"
-    ) +
-    (
-      type === "owner"
-        ? " - Owner QR"
-        : " - Customer QR"
-    );
 
 
   const printWindow =
     window.open(
       "",
-      "_blank"
+      "_blank",
+      "width=600,height=700"
     );
 
 
@@ -1800,6 +1594,19 @@ function printQR(
   }
 
 
+  const title =
+    safeText(
+      restaurantName ||
+      "Restaurant QR"
+    );
+
+
+  const qrType =
+    type === "owner"
+      ? "Owner QR"
+      : "Customer QR";
+
+
   printWindow.document.open();
 
 
@@ -1811,25 +1618,57 @@ function printQR(
 
     <head>
 
+      <meta charset="UTF-8">
+
       <title>
         ${escapeHTML(title)}
+        - ${qrType}
       </title>
 
       <style>
 
         body{
-          font-family:Arial,sans-serif;
+          margin:0;
+          padding:40px 20px;
           text-align:center;
-          padding:30px;
+          font-family:Arial,sans-serif;
+          background:#fff;
+        }
+
+        h1{
+          font-size:26px;
+          margin:0 0 8px;
         }
 
         h2{
-          margin-bottom:20px;
+          font-size:19px;
+          margin:0 0 25px;
         }
 
         img{
           width:300px;
           height:300px;
+          display:block;
+          margin:20px auto;
+        }
+
+        .note{
+          margin-top:20px;
+          font-size:14px;
+          color:#555;
+        }
+
+        @media print{
+
+          body{
+            padding:20px;
+          }
+
+          img{
+            width:280px;
+            height:280px;
+          }
+
         }
 
       </style>
@@ -1838,13 +1677,38 @@ function printQR(
 
     <body>
 
+      <h1>
+        RestaurantQR
+      </h1>
+
       <h2>
         ${escapeHTML(title)}
+        <br>
+        ${qrType}
       </h2>
 
       <img
-        src="${src}"
+        src="${dataURL}"
+        alt="QR Code"
       >
+
+      <div class="note">
+        Scan QR to continue
+      </div>
+
+      <script>
+
+        window.onload=function(){
+
+          setTimeout(function(){
+
+            window.print();
+
+          },500);
+
+        };
+
+      <\/script>
 
     </body>
 
@@ -1855,24 +1719,11 @@ function printQR(
 
   printWindow.document.close();
 
-
-  setTimeout(
-    function(){
-
-      printWindow.focus();
-
-      printWindow.print();
-
-    },
-    500
-  );
-
 }
 
 
-
 /* =====================================================
-   BLOCK / ACTIVATE
+   BLOCK / ACTIVATE RESTAURANT
 ===================================================== */
 
 async function toggleRestaurant(
@@ -1883,37 +1734,52 @@ async function toggleRestaurant(
   if(!checkSupabase()) return;
 
 
+  const action =
+    active
+      ? "activate"
+      : "block";
+
+
+  if(
+    !confirm(
+      active
+        ? "Restaurant activate करना है?"
+        : "Restaurant block करना है?"
+    )
+  ){
+
+    return;
+
+  }
+
+
   try{
 
-    const {error} =
+    const result =
       await db
         .from("restaurants")
         .update({
-
-          is_active:
-            active
-
+          is_active:active
         })
-        .eq(
-          "id",
-          id
-        );
+        .eq("id",id);
 
 
-    if(error){
+    if(result.error){
 
-      throw error;
+      throw result.error;
 
     }
 
 
     await loadRestaurants();
 
-  }
-  catch(error){
+
+  }catch(error){
 
     alert(
-      "❌ Status update नहीं हुआ:\n" +
+      "❌ " +
+      action +
+      " नहीं हुआ:\n" +
       (
         error.message ||
         "Unknown error"
@@ -1923,7 +1789,6 @@ async function toggleRestaurant(
   }
 
 }
-
 
 
 /* =====================================================
@@ -1940,35 +1805,29 @@ async function toggleCustomerQR(
 
   try{
 
-    const {error} =
+    const result =
       await db
         .from("restaurants")
         .update({
-
-          customer_qr_active:
-            active
-
+          customer_qr_active:active
         })
-        .eq(
-          "id",
-          id
-        );
+        .eq("id",id);
 
 
-    if(error){
+    if(result.error){
 
-      throw error;
+      throw result.error;
 
     }
 
 
     await loadRestaurants();
 
-  }
-  catch(error){
+
+  }catch(error){
 
     alert(
-      "❌ Customer QR status update नहीं हुआ:\n" +
+      "❌ Customer QR update नहीं हुआ:\n" +
       (
         error.message ||
         "Unknown error"
@@ -1980,9 +1839,8 @@ async function toggleCustomerQR(
 }
 
 
-
 /* =====================================================
-   ₹199 SUBSCRIPTION
+   ACTIVATE SUBSCRIPTION
 ===================================================== */
 
 async function activateSubscription(
@@ -1992,24 +1850,33 @@ async function activateSubscription(
   if(!checkSupabase()) return;
 
 
-  const start =
-    new Date();
+  if(
+    !confirm(
+      "₹199 की 1 महीने की subscription activate करें?"
+    )
+  ){
 
+    return;
 
-  const end =
-    new Date(
-      start
-    );
-
-
-  end.setMonth(
-    end.getMonth() + 1
-  );
+  }
 
 
   try{
 
-    const {error} =
+    const start =
+      new Date();
+
+
+    const end =
+      new Date();
+
+
+    end.setMonth(
+      end.getMonth() + 1
+    );
+
+
+    const result =
       await db
         .from("restaurants")
         .update({
@@ -2021,34 +1888,35 @@ async function activateSubscription(
             start.toISOString(),
 
           subscription_end:
-            end.toISOString()
+            end.toISOString(),
+
+          is_active:true,
+
+          customer_qr_active:true
 
         })
-        .eq(
-          "id",
-          id
-        );
+        .eq("id",id);
 
 
-    if(error){
+    if(result.error){
 
-      throw error;
+      throw result.error;
 
     }
 
 
     alert(
-      "✅ ₹199 subscription activated."
+      "✅ Subscription 1 महीने के लिए activate हो गई।"
     );
 
 
     await loadRestaurants();
 
-  }
-  catch(error){
+
+  }catch(error){
 
     alert(
-      "❌ Subscription activate नहीं हुआ:\n" +
+      "❌ Subscription activate नहीं हुई:\n" +
       (
         error.message ||
         "Unknown error"
@@ -2060,85 +1928,81 @@ async function activateSubscription(
 }
 
 
-
 /* =====================================================
-   DETAILS
+   RESTAURANT DETAILS
 ===================================================== */
 
 function showRestaurantInfo(
   id
 ){
 
-  const restaurant =
+  const r =
     restaurants.find(
-      function(r){
-
-        return r.id === id;
-
-      }
+      x => x.id === id
     );
 
 
-  if(!restaurant) return;
+  if(!r) return;
 
 
-  const validTill =
-    restaurant.subscription_end
-      ? new Date(
-          restaurant.subscription_end
-        ).toLocaleDateString(
-          "en-IN"
-        )
-      : "Not active";
+  const subscription =
+    r.subscription_status ||
+    "pending";
 
 
   alert(
 
+    "Restaurant Details\n\n" +
+
     "Restaurant: " +
-    (
-      restaurant.name ||
-      "-"
-    ) +
+    (r.name || "-") +
 
     "\nOwner: " +
-    (
-      restaurant.owner_name ||
-      "-"
-    ) +
+    (r.owner_name || "-") +
 
     "\nPhone: " +
-    (
-      restaurant.phone ||
-      "-"
-    ) +
+    (r.phone || "-") +
 
     "\nSubscription: " +
+    subscription +
+
+    "\nPrice: ₹" +
+    Number(
+      r.monthly_price || 199
+    ).toFixed(0) +
+
+    " / Month" +
+
+    "\nRestaurant: " +
     (
-      restaurant.subscription_status ||
-      "pending"
+      r.is_active
+        ? "Active"
+        : "Blocked"
     ) +
 
-    "\nValid Till: " +
-    validTill
+    "\nCustomer QR: " +
+    (
+      r.customer_qr_active
+        ? "ON"
+        : "OFF"
+    )
 
   );
 
 }
 
 
-
 /* =====================================================
-   START DASHBOARD
+   PAGE START
 ===================================================== */
 
 document.addEventListener(
   "DOMContentLoaded",
   async function(){
 
-    console.log(
-      "Admin Dashboard starting..."
-    );
-
+    /*
+      Admin login protection
+    */
 
     if(
       typeof protectAdminPage ===
@@ -2148,12 +2012,7 @@ document.addEventListener(
       const allowed =
         await protectAdminPage();
 
-
-      if(!allowed){
-
-        return;
-
-      }
+      if(!allowed) return;
 
     }
 
