@@ -226,33 +226,26 @@ async function verifyCustomerQR() {
 
     try {
 
-        const result =
-            await db
-                .from("restaurants")
-                .select("*")
-                .eq(
-                    "customer_qr_token",
-                    token
-                )
-                .maybeSingle();
+        const { data: rows, error } = await db.rpc(
+    "get_restaurant_by_customer_qr",
+    {
+        p_token: token
+    }
+);
 
+if (error) {
+    throw error;
+}
 
-        if (result.error) {
-            throw result.error;
-        }
+const data = rows?.[0];
 
+if (!data) {
+    status.innerHTML =
+        "❌ Invalid Customer QR.";
+    return;
+}
 
-        if (!result.data) {
-
-            status.innerHTML =
-                "❌ Invalid Customer QR.";
-
-            return;
-        }
-
-
-        customerRestaurant =
-            result.data;
+customerRestaurant = data;
 
 
         /* ADMIN BLOCK CHECK */
