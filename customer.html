@@ -226,7 +226,7 @@ async function verifyCustomerQR() {
 
     try {
 
-        const { data: rows, error } = await db.rpc(
+ const { data: rows, error } = await db.rpc(
     "get_restaurant_by_customer_qr",
     {
         p_token: token
@@ -361,27 +361,17 @@ async function loadMenu() {
         );
 
 
-    const result =
-        await db
-            .from("menu_items")
-            .select("*")
-            .eq(
-                "restaurant_id",
-                customerRestaurant.id
-            )
-            .order(
-                "created_at",
-                {
-                    ascending: true
-                }
-            );
+const { data, error } = await db.rpc(
+    "get_public_menu",
+    {
+        p_restaurant_id: customerRestaurant.id
+    }
+);
 
 
-    if (result.error) {
+    if (error)  {
 
-        console.error(
-            result.error
-        );
+console.error(error);
 
 
         container.innerHTML =
@@ -391,8 +381,8 @@ async function loadMenu() {
     }
 
 
-    menuItems =
-        result.data || [];
+menuItems =
+    data || [];
 
 
     renderMenu();
