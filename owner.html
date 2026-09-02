@@ -1,4 +1,4 @@
-        <!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
@@ -262,30 +262,96 @@ function filterOrders(filter,btn){
   activeFilter=filter;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderOrders();
 }
 
+async function updateOrderStatus(orderId, newStatus){
+  if(!ownerRestaurant) return;
+
+  try{
+    const {error} = await db
+      .from("orders")
+      .update({status:newStatus})
+      .eq("id",orderId)
+      .eq("restaurant_id",ownerRestaurant.id);
+
+    if(error) throw error;
+
+    await loadOrders();
+  }catch(error){
+    console.error("Status update error:",error);
+    alert("❌ Status update नहीं हुआ: " + (error.message || "Unknown error"));
+  }
+}
+
+function getOrderAction(order){
+  const status = order.status || "new";
+
+  if(status === "new"){
+    return `<button class="primary" onclick="updateOrderStatus('${order.id}','preparing')">✅ Accept → Preparing</button>`;
+  }
+
+  if(status === "preparing"){
+    return `<button class="primary" onclick="updateOrderStatus('${order.id}','ready')">🍽️ Mark Ready</button>`;
+  }
+
+  if(status === "ready"){
+    return `<button class="primary" onclick="updateOrderStatus('${order.id}','completed')">✅ Complete Order</button>`;
+  }
+
+  return `<span class="success">✅ Order Completed</span>`;
+}
+
 function renderOrders(){
-  const list=activeFilter==="all"?allOrders:allOrders.filter(o=>(o.status||"new")===activeFilter);
+  const list=activeFilter==="all"
+    ? allOrders
+    : allOrders.filter(o=>(o.status||"new")===activeFilter);
+
   const c=document.getElementById("orders");
-  if(!list.length){c.innerHTML="<p class='muted'>इस category में कोई order नहीं है।</p>";return;}
+
+  if(!list.length){
+    c.innerHTML="<p class='muted'>इस category में कोई order नहीं है।</p>";
+    return;
+  }
+
   c.innerHTML=list.map(o=>`
     <div class="order">
       <div class="order-head">
-        <div><h3>Table ${escapeHTML(o.table_number||"-")}</h3><span class="muted">${escapeHTML(o.customer_name||"Customer")} • ${new Date(o.created_at).toLocaleString("en-IN")}</span></div>
-        <div class="amount">₹${Number(o.total_amount||0).toFixed(0)}</div>
+        <div>
+          <h3>Table ${escapeHTML(o.table_number||"-")}</h3>
+          <span class="muted">
+            ${escapeHTML(o.customer_name||"Customer")}
+            • ${o.created_at ? new Date(o.created_at).toLocaleString("en-IN") : ""}
+          </span>
+        </div>
+        <div class="amount">₹${Number(o.total_amount ?? o.total ?? 0).toFixed(0)}</div>
       </div>
+
       <span class="status">${escapeHTML(o.status||"new")}</span>
+
       <div class="order-actions">
-        ${o.status==="new"?'<button class="primary" onclick="showOrderInfo(\''+o.id+'\')">Accept</button>':''}
-        <button onclick="showOrderInfo('${o.id}')">View</button>
+        ${getOrderAction(o)}
+        <button type="button" onclick="showOrderInfo('${o.id}')">View</button>
       </div>
-    </div>`).join("");
+    </div>
+  `).join("");
 }
 
 function showOrderInfo(id){
-  const o=allOrders.find(x=>x.id===id);if(!o)return;
-  alert("Order ID: "+o.id+"\nTable: "+(o.table_number||"-")+"\nCustomer: "+(o.customer_name||"-")+"\nTotal: ₹"+Number(o.total_amount||0).toFixed(0)+"\nStatus: "+(o.status||"new"));
+  const o=allOrders.find(x=>x.id===id);
+  if(!o)return;
+
+  alert(
+    "Order ID: "+o.id+
+    "\nTable: "+(o.table_number||"-")+
+    "\nCustomer: "+(o.customer_name||"-")+
+    "\nTotal: ₹"+Number(o.total_amount ?? o.total ?? 0).toFixed(0)+
+    "\nStatus: "+(o.status||"new")
+  );
 }
 
 document.addEventListener("DOMContentLoaded",verifyOwnerQR);
+
+setInterval(function(){
+  if(ownerRestaurant) loadOrders();
+},10000);
 </script>
 </body>
 </html>
