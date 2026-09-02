@@ -238,13 +238,67 @@ async function deleteMenuItem(id){
 }
 
 async function loadOrders(){
-  const {data,error}=await db.from("orders").select("*").eq("restaurant_id",ownerRestaurant.id).order("created_at",{ascending:false});
-  if(error){document.getElementById("orders").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';return;}
-  allOrders=data||[];renderOrders();
-  const total=allOrders.reduce((s,o)=>s+Number(o.total_amount||0),0);
+  const {data,error}=await db
+    .from("orders")
+    .select("*")
+    .eq("restaurant_id",ownerRestaurant.id)
+    .order("created_at",{ascending:false});
+
+  if(error){
+    document.getElementById("orders").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';
+    return;
+  }
+
+  allOrders=data||[];
+
+  // Order items भी load करो ताकि Owner को पता चले क्या-क्या मंगाया गया।
+  // अगर order_items table/RLS उपलब्ध नहीं है तो orders फिर भी दिखेंगे।
+  try{
+    const orderIds=allOrders.map(o=>o.id).filter(Boolean);
+
+    if(orderIds.length){
+      const {data:itemRows,error:itemError}=await db
+        .from("order_items")
+        .select("*")
+        .in("order_id",orderIds);
+
+      if(!itemError && itemRows){
+        const menuIds=itemRows.map(x=>x.menu_item_id).filter(Boolean);
+        let menuMap={};
+
+        if(menuIds.length){
+          const {data:menuRows}=await db
+            .from("menu_items")
+            .select("id,name,price")
+            .in("id",menuIds);
+
+          (menuRows||[]).forEach(m=>menuMap[m.id]=m);
+        }
+
+        allOrders.forEach(order=>{
+          order.items=(itemRows||[])
+            .filter(x=>x.order_id===order.id)
+            .map(x=>{
+              const menu=menuMap[x.menu_item_id]||{};
+              return {
+                name:x.name || menu.name || "Item",
+                quantity:Number(x.quantity||1),
+                price:Number(x.price ?? menu.price ?? 0)
+              };
+            });
+        });
+      }
+    }
+  }catch(itemError){
+    console.warn("Order items load warning:",itemError);
+  }
+
+  renderOrders();
+
+  const total=allOrders.reduce((s,o)=>s+Number(o.total_amount ?? o.total ?? 0),0);
   document.getElementById("salesTotal").textContent="₹"+total.toFixed(0);
   document.getElementById("ordersTotal").textContent=allOrders.length;
-  document.getElementById("newTotal").textContent=allOrders.filter(o=>o.status==="new").length;
+  document.getElementById("newTotal").textContent=allOrders.filter(o=>(o.status||"new")==="new").length;
   document.getElementById("preparingTotal").textContent=allOrders.filter(o=>o.status==="preparing").length;
   document.getElementById("weekSales").textContent="₹"+total.toFixed(0);
   document.getElementById("orderCount").textContent=allOrders.length+" orders";
@@ -326,6 +380,19 @@ function renderOrders(){
 
       <span class="status">${escapeHTML(o.status||"new")}</span>
 
+      <div class="order-items">
+        ${
+          (o.items && o.items.length)
+          ? o.items.map(item=>`
+              <div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13px">
+                <span>🍽️ ${escapeHTML(item.name)} × ${item.quantity}</span>
+                <strong>₹${(item.price*item.quantity).toFixed(0)}</strong>
+              </div>
+            `).join("")
+          : `<div class="muted" style="margin-top:8px">Items details उपलब्ध नहीं हैं।</div>`
+        }
+      </div>
+
       <div class="order-actions">
         ${getOrderAction(o)}
         <button type="button" onclick="showOrderInfo('${o.id}')">View</button>
@@ -354,4 +421,5 @@ setInterval(function(){
 },10000);
 </script>
 </body>
-</html>
+      </html>
+                                                      
