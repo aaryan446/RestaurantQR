@@ -661,3 +661,44 @@ document.addEventListener("DOMContentLoaded",async()=>{
   $("logoutBtn").addEventListener("click",logout);
   $("addBtn").addEventListener("click",createRestaurant);
   $("search").addEventListener("input",renderRestaurants)
+<script>
+async function loadAll(){
+  await loadRestaurants();
+  await loadRequests();
+  updateStats();
+}
+
+document.addEventListener("DOMContentLoaded", async () => {
+
+  $("logoutBtn").addEventListener("click", logout);
+
+  $("addBtn").addEventListener("click", createRestaurant);
+
+  $("refreshBtn").addEventListener("click", async () => {
+    const btn = $("refreshBtn");
+
+    btn.disabled = true;
+    btn.textContent = "Loading...";
+
+    try {
+      await loadAll();
+    } finally {
+      btn.disabled = false;
+      btn.textContent = "↻ Refresh";
+    }
+  });
+
+  $("search").addEventListener("input", () => {
+    renderRestaurants();
+  });
+
+  const allowed = await protectAdmin();
+
+  if (!allowed) return;
+
+  await loadAll();
+});
+</script>
+
+</body>
+</html>
