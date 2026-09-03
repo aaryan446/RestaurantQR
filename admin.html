@@ -2,30 +2,24 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-<title>RestaurantQR - Admin Dashboard</title>
-
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RestaurantQR - Admin</title>
 
 <style>
 :root{
   --green:#168447;
-  --green-dark:#0e6334;
   --green2:#eaf7ef;
   --text:#17201a;
   --muted:#68736c;
-  --card:#fff;
   --bg:#f5f7f5;
+  --card:#fff;
   --border:#e5e9e6;
-  --danger:#c73535;
+  --red:#c73535;
   --orange:#e98a16;
   --blue:#2563eb;
 }
 
-*{
-  box-sizing:border-box;
-}
+*{box-sizing:border-box}
 
 body{
   margin:0;
@@ -35,36 +29,36 @@ body{
 }
 
 .app{
-  max-width:850px;
+  max-width:900px;
   margin:auto;
   padding-bottom:40px;
 }
 
 header{
-  background:#fff;
-  border-bottom:1px solid var(--border);
-  padding:18px 16px;
   position:sticky;
   top:0;
   z-index:20;
+  background:#fff;
+  border-bottom:1px solid var(--border);
+  padding:15px;
   text-align:center;
 }
 
 header h1{
   margin:0;
-  font-size:23px;
+  font-size:22px;
 }
 
 header p{
-  margin:4px 0 0;
+  margin:3px 0 0;
   color:var(--muted);
   font-size:13px;
 }
 
-header .small{
+.logout{
   position:absolute;
-  right:15px;
-  top:18px;
+  right:12px;
+  top:13px;
   border:0;
   background:#f1f3f2;
   padding:9px 12px;
@@ -73,28 +67,21 @@ header .small{
 }
 
 main{
-  padding:16px;
+  padding:14px;
 }
 
 .card{
   background:var(--card);
   border:1px solid var(--border);
   border-radius:20px;
-  padding:18px;
-  margin-bottom:15px;
+  padding:17px;
+  margin-bottom:14px;
   box-shadow:0 3px 14px rgba(20,40,25,.04);
 }
 
-.card h2{
-  margin:0 0 15px;
+h2{
+  margin:0 0 14px;
   font-size:18px;
-}
-
-label{
-  display:block;
-  font-size:13px;
-  font-weight:700;
-  margin-top:10px;
 }
 
 input{
@@ -102,13 +89,9 @@ input{
   padding:13px;
   border:1px solid var(--border);
   border-radius:12px;
-  margin:6px 0 8px;
+  margin:5px 0 10px;
   font-size:15px;
   outline:none;
-}
-
-input:focus{
-  border-color:var(--green);
 }
 
 button{
@@ -117,276 +100,258 @@ button{
 
 button:disabled{
   opacity:.6;
-  cursor:not-allowed;
 }
 
-.main-btn{
+.main{
   width:100%;
-  border:0;
-  background:var(--green);
-  color:#fff;
   padding:13px;
+  border:0;
   border-radius:12px;
+  background:var(--green);
+  color:white;
   font-weight:800;
-  font-size:14px;
-  margin-top:8px;
-}
-
-.main-btn:hover{
-  background:var(--green-dark);
 }
 
 .message{
-  margin-top:10px;
+  margin-top:9px;
   font-size:13px;
 }
 
-.message.success{
-  color:var(--green);
-}
-
-.message.error{
-  color:var(--danger);
-}
+.success{color:var(--green)}
+.error{color:var(--red)}
 
 .stats{
   display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:10px;
+  grid-template-columns:repeat(4,1fr);
+  gap:9px;
 }
 
 .stat{
   border:1px solid var(--border);
-  border-radius:16px;
-  padding:14px;
-  background:#fff;
+  border-radius:15px;
+  padding:12px 7px;
   text-align:center;
 }
 
 .stat span{
   color:var(--muted);
-  font-size:12px;
+  font-size:11px;
 }
 
 .stat b{
   display:block;
-  font-size:23px;
-  margin-top:4px;
+  font-size:22px;
+  margin-top:3px;
 }
 
-.restaurant-card{
+.search{
+  margin-bottom:5px;
+}
+
+.restaurant{
   border:1px solid var(--border);
-  border-radius:19px;
-  padding:16px;
+  border-radius:18px;
+  padding:15px;
   margin-top:12px;
-  background:#fff;
 }
 
-.restaurant-head{
+.head{
   display:flex;
   justify-content:space-between;
-  align-items:flex-start;
   gap:10px;
 }
 
-.restaurant-head h3{
+.head h3{
   margin:0;
-  font-size:18px;
+  font-size:17px;
 }
 
-.owner-info{
+.muted{
   color:var(--muted);
-  font-size:13px;
-  margin-top:5px;
+  font-size:12px;
 }
 
 .badge{
   display:inline-block;
-  padding:6px 9px;
+  padding:5px 8px;
   border-radius:999px;
   font-size:11px;
   font-weight:800;
   white-space:nowrap;
 }
 
-.badge.active{
-  background:#eaf7ef;
+.active{
+  background:var(--green2);
   color:var(--green);
 }
 
-.badge.blocked{
+.blocked{
   background:#ffeaea;
-  color:var(--danger);
+  color:var(--red);
 }
 
-.badge.pending{
+.pending{
   background:#fff3df;
   color:#a96100;
 }
 
-.info-grid{
+.info{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:14px;
+  gap:7px;
+  margin-top:12px;
 }
 
-.info{
+.info div{
   background:#f8faf8;
-  border-radius:12px;
-  padding:10px;
-  font-size:12px;
+  padding:9px;
+  border-radius:11px;
+  font-size:11px;
 }
 
 .info strong{
   display:block;
-  margin-top:3px;
   font-size:13px;
-}
-
-.qr-grid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:12px;
-  margin-top:15px;
-}
-
-.qr-box{
-  border:1px solid var(--border);
-  border-radius:16px;
-  padding:12px;
-  text-align:center;
-}
-
-.qr-box h4{
-  margin:0 0 8px;
-  font-size:14px;
-}
-
-.qr-image{
-  width:180px;
-  height:180px;
-  max-width:100%;
-  margin:auto;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  background:#fff;
-}
-
-.qr-image canvas,
-.qr-image img{
-  width:180px !important;
-  height:180px !important;
-  max-width:100%;
-}
-
-.qr-actions{
-  display:flex;
-  gap:6px;
-  margin-top:9px;
-}
-
-.qr-actions button{
-  flex:1;
-  border:1px solid var(--border);
-  background:#fff;
-  padding:8px 5px;
-  border-radius:9px;
-  font-size:11px;
-  font-weight:700;
-}
-
-.qr-actions button:hover{
-  background:var(--green2);
+  margin-top:2px;
 }
 
 .actions{
   display:grid;
   grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin-top:14px;
+  gap:7px;
+  margin-top:12px;
 }
 
-.action-btn{
+.action{
   border:1px solid var(--border);
-  background:#fff;
+  background:white;
   padding:10px;
-  border-radius:11px;
+  border-radius:10px;
   font-weight:700;
   font-size:12px;
 }
 
-.action-btn.green{
+.green{
   background:var(--green);
-  color:#fff;
+  color:white;
   border-color:var(--green);
 }
 
-.action-btn.red{
+.red{
   background:#fff0f0;
-  color:var(--danger);
-  border-color:#ffd1d1;
+  color:var(--red);
 }
 
-.action-btn.orange{
+.orange{
   background:#fff5e8;
   color:#a96100;
-  border-color:#ffe0b4;
 }
 
-.action-btn.blue{
+.blue{
   background:#eff6ff;
   color:var(--blue);
-  border-color:#dbeafe;
+}
+
+.qrgrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin-top:13px;
+}
+
+.qrbox{
+  border:1px solid var(--border);
+  border-radius:15px;
+  padding:10px;
+  text-align:center;
+}
+
+.qrbox h4{
+  margin:0 0 8px;
+}
+
+.qr{
+  min-height:180px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.qr img,
+.qr canvas{
+  max-width:180px;
+  width:180px!important;
+  height:180px!important;
+}
+
+.qrbuttons{
+  display:flex;
+  gap:5px;
+  margin-top:7px;
+}
+
+.qrbuttons button{
+  flex:1;
+  border:1px solid var(--border);
+  background:white;
+  border-radius:9px;
+  padding:8px;
+  font-size:11px;
+  font-weight:700;
+}
+
+.recharge{
+  border:2px solid #ffe0b4;
+  background:#fffaf2;
+  border-radius:16px;
+  padding:14px;
+  margin-top:12px;
+}
+
+.recharge h3{
+  margin:0;
+  font-size:15px;
+}
+
+.payment-box{
+  display:none;
+  text-align:center;
+  margin-top:12px;
+  padding:14px;
+  border:1px solid var(--border);
+  border-radius:15px;
+  background:#fff;
+}
+
+.payment-box img{
+  width:240px;
+  max-width:100%;
+  border-radius:12px;
+}
+
+.payment-box p{
+  font-size:12px;
+  color:var(--muted);
 }
 
 .empty{
   text-align:center;
-  color:var(--muted);
-  padding:25px 10px;
-}
-
-.loading{
-  text-align:center;
-  color:var(--muted);
   padding:20px;
+  color:var(--muted);
 }
 
 @media(max-width:600px){
-
-  main{
-    padding:12px;
-  }
-
   .stats{
-    grid-template-columns:1fr 1fr 1fr;
+    grid-template-columns:repeat(2,1fr);
   }
 
-  .qr-grid{
+  .qrgrid{
     grid-template-columns:1fr;
   }
 
   .actions{
     grid-template-columns:1fr;
   }
-
-}
-
-@media(max-width:380px){
-
-  .stats{
-    gap:6px;
-  }
-
-  .stat{
-    padding:10px 5px;
-  }
-
-  .stat b{
-    font-size:20px;
-  }
-
 }
 </style>
 </head>
@@ -396,174 +361,166 @@ button:disabled{
 <div class="app">
 
 <header>
-
-  <button
-    class="small"
-    type="button"
-    onclick="logout()">
-    Logout
-  </button>
-
+  <button class="logout" onclick="logout()">Logout</button>
   <h1>RestaurantQR</h1>
   <p>Admin Dashboard</p>
-
 </header>
-
 
 <main>
 
-<!-- ================= ADD RESTAURANT ================= -->
+<!-- ADD RESTAURANT -->
 
 <section class="card">
 
-  <h2>➕ Add Restaurant</h2>
+<h2>➕ Add Restaurant</h2>
 
-  <label>Restaurant Name</label>
+<input id="restaurantName"
+       placeholder="Restaurant Name">
 
-  <input
-    id="restaurantName"
-    type="text"
-    placeholder="Restaurant name"
-    autocomplete="off"
-  >
+<input id="ownerName"
+       placeholder="Owner Name">
 
-  <label>Owner Name</label>
+<input id="ownerPhone"
+       type="tel"
+       placeholder="Owner Phone">
 
-  <input
-    id="ownerName"
-    type="text"
-    placeholder="Owner name"
-    autocomplete="off"
-  >
+<button class="main"
+        id="addBtn"
+        onclick="createRestaurant()">
+Add Restaurant
+</button>
 
-  <label>Owner Phone</label>
-
-  <input
-    id="ownerPhone"
-    type="tel"
-    placeholder="Phone number"
-    inputmode="numeric"
-    autocomplete="off"
-  >
-
-  <button
-    id="addRestaurantBtn"
-    class="main-btn"
-    type="button"
-    onclick="createRestaurant()">
-
-    Add Restaurant
-
-  </button>
-
-  <div
-    id="restaurantMessage"
-    class="message">
-  </div>
+<div id="addMessage" class="message"></div>
 
 </section>
 
 
-<!-- ================= OVERVIEW ================= -->
+<!-- STATS -->
 
 <section class="card">
 
-  <h2>📊 Overview</h2>
+<h2>📊 Overview</h2>
 
-  <div class="stats">
+<div class="stats">
 
-    <div class="stat">
-      <span>Total</span>
-      <b id="totalRestaurants">0</b>
-    </div>
+<div class="stat">
+<span>Total</span>
+<b id="total">0</b>
+</div>
 
-    <div class="stat">
-      <span>Active</span>
-      <b id="activeRestaurants">0</b>
-    </div>
+<div class="stat">
+<span>Active</span>
+<b id="active">0</b>
+</div>
 
-    <div class="stat">
-      <span>Blocked</span>
-      <b id="blockedRestaurants">0</b>
-    </div>
+<div class="stat">
+<span>Blocked</span>
+<b id="blocked">0</b>
+</div>
 
-  </div>
+<div class="stat">
+<span>Recharge</span>
+<b id="pendingRecharge">0</b>
+</div>
+
+</div>
 
 </section>
 
 
-<!-- ================= RESTAURANTS ================= -->
+<!-- RECHARGE REQUESTS -->
 
 <section class="card">
 
-  <h2>🏪 Restaurants</h2>
+<h2>💰 Recharge Requests</h2>
 
-  <div id="restaurantList">
-    <div class="loading">
-      Loading restaurants...
-    </div>
-  </div>
+<div id="rechargeList">
+<div class="empty">Loading...</div>
+</div>
+
+</section>
+
+
+<!-- PAYMENT SCANNER -->
+
+<section class="card">
+
+<h2>📲 Admin Payment Scanner</h2>
+
+<p class="muted">
+Owner के Recharge पर यही QR दिखाया जा सकता है।
+</p>
+
+<div class="payment-box"
+     style="display:block">
+
+<img src="payment-qr.png"
+     alt="Payment QR">
+
+<p>
+₹199 / 1 Month
+</p>
+
+</div>
+
+</section>
+
+
+<!-- RESTAURANTS -->
+
+<section class="card">
+
+<h2>🏪 Restaurants</h2>
+
+<input
+  id="search"
+  class="search"
+  placeholder="🔎 Restaurant या Owner search करें..."
+  oninput="renderRestaurants()">
+
+<div id="restaurantList">
+<div class="empty">Loading...</div>
+</div>
 
 </section>
 
 </main>
-
 </div>
 
-
-<!-- ================= SUPABASE ================= -->
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script src="app.js"></script>
-
-
-<!-- ================= QR LIBRARY ================= -->
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
 
 <script>
 
-/* =====================================================
-   GLOBAL
-===================================================== */
+let restaurants=[];
+let rechargeRequests=[];
 
-let restaurants = [];
-
-
-/* =====================================================
-   PROJECT URL
-===================================================== */
-
-const PROJECT_BASE_URL =
-  "https://aaryan446.github.io/RestaurantQR";
+const BASE_URL =
+"https://aaryan446.github.io/RestaurantQR";
 
 
 /* =====================================================
-   SAFE TEXT
+   TOKEN
 ===================================================== */
 
-function safeText(value){
+function token(prefix){
 
-  return String(value ?? "");
+  if(window.crypto &&
+     crypto.randomUUID){
 
-}
+    return prefix+"_"+crypto
+      .randomUUID()
+      .replace(/-/g,"");
+  }
 
-
-/* =====================================================
-   JS SAFE STRING
-===================================================== */
-
-function safeJS(value){
-
-  return safeText(value)
-    .replace(/\\/g,"\\\\")
-    .replace(/'/g,"\\'")
-    .replace(/"/g,'\\"')
-    .replace(/\n/g," ")
-    .replace(/\r/g," ");
-
+  return prefix+"_"+Date.now()+"_"+Math.random()
+    .toString(36)
+    .substring(2,12);
 }
 
 
@@ -571,48 +528,15 @@ function safeJS(value){
    MESSAGE
 ===================================================== */
 
-function adminMessage(text,type=""){
+function message(id,text,type=""){
 
-  const box =
-    document.getElementById(
-      "restaurantMessage"
-    );
+  const el=document.getElementById(id);
 
-  if(!box) return;
+  if(!el)return;
 
-  box.textContent = text;
+  el.textContent=text;
 
-  box.className =
-    "message " + type;
-
-}
-
-
-/* =====================================================
-   TOKEN GENERATOR
-===================================================== */
-
-function generateToken(prefix){
-
-  if(
-    window.crypto &&
-    typeof crypto.randomUUID === "function"
-  ){
-
-    return prefix + "_" +
-      crypto
-        .randomUUID()
-        .replace(/-/g,"");
-
-  }
-
-  return prefix + "_" +
-    Date.now().toString(36) +
-    "_" +
-    Math.random()
-      .toString(36)
-      .substring(2,14);
-
+  el.className="message "+type;
 }
 
 
@@ -622,184 +546,125 @@ function generateToken(prefix){
 
 async function createRestaurant(){
 
-  if(!checkSupabase()) return;
+  if(!checkSupabase())return;
 
+  const name=
+    document.getElementById("restaurantName")
+    .value.trim();
 
-  const name =
-    document
-      .getElementById("restaurantName")
-      .value
-      .trim();
+  const owner=
+    document.getElementById("ownerName")
+    .value.trim();
 
-
-  const ownerName =
-    document
-      .getElementById("ownerName")
-      .value
-      .trim();
-
-
-  const ownerPhone =
-    document
-      .getElementById("ownerPhone")
-      .value
-      .trim();
-
+  const phone=
+    document.getElementById("ownerPhone")
+    .value.trim();
 
   if(!name){
 
-    adminMessage(
-      "❌ Restaurant name डालें।",
+    message(
+      "addMessage",
+      "❌ Restaurant name डालें",
       "error"
     );
 
     return;
   }
 
+  const btn=
+    document.getElementById("addBtn");
 
-  const button =
-    document.getElementById(
-      "addRestaurantBtn"
-    );
-
-
-  button.disabled = true;
-
-  button.textContent =
-    "Creating...";
-
-
-  adminMessage("");
-
+  btn.disabled=true;
+  btn.textContent="Creating...";
 
   try{
 
-    const baseSlug =
-      name
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g,"-")
-        .replace(/^-+|-+$/g,"");
-
-
-    const slug =
-      (baseSlug || "restaurant") +
-      "-" +
+    const slug=
+      (name.toLowerCase()
+      .replace(/[^a-z0-9]+/g,"-")
+      .replace(/^-+|-+$/g,"")
+      ||"restaurant")
+      +"-"+
       Math.random()
-        .toString(36)
-        .substring(2,8);
+      .toString(36)
+      .substring(2,7);
 
+    const ownerToken=
+      token("owner");
 
-    /*
-      IMPORTANT:
-      हर restaurant के लिए
-      नया Owner QR token
-      और Customer QR token बनेगा।
-      
-      Token user को dashboard में
-      text के रूप में नहीं दिखाया जाएगा।
-    */
+    const customerToken=
+      token("customer");
 
-    const ownerToken =
-      generateToken("owner");
-
-
-    const customerToken =
-      generateToken("customer");
-
-
-    const result =
+    const {data,error}=
       await db
-        .from("restaurants")
-        .insert({
+      .from("restaurants")
+      .insert({
 
-          name:name,
+        name:name,
 
-          owner_name:
-            ownerName || null,
+        owner_name:
+          owner || null,
 
-          phone:
-            ownerPhone || null,
+        phone:
+          phone || null,
 
-          slug:slug,
+        slug:slug,
 
-          monthly_price:199,
+        monthly_price:199,
 
-          subscription_status:
-            "pending",
+        subscription_status:"pending",
 
-          is_active:true,
+        is_active:true,
 
-          customer_qr_active:true,
+        customer_qr_active:true,
 
-          owner_qr_token:
-            ownerToken,
+        owner_qr_token:
+          ownerToken,
 
-          customer_qr_token:
-            customerToken
+        customer_qr_token:
+          customerToken
 
-        })
-        .select("*")
-        .single();
+      })
+      .select("*")
+      .single();
 
+    if(error)throw error;
 
-    if(result.error){
-
-      throw result.error;
-
-    }
-
-
-    adminMessage(
-      "✅ Restaurant successfully created.",
+    message(
+      "addMessage",
+      "✅ Restaurant successfully added",
       "success"
     );
 
-
     document.getElementById(
       "restaurantName"
-    ).value = "";
-
+    ).value="";
 
     document.getElementById(
       "ownerName"
-    ).value = "";
-
+    ).value="";
 
     document.getElementById(
       "ownerPhone"
-    ).value = "";
+    ).value="";
 
+    await loadAll();
 
-    await loadRestaurants();
+  }catch(e){
 
+    console.error(e);
 
-  }catch(error){
-
-    console.error(
-      "CREATE RESTAURANT ERROR:",
-      error
-    );
-
-
-    adminMessage(
-      "❌ " +
-      (
-        error.message ||
-        "Restaurant create नहीं हुआ।"
-      ),
+    message(
+      "addMessage",
+      "❌ "+e.message,
       "error"
     );
 
-
   }finally{
 
-    button.disabled = false;
-
-    button.textContent =
-      "Add Restaurant";
-
+    btn.disabled=false;
+    btn.textContent="Add Restaurant";
   }
-
 }
 
 
@@ -809,241 +674,149 @@ async function createRestaurant(){
 
 async function loadRestaurants(){
 
-  if(!checkSupabase()) return;
+  const {data,error}=
+    await db
+    .from("restaurants")
+    .select("*")
+    .order("created_at",{ascending:false});
 
+  if(error){
 
-  const container =
     document.getElementById(
       "restaurantList"
-    );
-
-
-  container.innerHTML =
-    '<div class="loading">Restaurants load हो रहे हैं...</div>';
-
-
-  try{
-
-    const result =
-      await db
-        .from("restaurants")
-        .select("*")
-        .order(
-          "created_at",
-          {
-            ascending:false
-          }
-        );
-
-
-    if(result.error){
-
-      throw result.error;
-
-    }
-
-
-    restaurants =
-      result.data || [];
-
-
-    renderRestaurants();
-
-    updateStats();
-
-
-  }catch(error){
-
-    console.error(
-      "LOAD RESTAURANTS ERROR:",
-      error
-    );
-
-
-    container.innerHTML = `
-
-      <div class="empty">
-
-        ❌ Restaurant load नहीं हुआ।<br><br>
-
-        ${escapeHTML(
-          error.message ||
-          "Unknown error"
-        )}
-
-      </div>
-
-    `;
-
-  }
-
-}
-
-
-/* =====================================================
-   STATS
-===================================================== */
-
-function updateStats(){
-
-  const total =
-    restaurants.length;
-
-
-  const active =
-    restaurants.filter(
-      r => r.is_active === true
-    ).length;
-
-
-  const blocked =
-    restaurants.filter(
-      r => r.is_active === false
-    ).length;
-
-
-  document.getElementById(
-    "totalRestaurants"
-  ).textContent = total;
-
-
-  document.getElementById(
-    "activeRestaurants"
-  ).textContent = active;
-
-
-  document.getElementById(
-    "blockedRestaurants"
-  ).textContent = blocked;
-
-}
-
-
-/* =====================================================
-   RENDER RESTAURANTS
-===================================================== */
-
-function renderRestaurants(){
-
-  const container =
-    document.getElementById(
-      "restaurantList"
-    );
-
-
-  if(!restaurants.length){
-
-    container.innerHTML = `
-
-      <div class="empty">
-
-        अभी कोई restaurant नहीं है।
-
-      </div>
-
-    `;
+    ).innerHTML=
+      `<div class="empty error">
+      ❌ ${escapeHTML(error.message)}
+      </div>`;
 
     return;
   }
 
+  restaurants=data||[];
 
-  container.innerHTML =
-    restaurants.map(function(r){
+  renderRestaurants();
 
-      const active =
-        r.is_active === true;
-
-
-      const customerActive =
-        r.customer_qr_active === true;
+  updateStats();
+}
 
 
-      const subscription =
-        r.subscription_status ||
-        "pending";
+/* =====================================================
+   SEARCH + RENDER
+===================================================== */
 
+function renderRestaurants(){
 
-      const startDate =
-        r.subscription_start
-          ? new Date(
-              r.subscription_start
-            ).toLocaleDateString("en-IN")
-          : "Not active";
+  const box=
+    document.getElementById(
+      "restaurantList"
+    );
 
+  const search=
+    (document.getElementById("search")
+    .value||"")
+    .toLowerCase()
+    .trim();
 
-      const endDate =
+  let list=
+    restaurants.filter(r=>{
+
+      if(!search)return true;
+
+      return (
+        String(r.name||"")
+          .toLowerCase()
+          .includes(search)
+        ||
+        String(r.owner_name||"")
+          .toLowerCase()
+          .includes(search)
+        ||
+        String(r.phone||"")
+          .toLowerCase()
+          .includes(search)
+      );
+
+    });
+
+  if(!list.length){
+
+    box.innerHTML=
+      `<div class="empty">
+       कोई restaurant नहीं मिला।
+       </div>`;
+
+    return;
+  }
+
+  box.innerHTML=
+    list.map(r=>{
+
+      const isActive=
+        r.is_active===true;
+
+      const qrActive=
+        r.customer_qr_active===true;
+
+      const sub=
+        r.subscription_status||"pending";
+
+      const end=
         r.subscription_end
-          ? new Date(
-              r.subscription_end
-            ).toLocaleDateString("en-IN")
-          : "Not active";
+        ?new Date(
+          r.subscription_end
+        ).toLocaleDateString("en-IN")
+        :"Not active";
 
-
-      /*
-        QR LINK
-      */
-
-      const ownerURL =
-        PROJECT_BASE_URL +
-        "/owner.html?token=" +
+      const ownerURL=
+        BASE_URL+
+        "/owner.html?token="+
         encodeURIComponent(
-          r.owner_qr_token || ""
+          r.owner_qr_token||""
         );
 
-
-      const customerURL =
-        PROJECT_BASE_URL +
-        "/customer.html?token=" +
+      const customerURL=
+        BASE_URL+
+        "/customer.html?token="+
         encodeURIComponent(
-          r.customer_qr_token || ""
+          r.customer_qr_token||""
         );
-
 
       return `
 
-      <div class="restaurant-card">
+      <div class="restaurant">
 
-        <!-- HEADER -->
-
-        <div class="restaurant-head">
+        <div class="head">
 
           <div>
 
             <h3>
-              ${escapeHTML(
-                r.name || "Restaurant"
-              )}
+              ${escapeHTML(r.name)}
             </h3>
 
-            <div class="owner-info">
-              👤 Owner:
-              ${escapeHTML(
-                r.owner_name ||
-                "Not added"
+            <div class="muted">
+              👤 ${escapeHTML(
+                r.owner_name||"Not added"
               )}
             </div>
 
-            <div class="owner-info">
-              📞
-              ${escapeHTML(
-                r.phone ||
-                "Not added"
+            <div class="muted">
+              📞 ${escapeHTML(
+                r.phone||"Not added"
               )}
             </div>
 
           </div>
 
-
           <span class="badge ${
-            active
-              ? "active"
-              : "blocked"
+            isActive
+            ?"active"
+            :"blocked"
           }">
 
             ${
-              active
-                ? "🟢 Active"
-                : "🔴 Blocked"
+              isActive
+              ?"🟢 Active"
+              :"🔴 Blocked"
             }
 
           </span>
@@ -1051,104 +824,78 @@ function renderRestaurants(){
         </div>
 
 
-        <!-- INFORMATION -->
+        <div class="info">
 
-        <div class="info-grid">
-
-          <div class="info">
-
+          <div>
             Subscription
-
             <strong>
-              ${escapeHTML(
-                subscription
-              )}
+              ${escapeHTML(sub)}
             </strong>
-
           </div>
 
-
-          <div class="info">
-
+          <div>
             Price
-
             <strong>
               ₹${Number(
-                r.monthly_price || 199
-              ).toFixed(0)}
-              / Month
+                r.monthly_price||199
+              )}/Month
             </strong>
-
           </div>
 
-
-          <div class="info">
-
+          <div>
             Start
-
             <strong>
-              ${startDate}
+              ${
+                r.subscription_start
+                ?new Date(
+                  r.subscription_start
+                ).toLocaleDateString("en-IN")
+                :"Not active"
+              }
             </strong>
-
           </div>
 
-
-          <div class="info">
-
+          <div>
             Valid Till
-
-            <strong>
-              ${endDate}
-            </strong>
-
+            <strong>${end}</strong>
           </div>
 
         </div>
 
 
-        <!-- ================= QR ================= -->
+        <!-- QR -->
 
-        <div class="qr-grid">
+        <div class="qrgrid">
 
+          <div class="qrbox">
 
-          <!-- OWNER QR -->
-
-          <div class="qr-box">
-
-            <h4>
-              🔐 Owner QR
-            </h4>
+            <h4>🔐 Owner QR</h4>
 
             <div
-              class="qr-image"
-              id="ownerQR-${safeJS(r.id)}">
+              class="qr"
+              id="owner-${r.id}">
             </div>
 
-            <div class="qr-actions">
+            <div class="qrbuttons">
 
-              <button
-                type="button"
-                onclick="downloadQR(
-                  '${safeJS(r.id)}',
+              <button onclick="
+                downloadQR(
+                  '${safe(r.id)}',
                   'owner',
-                  '${safeJS(r.name)}'
-                )">
-
+                  '${safe(r.name)}'
+                )
+              ">
                 📥 Download
-
               </button>
 
-
-              <button
-                type="button"
-                onclick="printQR(
-                  '${safeJS(r.id)}',
+              <button onclick="
+                printQR(
+                  '${safe(r.id)}',
                   'owner',
-                  '${safeJS(r.name)}'
-                )">
-
+                  '${safe(r.name)}'
+                )
+              ">
                 🖨️ Print
-
               </button>
 
             </div>
@@ -1156,44 +903,35 @@ function renderRestaurants(){
           </div>
 
 
-          <!-- CUSTOMER QR -->
+          <div class="qrbox">
 
-          <div class="qr-box">
-
-            <h4>
-              📱 Customer QR
-            </h4>
+            <h4>📱 Customer QR</h4>
 
             <div
-              class="qr-image"
-              id="customerQR-${safeJS(r.id)}">
+              class="qr"
+              id="customer-${r.id}">
             </div>
 
-            <div class="qr-actions">
+            <div class="qrbuttons">
 
-              <button
-                type="button"
-                onclick="downloadQR(
-                  '${safeJS(r.id)}',
+              <button onclick="
+                downloadQR(
+                  '${safe(r.id)}',
                   'customer',
-                  '${safeJS(r.name)}'
-                )">
-
+                  '${safe(r.name)}'
+                )
+              ">
                 📥 Download
-
               </button>
 
-
-              <button
-                type="button"
-                onclick="printQR(
-                  '${safeJS(r.id)}',
+              <button onclick="
+                printQR(
+                  '${safe(r.id)}',
                   'customer',
-                  '${safeJS(r.name)}'
-                )">
-
+                  '${safe(r.name)}'
+                )
+              ">
                 🖨️ Print
-
               </button>
 
             </div>
@@ -1203,108 +941,100 @@ function renderRestaurants(){
         </div>
 
 
-        <!-- ================= ACTIONS ================= -->
+        <!-- ACTIONS -->
 
         <div class="actions">
 
-
           ${
-            active
+            isActive
 
-              ? `
+            ?`
 
-                <button
-                  class="action-btn red"
-                  type="button"
-                  onclick="toggleRestaurant(
-                    '${safeJS(r.id)}',
-                    false
-                  )">
+            <button
+              class="action red"
+              onclick="
+                toggleRestaurant(
+                  '${safe(r.id)}',
+                  false
+                )
+              ">
+              🚫 Block Restaurant
+            </button>
 
-                  🚫 Block Restaurant
+            `
 
-                </button>
+            :`
 
-              `
+            <button
+              class="action green"
+              onclick="
+                toggleRestaurant(
+                  '${safe(r.id)}',
+                  true
+                )
+              ">
+              ✅ Activate Restaurant
+            </button>
 
-              : `
-
-                <button
-                  class="action-btn green"
-                  type="button"
-                  onclick="toggleRestaurant(
-                    '${safeJS(r.id)}',
-                    true
-                  )">
-
-                  ✅ Activate Restaurant
-
-                </button>
-
-              `
+            `
           }
 
 
           ${
-            customerActive
+            qrActive
 
-              ? `
+            ?`
 
-                <button
-                  class="action-btn orange"
-                  type="button"
-                  onclick="toggleCustomerQR(
-                    '${safeJS(r.id)}',
-                    false
-                  )">
+            <button
+              class="action orange"
+              onclick="
+                toggleCustomerQR(
+                  '${safe(r.id)}',
+                  false
+                )
+              ">
+              📱 Customer QR OFF
+            </button>
 
-                  📱 Customer QR OFF
+            `
 
-                </button>
+            :`
 
-              `
+            <button
+              class="action blue"
+              onclick="
+                toggleCustomerQR(
+                  '${safe(r.id)}',
+                  true
+                )
+              ">
+              📱 Customer QR ON
+            </button>
 
-              : `
-
-                <button
-                  class="action-btn blue"
-                  type="button"
-                  onclick="toggleCustomerQR(
-                    '${safeJS(r.id)}',
-                    true
-                  )">
-
-                  📱 Customer QR ON
-
-                </button>
-
-              `
+            `
           }
 
 
           <button
-            class="action-btn green"
-            type="button"
-            onclick="activateSubscription(
-              '${safeJS(r.id)}'
-            )">
-
+            class="action green"
+            onclick="
+              activateSubscription(
+                '${safe(r.id)}'
+              )
+            ">
             💰 Activate ₹199
-
           </button>
 
 
           <button
-            class="action-btn"
-            type="button"
-            onclick="showRestaurantInfo(
-              '${safeJS(r.id)}'
-            )">
-
+            class="action"
+            onclick="
+              showDetails(
+                '${safe(r.id)}'
+              )
+            ">
             ℹ️ Details
-
           </button>
-
 
         </div>
 
@@ -1315,38 +1045,57 @@ function renderRestaurants(){
     }).join("");
 
 
-  /*
-    HTML बनने के बाद QR बनाओ
-  */
+  /* CREATE QR */
 
-  restaurants.forEach(function(r){
+  list.forEach(r=>{
 
-    const ownerURL =
-      PROJECT_BASE_URL +
-      "/owner.html?token=" +
-      encodeURIComponent(
-        r.owner_qr_token || ""
+    const ownerBox=
+      document.getElementById(
+        "owner-"+r.id
       );
 
-
-    const customerURL =
-      PROJECT_BASE_URL +
-      "/customer.html?token=" +
-      encodeURIComponent(
-        r.customer_qr_token || ""
+    const customerBox=
+      document.getElementById(
+        "customer-"+r.id
       );
 
+    if(ownerBox){
 
-    createQR(
-      "ownerQR-" + r.id,
-      ownerURL
-    );
+      ownerBox.innerHTML="";
 
+      new QRCode(
+        ownerBox,
+        {
+          text:
+            BASE_URL+
+            "/owner.html?token="+
+            encodeURIComponent(
+              r.owner_qr_token||""
+            ),
+          width:180,
+          height:180
+        }
+      );
+    }
 
-    createQR(
-      "customerQR-" + r.id,
-      customerURL
-    );
+    if(customerBox){
+
+      customerBox.innerHTML="";
+
+      new QRCode(
+        customerBox,
+        {
+          text:
+            BASE_URL+
+            "/customer.html?token="+
+            encodeURIComponent(
+              r.customer_qr_token||""
+            ),
+          width:180,
+          height:180
+        }
+      );
+    }
 
   });
 
@@ -1354,675 +1103,152 @@ function renderRestaurants(){
 
 
 /* =====================================================
-   CREATE QR
+   SAFE
 ===================================================== */
 
-function createQR(
-  elementId,
-  url
-){
+function safe(v){
 
-  const element =
+  return String(v??"")
+    .replace(/\\/g,"\\\\")
+    .replace(/'/g,"\\'");
+}
+
+
+/* =====================================================
+   STATS
+===================================================== */
+
+function updateStats(){
+
+  document.getElementById("total")
+    .textContent=restaurants.length;
+
+  document.getElementById("active")
+    .textContent=
+      restaurants.filter(
+        r=>r.is_active===true
+      ).length;
+
+  document.getElementById("blocked")
+    .textContent=
+      restaurants.filter(
+        r=>r.is_active===false
+      ).length;
+
+  document.getElementById("pendingRecharge")
+    .textContent=
+      rechargeRequests.filter(
+        r=>r.status==="pending"
+      ).length;
+}
+
+
+/* =====================================================
+   LOAD RECHARGE REQUESTS
+===================================================== */
+
+async function loadRechargeRequests(){
+
+  const box=
     document.getElementById(
-      elementId
+      "rechargeList"
     );
-
-
-  if(!element) return;
-
-
-  element.innerHTML = "";
-
-
-  if(
-    !url ||
-    !url.includes("token=") ||
-    url.endsWith("token=")
-  ){
-
-    element.innerHTML =
-      '<div class="empty">QR unavailable</div>';
-
-    return;
-
-  }
-
-
-  if(
-    typeof QRCode === "undefined"
-  ){
-
-    element.innerHTML =
-      '<div class="empty">QR library load नहीं हुई।</div>';
-
-    return;
-
-  }
-
 
   try{
 
-    new QRCode(
-      element,
-      {
-        text:url,
-        width:180,
-        height:180,
-        correctLevel:
-          QRCode.CorrectLevel.H
-      }
-    );
-
-  }catch(error){
-
-    console.error(
-      "QR CREATE ERROR:",
-      error
-    );
-
-    element.innerHTML =
-      '<div class="empty">QR create error</div>';
-
-  }
-
-}
-
-
-/* =====================================================
-   GET QR IMAGE
-===================================================== */
-
-function getQRDataURL(
-  elementId
-){
-
-  const box =
-    document.getElementById(
-      elementId
-    );
-
-
-  if(!box) return null;
-
-
-  const canvas =
-    box.querySelector("canvas");
-
-
-  if(canvas){
-
-    return canvas.toDataURL(
-      "image/png"
-    );
-
-  }
-
-
-  const img =
-    box.querySelector("img");
-
-
-  if(img && img.src){
-
-    return img.src;
-
-  }
-
-
-  return null;
-
-}
-
-
-/* =====================================================
-   DOWNLOAD QR
-===================================================== */
-
-function downloadQR(
-  restaurantId,
-  type,
-  restaurantName
-){
-
-  const elementId =
-    type === "owner"
-      ? "ownerQR-" + restaurantId
-      : "customerQR-" + restaurantId;
-
-
-  const dataURL =
-    getQRDataURL(
-      elementId
-    );
-
-
-  if(!dataURL){
-
-    alert(
-      "❌ QR image तैयार नहीं है।"
-    );
-
-    return;
-
-  }
-
-
-  const a =
-    document.createElement("a");
-
-
-  a.href =
-    dataURL;
-
-
-  const cleanName =
-    safeText(
-      restaurantName ||
-      "Restaurant"
-    )
-      .replace(
-        /[^a-zA-Z0-9_-]/g,
-        "_"
+    const {data,error}=
+      await db
+      .from("recharge_requests")
+      .select("*")
+      .order(
+        "created_at",
+        {ascending:false}
       );
 
+    if(error)throw error;
 
-  a.download =
-    cleanName +
-    "-" +
-    type +
-    "-QR.png";
+    rechargeRequests=data||[];
 
+    updateStats();
 
-  document.body.appendChild(a);
+    if(!rechargeRequests.length){
 
-  a.click();
+      box.innerHTML=
+        `<div class="empty">
+        अभी कोई recharge request नहीं है।
+        </div>`;
 
-  a.remove();
+      return;
+    }
 
-}
+    const restaurantIds=
+      rechargeRequests
+      .map(x=>x.restaurant_id)
+      .filter(Boolean);
 
+    let map={};
 
-/* =====================================================
-   PRINT QR
-===================================================== */
+    if(restaurantIds.length){
 
-function printQR(
-  restaurantId,
-  type,
-  restaurantName
-){
-
-  const elementId =
-    type === "owner"
-      ? "ownerQR-" + restaurantId
-      : "customerQR-" + restaurantId;
-
-
-  const dataURL =
-    getQRDataURL(
-      elementId
-    );
-
-
-  if(!dataURL){
-
-    alert(
-      "❌ QR image तैयार नहीं है।"
-    );
-
-    return;
-
-  }
-
-
-  const printWindow =
-    window.open(
-      "",
-      "_blank",
-      "width=600,height=700"
-    );
-
-
-  if(!printWindow){
-
-    alert(
-      "Popup blocked है। Browser में popup allow करें।"
-    );
-
-    return;
-
-  }
-
-
-  const title =
-    safeText(
-      restaurantName ||
-      "Restaurant QR"
-    );
-
-
-  const qrType =
-    type === "owner"
-      ? "Owner QR"
-      : "Customer QR";
-
-
-  printWindow.document.open();
-
-
-  printWindow.document.write(`
-
-    <!DOCTYPE html>
-
-    <html>
-
-    <head>
-
-      <meta charset="UTF-8">
-
-      <title>
-        ${escapeHTML(title)}
-        - ${qrType}
-      </title>
-
-      <style>
-
-        body{
-          margin:0;
-          padding:40px 20px;
-          text-align:center;
-          font-family:Arial,sans-serif;
-          background:#fff;
-        }
-
-        h1{
-          font-size:26px;
-          margin:0 0 8px;
-        }
-
-        h2{
-          font-size:19px;
-          margin:0 0 25px;
-        }
-
-        img{
-          width:300px;
-          height:300px;
-          display:block;
-          margin:20px auto;
-        }
-
-        .note{
-          margin-top:20px;
-          font-size:14px;
-          color:#555;
-        }
-
-        @media print{
-
-          body{
-            padding:20px;
-          }
-
-          img{
-            width:280px;
-            height:280px;
-          }
-
-        }
-
-      </style>
-
-    </head>
-
-    <body>
-
-      <h1>
-        RestaurantQR
-      </h1>
-
-      <h2>
-        ${escapeHTML(title)}
-        <br>
-        ${qrType}
-      </h2>
-
-      <img
-        src="${dataURL}"
-        alt="QR Code"
-      >
-
-      <div class="note">
-        Scan QR to continue
-      </div>
-
-      <script>
-
-        window.onload=function(){
-
-          setTimeout(function(){
-
-            window.print();
-
-          },500);
-
-        };
-
-      <\/script>
-
-    </body>
-
-    </html>
-
-  `);
-
-
-  printWindow.document.close();
-
-}
-
-
-/* =====================================================
-   BLOCK / ACTIVATE RESTAURANT
-===================================================== */
-
-async function toggleRestaurant(
-  id,
-  active
-){
-
-  if(!checkSupabase()) return;
-
-
-  const action =
-    active
-      ? "activate"
-      : "block";
-
-
-  if(
-    !confirm(
-      active
-        ? "Restaurant activate करना है?"
-        : "Restaurant block करना है?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    const result =
-      await db
+      const {data:rows}=
+        await db
         .from("restaurants")
-        .update({
-          is_active:active
-        })
-        .eq("id",id);
+        .select("id,name,owner_name,phone")
+        .in(
+          "id",
+          restaurantIds
+        );
 
-
-    if(result.error){
-
-      throw result.error;
-
+      (rows||[]).forEach(
+        r=>map[r.id]=r
+      );
     }
 
-
-    await loadRestaurants();
-
-
-  }catch(error){
-
-    alert(
-      "❌ " +
-      action +
-      " नहीं हुआ:\n" +
-      (
-        error.message ||
-        "Unknown error"
-      )
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   CUSTOMER QR ON / OFF
-===================================================== */
-
-async function toggleCustomerQR(
-  id,
-  active
-){
-
-  if(!checkSupabase()) return;
-
-
-  try{
-
-    const result =
-      await db
-        .from("restaurants")
-        .update({
-          customer_qr_active:active
-        })
-        .eq("id",id);
-
-
-    if(result.error){
-
-      throw result.error;
-
-    }
-
-
-    await loadRestaurants();
-
-
-  }catch(error){
-
-    alert(
-      "❌ Customer QR update नहीं हुआ:\n" +
-      (
-        error.message ||
-        "Unknown error"
-      )
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   ACTIVATE SUBSCRIPTION
-===================================================== */
-
-async function activateSubscription(
-  id
-){
-
-  if(!checkSupabase()) return;
-
-
-  if(
-    !confirm(
-      "₹199 की 1 महीने की subscription activate करें?"
-    )
-  ){
-
-    return;
-
-  }
-
-
-  try{
-
-    const start =
-      new Date();
-
-
-    const end =
-      new Date();
-
-
-    end.setMonth(
-      end.getMonth() + 1
-    );
-
-
-    const result =
-      await db
-        .from("restaurants")
-        .update({
-
-          subscription_status:
-            "active",
-
-          subscription_start:
-            start.toISOString(),
-
-          subscription_end:
-            end.toISOString(),
-
-          is_active:true,
-
-          customer_qr_active:true
-
-        })
-        .eq("id",id);
-
-
-    if(result.error){
-
-      throw result.error;
-
-    }
-
-
-    alert(
-      "✅ Subscription 1 महीने के लिए activate हो गई।"
-    );
-
-
-    await loadRestaurants();
-
-
-  }catch(error){
-
-    alert(
-      "❌ Subscription activate नहीं हुई:\n" +
-      (
-        error.message ||
-        "Unknown error"
-      )
-    );
-
-  }
-
-}
-
-
-/* =====================================================
-   RESTAURANT DETAILS
-===================================================== */
-
-function showRestaurantInfo(
-  id
-){
-
-  const r =
-    restaurants.find(
-      x => x.id === id
-    );
-
-
-  if(!r) return;
-
-
-  const subscription =
-    r.subscription_status ||
-    "pending";
-
-
-  alert(
-
-    "Restaurant Details\n\n" +
-
-    "Restaurant: " +
-    (r.name || "-") +
-
-    "\nOwner: " +
-    (r.owner_name || "-") +
-
-    "\nPhone: " +
-    (r.phone || "-") +
-
-    "\nSubscription: " +
-    subscription +
-
-    "\nPrice: ₹" +
-    Number(
-      r.monthly_price || 199
-    ).toFixed(0) +
-
-    " / Month" +
-
-    "\nRestaurant: " +
-    (
-      r.is_active
-        ? "Active"
-        : "Blocked"
-    ) +
-
-    "\nCustomer QR: " +
-    (
-      r.customer_qr_active
-        ? "ON"
-        : "OFF"
-    )
-
-  );
-
-}
-
-
-/* =====================================================
-   PAGE START
-===================================================== */
-
-document.addEventListener(
-  "DOMContentLoaded",
-  async function(){
-
-    /*
-      Admin login protection
-    */
-
-    if(
-      typeof protectAdminPage ===
-      "function"
-    ){
-
-      const allowed =
-        await protectAdminPage();
-
-      if(!allowed) return;
-
-    }
-
-
-    await loadRestaurants();
-
-  }
-);
-
-</script>
-
-</body>
-</html>
+    box.innerHTML=
+      rechargeRequests.map(req=>{
+
+        const r=
+          map[req.restaurant_id]||{};
+
+        const pending=
+          req.status==="pending";
+
+        return `
+
+        <div class="recharge">
+
+          <h3>
+            🏪 ${escapeHTML(
+              r.name||"Restaurant"
+            )}
+          </h3>
+
+          <div class="muted">
+            👤 ${escapeHTML(
+              r.owner_name||"Owner"
+            )}
+          </div>
+
+          <div class="muted">
+            📞 ${escapeHTML(
+              r.phone||""
+            )}
+          </div>
+
+          <p>
+            💰 Amount:
+            <strong>
+              ₹${Number(
+                req.amount||199
+              )}
+            </strong>
+          </p>
+
+          <p>
+            Status:
+            <strong>
+              ${escapeHTML(
+                req.status||"pending"
+              )}
+            </strong>
+  </p>
