@@ -10,168 +10,479 @@
 
 <style>
 :root{
- --green:#168447;--dark:#0d5c30;--bg:#f4f7f5;--card:#fff;
- --border:#dfe7e1;--text:#17201a;--muted:#68736c;
- --red:#c73535;--orange:#a96100;--blue:#2563eb;
+ --green:#168447;
+ --dark:#0d5c30;
+ --bg:#f4f7f5;
+ --card:#fff;
+ --border:#dfe7e1;
+ --text:#17201a;
+ --muted:#68736c;
+ --red:#c73535;
+ --orange:#a96100;
+ --blue:#2563eb;
 }
+
 *{box-sizing:border-box}
+
 body{
- margin:0;background:var(--bg);color:var(--text);
+ margin:0;
+ background:var(--bg);
+ color:var(--text);
  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif
 }
-.app{max-width:900px;margin:auto;padding-bottom:60px}
+
+.app{
+ max-width:900px;
+ margin:auto;
+ padding-bottom:60px
+}
+
 header{
- position:sticky;top:0;z-index:50;background:#fff;
- border-bottom:1px solid var(--border);padding:16px;text-align:center
+ position:sticky;
+ top:0;
+ z-index:50;
+ background:#fff;
+ border-bottom:1px solid var(--border);
+ padding:16px;
+ text-align:center
 }
-header h1{margin:0;font-size:23px}
-header p{margin:4px 0 0;color:var(--muted);font-size:13px}
+
+header h1{
+ margin:0;
+ font-size:23px
+}
+
+header p{
+ margin:4px 0 0;
+ color:var(--muted);
+ font-size:13px
+}
+
 .logout{
- position:absolute;right:12px;top:14px;border:0;
- background:#f0f3f1;padding:9px 12px;border-radius:10px;font-weight:800
+ position:absolute;
+ right:12px;
+ top:14px;
+ border:0;
+ background:#f0f3f1;
+ padding:9px 12px;
+ border-radius:10px;
+ font-weight:800
 }
+
 main{padding:14px}
+
 .card{
- background:var(--card);border:1px solid var(--border);
- border-radius:20px;padding:17px;margin-bottom:15px;
+ background:var(--card);
+ border:1px solid var(--border);
+ border-radius:20px;
+ padding:17px;
+ margin-bottom:15px;
  box-shadow:0 3px 15px rgba(20,40,25,.04)
 }
-h2{margin:0 0 14px;font-size:18px}
-label{display:block;font-size:13px;font-weight:800;margin-top:9px}
+
+h2{
+ margin:0 0 14px;
+ font-size:18px
+}
+
+label{
+ display:block;
+ font-size:13px;
+ font-weight:800;
+ margin-top:9px
+}
+
 input{
- width:100%;padding:13px;border:1px solid var(--border);
- border-radius:12px;margin:6px 0 8px;font-size:15px;outline:none
+ width:100%;
+ padding:13px;
+ border:1px solid var(--border);
+ border-radius:12px;
+ margin:6px 0 8px;
+ font-size:15px;
+ outline:none
 }
-input:focus{border-color:var(--green)}
+
+input:focus{
+ border-color:var(--green)
+}
+
 button{cursor:pointer}
+
 button:disabled{opacity:.6}
+
 .main{
- width:100%;border:0;background:var(--green);color:#fff;
- padding:13px;border-radius:12px;font-weight:800;font-size:14px
+ width:100%;
+ border:0;
+ background:var(--green);
+ color:#fff;
+ padding:13px;
+ border-radius:12px;
+ font-weight:800;
+ font-size:14px
 }
+
 .main:hover{background:var(--dark)}
-.msg{font-size:13px;margin-top:10px}
-.ok{color:var(--green)}.err{color:var(--red)}
+
+.msg{
+ font-size:13px;
+ margin-top:10px
+}
+
+.ok{color:var(--green)}
+.err{color:var(--red)}
 
 .stats{
- display:grid;grid-template-columns:repeat(4,1fr);gap:9px
+ display:grid;
+ grid-template-columns:repeat(4,1fr);
+ gap:9px
 }
+
 .stat{
- border:1px solid var(--border);border-radius:15px;
- padding:13px 5px;text-align:center;background:#fff
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:13px 5px;
+ text-align:center;
+ background:#fff
 }
-.stat span{font-size:12px;color:var(--muted)}
-.stat b{display:block;font-size:23px;margin-top:3px}
+
+.stat span{
+ font-size:12px;
+ color:var(--muted)
+}
+
+.stat b{
+ display:block;
+ font-size:23px;
+ margin-top:3px
+}
 
 .alertBoard{
- border-radius:17px;padding:14px;margin-bottom:10px;
+ border-radius:17px;
+ padding:14px;
+ margin-bottom:10px;
  border:1px solid
 }
-.alertBoard h3{margin:0 0 8px;font-size:15px}
-.alertItem{
- background:#fff;border:1px solid var(--border);
- padding:10px;border-radius:11px;margin-top:7px;font-size:13px
-}
-.warning{background:#fff8e9;border-color:#ffd88a}
-.danger{background:#fff0f0;border-color:#ffcaca}
-.good{background:#edf9f1;border-color:#c5e8d0}
 
-.toolbar{display:flex;gap:8px;margin-bottom:10px}
-.toolbar input{margin:0;flex:1}
+.alertBoard h3{
+ margin:0 0 8px;
+ font-size:15px
+}
+
+.alertItem{
+ background:#fff;
+ border:1px solid var(--border);
+ padding:10px;
+ border-radius:11px;
+ margin-top:7px;
+ font-size:13px
+}
+
+.warning{
+ background:#fff8e9;
+ border-color:#ffd88a
+}
+
+.danger{
+ background:#fff0f0;
+ border-color:#ffcaca
+}
+
+.good{
+ background:#edf9f1;
+ border-color:#c5e8d0
+}
+
+.toolbar{
+ display:flex;
+ gap:8px;
+ margin-bottom:10px
+}
+
+.toolbar input{
+ margin:0;
+ flex:1
+}
+
 .refresh{
- border:1px solid var(--border);background:#fff;
- border-radius:12px;padding:0 13px;font-weight:800
+ border:1px solid var(--border);
+ background:#fff;
+ border-radius:12px;
+ padding:0 13px;
+ font-weight:800
 }
 
 .restaurant{
- border:1px solid var(--border);border-radius:18px;
- padding:15px;margin-top:10px;background:#fff
+ border:1px solid var(--border);
+ border-radius:18px;
+ padding:15px;
+ margin-top:10px;
+ background:#fff
 }
+
 .rhead{
- display:flex;justify-content:space-between;gap:10px
+ display:flex;
+ justify-content:space-between;
+ gap:10px
 }
-.rhead h3{margin:0;font-size:17px}
-.muted{color:var(--muted);font-size:12px;margin-top:4px}
+
+.rhead h3{
+ margin:0;
+ font-size:17px
+}
+
+.muted{
+ color:var(--muted);
+ font-size:12px;
+ margin-top:4px
+}
 
 .badge{
- display:inline-block;padding:5px 9px;border-radius:999px;
- font-size:11px;font-weight:800;white-space:nowrap;height:max-content
+ display:inline-block;
+ padding:5px 9px;
+ border-radius:999px;
+ font-size:11px;
+ font-weight:800;
+ white-space:nowrap;
+ height:max-content
 }
-.active{background:#eaf7ef;color:var(--green)}
-.blocked{background:#ffeaea;color:var(--red)}
-.pending{background:#fff3df;color:var(--orange)}
-.expired{background:#ffeaea;color:var(--red)}
+
+.active{
+ background:#eaf7ef;
+ color:var(--green)
+}
+
+.blocked{
+ background:#ffeaea;
+ color:var(--red)
+}
+
+.pending{
+ background:#fff3df;
+ color:var(--orange)
+}
+
+.expired{
+ background:#ffeaea;
+ color:var(--red)
+}
 
 .info{
- display:grid;grid-template-columns:1fr 1fr;
- gap:8px;margin-top:12px
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+ margin-top:12px
 }
+
 .ibox{
- background:#f8faf8;border-radius:11px;
- padding:9px;font-size:11px;color:var(--muted)
+ background:#f8faf8;
+ border-radius:11px;
+ padding:9px;
+ font-size:11px;
+ color:var(--muted)
 }
+
 .ibox b{
- display:block;color:var(--text);
- font-size:12px;margin-top:3px
+ display:block;
+ color:var(--text);
+ font-size:12px;
+ margin-top:3px
 }
 
 .qrs{
- display:grid;grid-template-columns:1fr 1fr;
- gap:10px;margin-top:12px
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:12px
 }
+
 .qrbox{
- border:1px solid var(--border);border-radius:14px;
- padding:10px;text-align:center
+ border:1px solid var(--border);
+ border-radius:14px;
+ padding:10px;
+ text-align:center
 }
-.qrbox h4{margin:0 0 8px;font-size:13px}
+
+.qrbox h4{
+ margin:0 0 8px;
+ font-size:13px
+}
+
 .qr{
- width:180px;height:180px;margin:auto;
- display:flex;align-items:center;justify-content:center
+ width:180px;
+ height:180px;
+ margin:auto;
+ display:flex;
+ align-items:center;
+ justify-content:center
 }
-.qr canvas,.qr img{
- max-width:180px!important;max-height:180px!important
+
+.qr canvas,
+.qr img{
+ max-width:180px!important;
+ max-height:180px!important
 }
 
 .actions{
- display:grid;grid-template-columns:1fr 1fr;
- gap:8px;margin-top:12px
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:8px;
+ margin-top:12px
 }
+
 .btn{
- border:1px solid var(--border);background:#fff;
- padding:10px;border-radius:11px;font-weight:800;font-size:12px
+ border:1px solid var(--border);
+ background:#fff;
+ padding:10px;
+ border-radius:11px;
+ font-weight:800;
+ font-size:12px
 }
-.green{background:var(--green);color:#fff;border-color:var(--green)}
-.red{background:#fff0f0;color:var(--red);border-color:#ffd1d1}
-.orange{background:#fff5e8;color:var(--orange);border-color:#ffe0b4}
-.blue{background:#eff6ff;color:var(--blue);border-color:#dbeafe}
+
+.green{
+ background:var(--green);
+ color:#fff;
+ border-color:var(--green)
+}
+
+.red{
+ background:#fff0f0;
+ color:var(--red);
+ border-color:#ffd1d1
+}
+
+.orange{
+ background:#fff5e8;
+ color:var(--orange);
+ border-color:#ffe0b4
+}
+
+.blue{
+ background:#eff6ff;
+ color:var(--blue);
+ border-color:#dbeafe
+}
 
 .rechargeBox{
- margin-top:12px;padding:12px;border-radius:14px;
- background:#f8faf8;border:1px solid var(--border)
+ margin-top:12px;
+ padding:12px;
+ border-radius:14px;
+ background:#f8faf8;
+ border:1px solid var(--border)
 }
-.rechargeBox strong{font-size:14px}
+
+.rechargeBox strong{
+ font-size:14px
+}
+
 .days{
- font-weight:900;margin-top:5px
+ font-weight:900;
+ margin-top:5px
 }
+
 .days.redText{color:var(--red)}
 .days.orangeText{color:var(--orange)}
 .days.greenText{color:var(--green)}
 
-.empty,.loading{text-align:center;color:var(--muted);padding:20px}
+.empty,
+.loading{
+ text-align:center;
+ color:var(--muted);
+ padding:20px
+}
+
 .errorbox{
- color:var(--red);font-size:13px;padding:10px;
- background:#fff0f0;border-radius:12px
+ color:var(--red);
+ font-size:13px;
+ padding:10px;
+ background:#fff0f0;
+ border-radius:12px;
+ word-break:break-word
+}
+
+.request{
+ border:1px solid var(--border);
+ border-radius:15px;
+ padding:12px;
+ margin-top:9px;
+ background:#fff
+}
+
+.requestTop{
+ display:flex;
+ justify-content:space-between;
+ gap:8px
+}
+
+.requestActions{
+ display:flex;
+ gap:8px;
+ margin-top:10px
+}
+
+.smallBtn{
+ flex:1;
+ border:0;
+ padding:9px;
+ border-radius:10px;
+ font-weight:800;
+ font-size:12px
+}
+
+.approve{
+ background:#eaf7ef;
+ color:var(--green)
+}
+
+.reject{
+ background:#fff0f0;
+ color:var(--red)
+}
+
+.status{
+ font-size:11px;
+ font-weight:800;
+ padding:4px 8px;
+ border-radius:999px
+}
+
+.status.pending{
+ background:#fff3df;
+ color:var(--orange)
+}
+
+.status.approved{
+ background:#eaf7ef;
+ color:var(--green)
+}
+
+.status.rejected{
+ background:#ffeaea;
+ color:var(--red)
 }
 
 @media(max-width:600px){
- .stats{grid-template-columns:1fr 1fr}
- .qrs{grid-template-columns:1fr}
- .actions{grid-template-columns:1fr}
+
+ .stats{
+  grid-template-columns:1fr 1fr
+ }
+
+ .qrs{
+  grid-template-columns:1fr
+ }
+
+ .actions{
+  grid-template-columns:1fr
+ }
+
+ .requestActions{
+  flex-direction:column
+ }
 }
 </style>
 </head>
 
 <body>
+
 <div class="app">
 
 <header>
@@ -184,6 +495,7 @@ button:disabled{opacity:.6}
 
 <!-- ADD RESTAURANT -->
 <section class="card">
+
 <h2>➕ Add Restaurant</h2>
 
 <label>Restaurant Name</label>
@@ -193,72 +505,117 @@ button:disabled{opacity:.6}
 <input id="ownerName" placeholder="Owner name">
 
 <label>Owner Phone</label>
-<input id="ownerPhone" type="tel" inputmode="numeric"
-placeholder="Phone number">
+<input
+ id="ownerPhone"
+ type="tel"
+ inputmode="numeric"
+ placeholder="Phone number">
 
-<button id="addBtn" class="main">Add Restaurant</button>
+<button id="addBtn" class="main">
+ Add Restaurant
+</button>
+
 <div id="addMsg" class="msg"></div>
+
 </section>
+
 
 <!-- OVERVIEW -->
 <section class="card">
+
 <h2>📊 Overview</h2>
 
 <div class="stats">
+
  <div class="stat">
-  <span>Total</span><b id="total">0</b>
+  <span>Total</span>
+  <b id="total">0</b>
  </div>
+
  <div class="stat">
-  <span>Active</span><b id="active">0</b>
+  <span>Active</span>
+  <b id="active">0</b>
  </div>
+
  <div class="stat">
-  <span>Blocked</span><b id="blocked">0</b>
+  <span>Blocked</span>
+  <b id="blocked">0</b>
  </div>
+
  <div class="stat">
-  <span>Recharge Due</span><b id="recharge">0</b>
+  <span>Recharge Due</span>
+  <b id="recharge">0</b>
  </div>
+
 </div>
+
 </section>
+
 
 <!-- ALERT BOARD -->
 <section class="card">
+
 <h2>🔔 Recharge Alert Board</h2>
+
 <div id="alerts">
- <div class="loading">Checking recharge...</div>
+ <div class="loading">
+  Checking recharge...
+ </div>
 </div>
+
 </section>
+
 
 <!-- RESTAURANTS -->
 <section class="card">
+
 <h2>🏪 Restaurants</h2>
 
 <div class="toolbar">
- <input id="search"
- placeholder="🔎 Restaurant या Owner search करें...">
- <button class="refresh" id="refreshBtn">↻</button>
+
+ <input
+  id="search"
+  placeholder="🔎 Restaurant या Owner search करें...">
+
+ <button
+  class="refresh"
+  id="refreshBtn">
+  ↻
+ </button>
+
 </div>
 
 <div id="list">
- <div class="loading">Restaurants load हो रहे हैं...</div>
+ <div class="loading">
+  Restaurants load हो रहे हैं...
+ </div>
 </div>
+
 </section>
+
 
 <!-- REQUESTS -->
 <section class="card">
+
 <h2>💰 Recharge Requests</h2>
+
 <div id="requests">
- <div class="loading">Loading...</div>
+ <div class="loading">
+  Loading...
+ </div>
 </div>
+
 </section>
 
 </main>
 </div>
 
+
 <script>
 
-/* =========================
+/* =====================================
  SUPABASE
-========================= */
+===================================== */
 
 const SUPABASE_URL =
 "https://ffzxyycnqdzkfwklzasz.supabase.co";
@@ -279,523 +636,890 @@ let restaurants=[];
 let requests=[];
 
 
-/* =========================
+/* =====================================
  HELPERS
-========================= */
+===================================== */
 
-const $ = id => document.getElementById(id);
+const $ = id =>
+ document.getElementById(id);
+
 
 function esc(v){
- return String(v ?? "").replace(/[&<>"']/g,m=>({
+
+ return String(v ?? "")
+ .replace(/[&<>"']/g,m=>({
+
   "&":"&amp;",
   "<":"&lt;",
   ">":"&gt;",
   '"':"&quot;",
   "'":"&#039;"
+
  }[m]));
+
 }
 
+
 function js(v){
+
  return String(v ?? "")
  .replace(/\\/g,"\\\\")
  .replace(/'/g,"\\'")
  .replace(/\n/g," ")
  .replace(/\r/g," ");
+
 }
+
 
 function token(prefix){
- if(window.crypto && crypto.randomUUID){
-  return prefix+"_"+crypto.randomUUID().replace(/-/g,"");
+
+ if(window.crypto &&
+    crypto.randomUUID){
+
+  return prefix+"_"+
+   crypto.randomUUID()
+   .replace(/-/g,"");
+
  }
 
- return prefix+"_"+Date.now().toString(36)+"_"+
- Math.random().toString(36).slice(2,12);
+ return prefix+"_"+
+  Date.now().toString(36)+"_"+
+  Math.random()
+   .toString(36)
+   .slice(2,12);
+
 }
+
 
 function money(v){
- return "₹"+Number(v || 199).toFixed(0);
+
+ return "₹"+
+  Number(v || 199)
+  .toFixed(0);
+
 }
 
+
 function formatDate(v){
- if(!v) return "Not active";
+
+ if(!v)
+  return "Not active";
 
  const d=new Date(v);
 
- if(isNaN(d.getTime())) return "Not active";
+ if(isNaN(d.getTime()))
+  return "Not active";
 
- return d.toLocaleDateString("en-IN",{
-  day:"2-digit",
-  month:"2-digit",
-  year:"numeric"
- });
+ return d.toLocaleDateString(
+  "en-IN",
+  {
+   day:"2-digit",
+   month:"2-digit",
+   year:"numeric"
+  }
+ );
+
 }
 
 
-/* =========================
- SUBSCRIPTION CALCULATOR
-========================= */
+/* =====================================
+ SUBSCRIPTION
+===================================== */
 
 function subscriptionInfo(end){
 
  if(!end){
+
   return {
    days:null,
    text:"Not active",
    type:"pending"
   };
+
  }
 
  const expiry=new Date(end);
  const now=new Date();
 
- const diff=expiry.getTime()-now.getTime();
- const days=Math.ceil(diff/(1000*60*60*24));
+ const diff=
+  expiry.getTime()-
+  now.getTime();
+
+ const days=
+  Math.ceil(
+   diff/(1000*60*60*24)
+  );
 
  if(days<=0){
+
   return {
    days:days,
    text:"Expired",
    type:"expired"
   };
+
  }
 
  return {
   days:days,
   text:days+" days left",
-  type:days<=7 ? "warning":"active"
+  type:days<=7
+   ?"warning"
+   :"active"
  };
+
 }
 
 
-/* =========================
+/* =====================================
  ADMIN AUTH
-========================= */
+===================================== */
 
 async function protectAdmin(){
 
- const {data,error}=await db.auth.getUser();
+ try{
 
- if(error || !data.user){
+  const {
+   data,
+   error
+  }=await db.auth.getUser();
+
+  if(error ||
+     !data ||
+     !data.user){
+
+   location.href="index.html";
+   return false;
+  }
+
+
+  const check=
+   await db
+   .from("admin_profiles")
+   .select("id,user_id")
+   .eq("user_id",data.user.id)
+   .maybeSingle();
+
+
+  if(check.error){
+
+   console.error(
+    "Admin profile error:",
+    check.error
+   );
+
+   $("list").innerHTML=
+    `<div class="errorbox">
+      ❌ Admin verification error.<br><br>
+      ${esc(check.error.message)}
+     </div>`;
+
+   return false;
+  }
+
+
+  if(!check.data){
+
+   alert("❌ यह account Admin नहीं है।");
+
+   await db.auth.signOut();
+
+   location.href="index.html";
+
+   return false;
+  }
+
+
+  return true;
+
+ }catch(e){
+
+  console.error(e);
+
+  alert(
+   "❌ Admin authentication failed."
+  );
+
   location.href="index.html";
+
   return false;
  }
 
- const check=await db
- .from("admin_profiles")
- .select("id,user_id")
- .eq("user_id",data.user.id)
- .maybeSingle();
-
- if(check.error || !check.data){
-  await db.auth.signOut();
-  location.href="index.html";
-  return false;
- }
-
- return true;
 }
 
 
-/* =========================
+/* =====================================
  LOGOUT
-========================= */
+===================================== */
 
 async function logout(){
+
  await db.auth.signOut();
+
  location.href="index.html";
+
 }
 
 
-/* =========================
+/* =====================================
  CREATE RESTAURANT
-========================= */
+===================================== */
 
 async function createRestaurant(){
 
- const name=$("restaurantName").value.trim();
- const owner=$("ownerName").value.trim();
- const phone=$("ownerPhone").value.trim();
+ const name=
+  $("restaurantName")
+  .value
+  .trim();
+
+ const owner=
+  $("ownerName")
+  .value
+  .trim();
+
+ const phone=
+  $("ownerPhone")
+  .value
+  .trim();
+
 
  if(!name){
-  $("addMsg").textContent="❌ Restaurant name डालें।";
-  $("addMsg").className="msg err";
+
+  $("addMsg").textContent=
+   "❌ Restaurant name डालें।";
+
+  $("addMsg").className=
+   "msg err";
+
   return;
  }
+
 
  const btn=$("addBtn");
 
  btn.disabled=true;
  btn.textContent="Creating...";
 
+
  try{
 
-  const slugBase=name
+  const slugBase=
+   name
    .toLowerCase()
    .replace(/[^a-z0-9]+/g,"-")
    .replace(/^-+|-+$/g,"")
-   || "restaurant";
+   ||"restaurant";
+
 
   const slug=
-   slugBase+"-"+Math.random().toString(36).slice(2,8);
+   slugBase+"-"+
+   Math.random()
+   .toString(36)
+   .slice(2,8);
 
-  const {data,error}=await db
+
+  const ownerToken=
+   token("owner");
+
+  const customerToken=
+   token("customer");
+
+
+  const {
+   data,
+   error
+  }=
+   await db
    .from("restaurants")
    .insert({
+
     name:name,
-    owner_name:owner || null,
-    phone:phone || null,
+
+    owner_name:
+     owner || null,
+
+    phone:
+     phone || null,
+
     slug:slug,
 
     monthly_price:199,
 
-    subscription_status:"pending",
+    subscription_status:
+     "pending",
 
     is_active:true,
 
     customer_qr_active:true,
 
-    owner_qr_token:token("owner"),
+    owner_qr_token:
+     ownerToken,
 
-    customer_qr_token:token("customer")
+    customer_qr_token:
+     customerToken
+
    })
    .select("*")
    .single();
 
-  if(error) throw error;
+
+  if(error)
+   throw error;
+
 
   $("restaurantName").value="";
   $("ownerName").value="";
   $("ownerPhone").value="";
 
+
   $("addMsg").textContent=
    "✅ Restaurant successfully created.";
 
-  $("addMsg").className="msg ok";
+  $("addMsg").className=
+   "msg ok";
+
 
   await loadAll();
+
 
  }catch(e){
 
   console.error(e);
 
   $("addMsg").textContent=
-   "❌ "+(e.message || "Restaurant create नहीं हुआ।");
+   "❌ "+
+   (e.message ||
+    "Restaurant create नहीं हुआ।");
 
-  $("addMsg").className="msg err";
+  $("addMsg").className=
+   "msg err";
 
  }finally{
 
   btn.disabled=false;
-  btn.textContent="Add Restaurant";
+  btn.textContent=
+   "Add Restaurant";
 
  }
+
 }
 
 
-/* =========================
+/* =====================================
  LOAD RESTAURANTS
-========================= */
+===================================== */
 
 async function loadRestaurants(){
 
  $("list").innerHTML=
- '<div class="loading">Restaurants load हो रहे हैं...</div>';
+  '<div class="loading">'+
+  'Restaurants load हो रहे हैं...'+
+  '</div>';
 
- const {data,error}=await db
-  .from("restaurants")
-  .select("*")
-  .order("created_at",{ascending:false});
 
- if(error){
+ try{
 
-  console.error(error);
+  const {
+   data,
+   error
+  }=
+   await db
+   .from("restaurants")
+   .select("*")
+   .order(
+    "created_at",
+    {ascending:false}
+   );
 
-  $("list").innerHTML=
-   '<div class="errorbox">❌ Restaurants load नहीं हुए।<br><br>'+
-   esc(error.message)+'</div>';
 
-  restaurants=[];
+  if(error)
+   throw error;
+
+
+  restaurants=
+   Array.isArray(data)
+   ?data
+   :[];
+
+
+  renderRestaurants();
   updateStats();
   renderAlerts();
 
-  return;
+
+ }catch(e){
+
+  console.error(e);
+
+  restaurants=[];
+
+  $("list").innerHTML=
+   '<div class="errorbox">'+
+   '❌ Restaurants load नहीं हुए।'+
+   '<br><br>'+
+   esc(e.message)+
+   '</div>';
+
+  updateStats();
+  renderAlerts();
+
  }
 
- restaurants=data || [];
-
- renderRestaurants();
- updateStats();
- renderAlerts();
 }
 
 
-/* =========================
+/* =====================================
  RENDER RESTAURANTS
-========================= */
+===================================== */
 
 function renderRestaurants(){
 
- const q=($("search").value || "")
+ const q=
+  ($("search").value || "")
   .trim()
   .toLowerCase();
 
- const filtered=restaurants.filter(r=>{
 
-  const text=[
-   r.name,
-   r.owner_name,
-   r.phone,
-   r.slug
-  ].filter(Boolean)
-  .join(" ")
-  .toLowerCase();
+ const filtered=
+  restaurants.filter(r=>{
 
-  return text.includes(q);
- });
+   const text=[
+    r.name,
+    r.owner_name,
+    r.phone,
+    r.slug
+   ]
+   .filter(Boolean)
+   .join(" ")
+   .toLowerCase();
+
+   return text.includes(q);
+
+  });
+
 
  if(!filtered.length){
 
   $("list").innerHTML=
    '<div class="empty">'+
-   (q
+   (
+    q
     ?"कोई matching restaurant नहीं मिला।"
-    :"अभी कोई restaurant नहीं है.")+
+    :"अभी कोई restaurant नहीं है।"
+   )+
    '</div>';
 
   return;
+
  }
 
- $("list").innerHTML=filtered.map(r=>{
 
-  const ownerURL=
-   BASE+"/owner.html?token="+
-   encodeURIComponent(r.owner_qr_token || "");
+ $("list").innerHTML=
+  filtered.map(r=>{
 
-  const customerURL=
-   BASE+"/customer.html?token="+
-   encodeURIComponent(r.customer_qr_token || "");
+   const ownerURL=
+    BASE+
+    "/owner.html?token="+
+    encodeURIComponent(
+     r.owner_qr_token || ""
+    );
 
-  const active=r.is_active===true;
 
-  const customerActive=
-   r.customer_qr_active===true;
+   const customerURL=
+    BASE+
+    "/customer.html?token="+
+    encodeURIComponent(
+     r.customer_qr_token || ""
+    );
 
-  const sub=subscriptionInfo(r.subscription_end);
 
-  let subText=
-   r.subscription_status || "pending";
+   const active=
+    r.is_active===true;
 
-  if(sub.type==="expired"){
-   subText="Expired";
-  }
 
-  return `
-  <div class="restaurant">
+   const customerActive=
+    r.customer_qr_active===true;
 
-   <div class="rhead">
 
-    <div>
-     <h3>${esc(r.name || "Restaurant")}</h3>
+   const sub=
+    subscriptionInfo(
+     r.subscription_end
+    );
 
-     <div class="muted">
-      👤 ${esc(r.owner_name || "Not added")}
-     </div>
 
-     <div class="muted">
-      📞 ${esc(r.phone || "Not added")}
-     </div>
-    </div>
+   let subText=
+    r.subscription_status ||
+    "pending";
 
-    <span class="badge ${
-     active ? "active":"blocked"
-    }">
-     ${active ? "🟢 Active":"🔴 Blocked"}
-    </span>
 
+   if(sub.type==="expired")
+    subText="Expired";
+
+
+   return `
+
+<div class="restaurant">
+
+ <div class="rhead">
+
+  <div>
+
+   <h3>
+    ${esc(r.name || "Restaurant")}
+   </h3>
+
+   <div class="muted">
+    👤 ${esc(
+     r.owner_name ||
+     "Not added"
+    )}
    </div>
 
-
-   <div class="info">
-
-    <div class="ibox">
-     Subscription
-     <b>${esc(subText)}</b>
-    </div>
-
-    <div class="ibox">
-     Price
-     <b>${money(r.monthly_price)} / Month</b>
-    </div>
-
-    <div class="ibox">
-     Start
-     <b>${formatDate(r.subscription_start)}</b>
-    </div>
-
-    <div class="ibox">
-     Valid Till
-     <b>${formatDate(r.subscription_end)}</b>
-    </div>
-
-   </div>
-
-
-   <div class="rechargeBox">
-
-    <strong>💳 Recharge Status</strong>
-
-    ${
-     sub.days===null
-
-     ? `<div class="days orangeText">
-          ⚠️ Recharge not activated
-        </div>`
-
-     : sub.days<=0
-
-     ? `<div class="days redText">
-          ❌ Recharge expired
-        </div>`
-
-     : sub.days<=2
-
-     ? `<div class="days redText">
-          🚨 सिर्फ ${sub.days} दिन बाकी
-        </div>`
-
-     : sub.days<=7
-
-     ? `<div class="days orangeText">
-          ⚠️ ${sub.days} दिन बाकी
-        </div>`
-
-     : `<div class="days greenText">
-          ✅ ${sub.days} दिन बाकी
-        </div>`
-    }
-
-   </div>
-
-
-   <div class="qrs">
-
-    <div class="qrbox">
-
-     <h4>🔐 Owner QR</h4>
-
-     <div class="qr" id="oq-${esc(r.id)}"></div>
-
-     <button class="btn"
-      onclick="printQR(
-       '${js(r.name)}',
-       'Owner QR',
-       '${js(ownerURL)}'
-      )">
-      🖨️ Print Owner QR
-     </button>
-
-    </div>
-
-
-    <div class="qrbox">
-
-     <h4>📱 Customer QR</h4>
-
-     <div class="qr" id="cq-${esc(r.id)}"></div>
-
-     <button class="btn"
-      onclick="printQR(
-       '${js(r.name)}',
-       'Customer QR',
-       '${js(customerURL)}'
-      )">
-      🖨️ Print Customer QR
-     </button>
-
-    </div>
-
-   </div>
-
-
-   <div class="actions">
-
-    ${
-     active
-
-     ? `<button class="btn red"
-          onclick="setRestaurant('${js(r.id)}',false)">
-          🚫 Block Restaurant
-        </button>`
-
-     : `<button class="btn green"
-          onclick="setRestaurant('${js(r.id)}',true)">
-          ✅ Activate Restaurant
-        </button>`
-    }
-
-
-    ${
-     customerActive
-
-     ? `<button class="btn orange"
-          onclick="setCustomer('${js(r.id)}',false)">
-          📱 Customer QR OFF
-        </button>`
-
-     : `<button class="btn blue"
-          onclick="setCustomer('${js(r.id)}',true)">
-          📱 Customer QR ON
-        </button>`
-    }
-
-   </div>
-
-
-   <div class="actions">
-
-    <button class="btn green"
-     onclick="activateManual('${js(r.id)}')">
-     💳 Activate ₹199 / 1 Month
-    </button>
-
-    <button class="btn blue"
-     onclick="copyURL('${js(customerURL)}')">
-     📋 Copy Customer Link
-    </button>
-
+   <div class="muted">
+    📞 ${esc(
+     r.phone ||
+     "Not added"
+    )}
    </div>
 
   </div>
-  `;
 
- }).join("");
 
+  <span class="badge ${
+   active
+   ?"active"
+   :"blocked"
+  }">
+
+   ${
+    active
+    ?"🟢 Active"
+    :"🔴 Blocked"
+   }
+
+  </span>
+
+ </div>
+
+
+ <div class="info">
+
+  <div class="ibox">
+   Subscription
+   <b>${esc(subText)}</b>
+  </div>
+
+  <div class="ibox">
+   Price
+   <b>
+    ${money(r.monthly_price)}
+    / Month
+   </b>
+  </div>
+
+  <div class="ibox">
+   Start
+   <b>
+    ${formatDate(
+     r.subscription_start
+    )}
+   </b>
+  </div>
+
+  <div class="ibox">
+   Valid Till
+   <b>
+    ${formatDate(
+     r.subscription_end
+    )}
+   </b>
+  </div>
+
+ </div>
+
+
+ <div class="rechargeBox">
+
+  <strong>
+   💳 Recharge Status
+  </strong>
+
+  ${
+   sub.days===null
+
+   ?`
+   <div class="days orangeText">
+    ⚠️ Recharge not activated
+   </div>
+   `
+
+   :sub.days<=0
+
+   ?`
+   <div class="days redText">
+    ❌ Recharge expired
+   </div>
+   `
+
+   :sub.days<=2
+
+   ?`
+   <div class="days redText">
+    🚨 सिर्फ ${sub.days} दिन बाकी
+   </div>
+   `
+
+   :sub.days<=7
+
+   ?`
+   <div class="days orangeText">
+    ⚠️ ${sub.days} दिन बाकी
+   </div>
+   `
+
+   :`
+   <div class="days greenText">
+    ✅ ${sub.days} दिन बाकी
+   </div>
+   `
+  }
+
+ </div>
+
+
+ <div class="qrs">
+
+  <div class="qrbox">
+
+   <h4>
+    🔐 Owner QR
+   </h4>
+
+   <div
+    class="qr"
+    id="oq-${esc(r.id)}">
+   </div>
+
+   <button
+    class="btn"
+    onclick="printQR(
+     '${js(r.name)}',
+     'Owner QR',
+     '${js(ownerURL)}'
+    )">
+
+    🖨️ Print Owner QR
+
+   </button>
+
+  </div>
+
+
+  <div class="qrbox">
+
+   <h4>
+    📱 Customer QR
+   </h4>
+
+   <div
+    class="qr"
+    id="cq-${esc(r.id)}">
+   </div>
+
+   <button
+    class="btn"
+    onclick="printQR(
+     '${js(r.name)}',
+     'Customer QR',
+     '${js(customerURL)}'
+    )">
+
+    🖨️ Print Customer QR
+
+   </button>
+
+  </div>
+
+ </div>
+
+
+ <div class="actions">
+
+  ${
+   active
+
+   ?`
+   <button
+    class="btn red"
+    onclick="setRestaurant(
+     '${js(r.id)}',
+     false
+    )">
+
+    🚫 Block Restaurant
+
+   </button>
+   `
+
+   :`
+   <button
+    class="btn green"
+    onclick="setRestaurant(
+     '${js(r.id)}',
+     true
+    )">
+
+    ✅ Activate Restaurant
+
+   </button>
+   `
+  }
+
+
+  ${
+   customerActive
+
+   ?`
+   <button
+    class="btn orange"
+    onclick="setCustomer(
+     '${js(r.id)}',
+     false
+    )">
+
+    📱 Customer QR OFF
+
+   </button>
+   `
+
+   :`
+   <button
+    class="btn blue"
+    onclick="setCustomer(
+     '${js(r.id)}',
+     true
+    )">
+
+    📱 Customer QR ON
+
+   </button>
+   `
+  }
+
+ </div>
+
+
+ <div class="actions">
+
+  <button
+   class="btn green"
+   onclick="activateManual(
+    '${js(r.id)}'
+   )">
+
+   💳 Activate ₹199 / 1 Month
+
+  </button>
+
+
+  <button
+   class="btn blue"
+   onclick="copyURL(
+    '${js(customerURL)}'
+   )">
+
+   📋 Copy Customer Link
+
+  </button>
+
+ </div>
+
+
+ <div class="actions">
+
+  <button
+   class="btn blue"
+   onclick="copyURL(
+    '${js(ownerURL)}'
+   )">
+
+   🔐 Copy Owner Link
+
+  </button>
+
+  <button
+   class="btn"
+   onclick="showLinks(
+    '${js(r.name)}',
+    '${js(ownerURL)}',
+    '${js(customerURL)}'
+   )">
+
+   🔗 Show Links
+
+  </button>
+
+ </div>
+
+</div>
+
+`;
+
+  }).join("");
+
+
+ /* GENERATE QR */
 
  filtered.forEach(r=>{
 
-  const oq=$("oq-"+r.id);
-  const cq=$("cq-"+r.id);
+  const oq=
+   $("oq-"+r.id);
 
-  if(oq && r.owner_qr_token){
+  const cq=
+   $("cq-"+r.id);
+
+
+  if(
+   oq &&
+   r.owner_qr_token &&
+   typeof QRCode!=="undefined"
+  ){
 
    new QRCode(oq,{
+
     text:
-     BASE+"/owner.html?token="+
-     encodeURIComponent(r.owner_qr_token),
+     BASE+
+     "/owner.html?token="+
+     encodeURIComponent(
+      r.owner_qr_token
+     ),
+
     width:180,
     height:180
+
    });
 
   }
 
-  if(cq && r.customer_qr_token){
+
+  if(
+   cq &&
+   r.customer_qr_token &&
+   typeof QRCode!=="undefined"
+  ){
 
    new QRCode(cq,{
+
     text:
-     BASE+"/customer.html?token="+
-     encodeURIComponent(r.customer_qr_token),
+     BASE+
+     "/customer.html?token="+
+     encodeURIComponent(
+      r.customer_qr_token
+     ),
+
     width:180,
     height:180
+
    });
 
   }
@@ -805,35 +1529,53 @@ function renderRestaurants(){
 }
 
 
-/* =========================
+/* =====================================
  STATS
-========================= */
+===================================== */
 
 function updateStats(){
 
- $("total").textContent=restaurants.length;
+ $("total").textContent=
+  restaurants.length;
+
 
  $("active").textContent=
-  restaurants.filter(r=>r.is_active===true).length;
+  restaurants.filter(
+   r=>r.is_active===true
+  ).length;
+
 
  $("blocked").textContent=
-  restaurants.filter(r=>r.is_active===false).length;
+  restaurants.filter(
+   r=>r.is_active===false
+  ).length;
 
- const due=restaurants.filter(r=>{
 
-  const s=subscriptionInfo(r.subscription_end);
+ const due=
+  restaurants.filter(r=>{
 
-  return s.days===null || s.days<=7;
+   const s=
+    subscriptionInfo(
+     r.subscription_end
+    );
 
- }).length;
+   return(
+    s.days===null ||
+    s.days<=7
+   );
 
- $("recharge").textContent=due;
+  }).length;
+
+
+ $("recharge").textContent=
+  due;
+
 }
 
 
-/* =========================
+/* =====================================
  ALERT BOARD
-========================= */
+===================================== */
 
 function renderAlerts(){
 
@@ -844,198 +1586,381 @@ function renderAlerts(){
  const soon=[];
  const pending=[];
 
+
  restaurants.forEach(r=>{
 
-  const s=subscriptionInfo(r.subscription_end);
+  const s=
+   subscriptionInfo(
+    r.subscription_end
+   );
+
 
   if(s.days===null){
+
    pending.push(r);
+
   }
   else if(s.days<=0){
+
    expired.push(r);
+
   }
   else if(s.days<=2){
+
    urgent.push(r);
+
   }
   else if(s.days<=7){
+
    soon.push(r);
+
   }
 
  });
 
+
  let html="";
+
 
  if(expired.length){
 
   html+=`
-   <div class="alertBoard danger">
-    <h3>🔴 Expired Recharge — ${expired.length}</h3>
-    ${expired.map(r=>`
-     <div class="alertItem">
-      <b>${esc(r.name)}</b><br>
-      ❌ Recharge खत्म हो चुका है
-      ${r.subscription_end
-       ? " · "+formatDate(r.subscription_end)
-       : ""}
-     </div>
-    `).join("")}
-   </div>
-  `;
+
+<div class="alertBoard danger">
+
+ <h3>
+  🔴 Expired Recharge —
+  ${expired.length}
+ </h3>
+
+ ${
+  expired.map(r=>`
+
+  <div class="alertItem">
+
+   <b>
+    ${esc(r.name)}
+   </b>
+
+   <br>
+
+   ❌ Recharge खत्म हो चुका है
+
+   ${
+    r.subscription_end
+    ?" · "+formatDate(
+      r.subscription_end
+     )
+    :""
+   }
+
+  </div>
+
+  `).join("")
  }
+
+</div>
+
+`;
+
+ }
+
 
  if(urgent.length){
 
   html+=`
-   <div class="alertBoard danger">
-    <h3>🚨 2 दिन के अंदर Recharge — ${urgent.length}</h3>
-    ${urgent.map(r=>{
-     const s=subscriptionInfo(r.subscription_end);
-     return `
-      <div class="alertItem">
-       <b>${esc(r.name)}</b><br>
-       ⚠️ सिर्फ ${s.days} दिन बाकी
-      </div>
-     `;
-    }).join("")}
+
+<div class="alertBoard danger">
+
+ <h3>
+  🚨 2 दिन के अंदर Recharge —
+  ${urgent.length}
+ </h3>
+
+ ${
+  urgent.map(r=>{
+
+   const s=
+    subscriptionInfo(
+     r.subscription_end
+    );
+
+   return `
+
+   <div class="alertItem">
+
+    <b>
+     ${esc(r.name)}
+    </b>
+
+    <br>
+
+    ⚠️ सिर्फ ${s.days} दिन बाकी
+
    </div>
-  `;
+
+   `;
+
+  }).join("")
  }
+
+</div>
+
+`;
+
+ }
+
 
  if(soon.length){
 
   html+=`
-   <div class="alertBoard warning">
-    <h3>🟠 7 दिन के अंदर Recharge — ${soon.length}</h3>
-    ${soon.map(r=>{
-     const s=subscriptionInfo(r.subscription_end);
-     return `
-      <div class="alertItem">
-       <b>${esc(r.name)}</b><br>
-       ${s.days} दिन बाकी ·
-       ${formatDate(r.subscription_end)}
-      </div>
-     `;
-    }).join("")}
+
+<div class="alertBoard warning">
+
+ <h3>
+  🟠 7 दिन के अंदर Recharge —
+  ${soon.length}
+ </h3>
+
+ ${
+  soon.map(r=>{
+
+   const s=
+    subscriptionInfo(
+     r.subscription_end
+    );
+
+   return `
+
+   <div class="alertItem">
+
+    <b>
+     ${esc(r.name)}
+    </b>
+
+    <br>
+
+    ${s.days} दिन बाकी ·
+    ${formatDate(
+     r.subscription_end
+    )}
+
    </div>
-  `;
+
+   `;
+
+  }).join("")
  }
+
+</div>
+
+`;
+
+ }
+
 
  if(pending.length){
 
   html+=`
-   <div class="alertBoard warning">
-    <h3>🟡 Recharge Pending — ${pending.length}</h3>
-    ${pending.map(r=>`
-     <div class="alertItem">
-      <b>${esc(r.name)}</b><br>
-      Recharge अभी activate नहीं है।
-     </div>
-    `).join("")}
-   </div>
-  `;
+
+<div class="alertBoard warning">
+
+ <h3>
+  🟡 Recharge Pending —
+  ${pending.length}
+ </h3>
+
+ ${
+  pending.map(r=>`
+
+  <div class="alertItem">
+
+   <b>
+    ${esc(r.name)}
+   </b>
+
+   <br>
+
+   Recharge अभी activate नहीं है।
+
+  </div>
+
+  `).join("")
  }
+
+</div>
+
+`;
+
+ }
+
 
  if(!html){
 
   html=`
-   <div class="alertBoard good">
-    <h3>✅ All Good</h3>
-    अभी कोई recharge alert नहीं है।
-   </div>
-  `;
+
+<div class="alertBoard good">
+
+ <h3>
+  ✅ All Good
+ </h3>
+
+ अभी कोई recharge alert नहीं है।
+
+</div>
+
+`;
 
  }
+
 
  box.innerHTML=html;
+
 }
 
 
-/* =========================
+/* =====================================
  BLOCK / ACTIVATE
-========================= */
+===================================== */
 
-async function setRestaurant(id,value){
+async function setRestaurant(
+ id,
+ value
+){
 
- const {error}=await db
+ const {error}=
+  await db
   .from("restaurants")
-  .update({is_active:value})
+  .update({
+   is_active:value
+  })
   .eq("id",id);
 
+
  if(error){
-  alert("❌ "+error.message);
+
+  alert(
+   "❌ "+error.message
+  );
+
   return;
+
  }
 
+
  await loadRestaurants();
+
 }
 
 
-/* =========================
+/* =====================================
  CUSTOMER QR
-========================= */
+===================================== */
 
-async function setCustomer(id,value){
+async function setCustomer(
+ id,
+ value
+){
 
- const {error}=await db
+ const {error}=
+  await db
   .from("restaurants")
-  .update({customer_qr_active:value})
+  .update({
+   customer_qr_active:value
+  })
   .eq("id",id);
 
+
  if(error){
-  alert("❌ "+error.message);
+
+  alert(
+   "❌ "+error.message
+  );
+
   return;
+
  }
 
+
  await loadRestaurants();
+
 }
 
 
-/* =========================
- MANUAL ₹199 RECHARGE
-========================= */
+/* =====================================
+ MANUAL RECHARGE
+===================================== */
 
 async function activateManual(id){
 
  const restaurant=
-  restaurants.find(r=>String(r.id)===String(id));
+  restaurants.find(
+   r=>String(r.id)===String(id)
+  );
+
 
  if(!restaurant){
-  alert("Restaurant नहीं मिला।");
+
+  alert(
+   "Restaurant नहीं मिला।"
+  );
+
   return;
+
  }
+
 
  if(!confirm(
   "₹199 का 1 Month recharge activate करें?\n\n"+
   restaurant.name
- )) return;
+ )){
+
+  return;
+
+ }
+
 
  const now=new Date();
 
  let start=now;
 
- /*
-  अगर पुराना subscription अभी active है,
-  तो नया month current expiry के बाद लगेगा।
- */
+
  if(
   restaurant.subscription_end &&
-  new Date(restaurant.subscription_end)>now
+  new Date(
+   restaurant.subscription_end
+  )>now
  ){
-  start=new Date(restaurant.subscription_end);
+
+  start=
+   new Date(
+    restaurant.subscription_end
+   );
+
  }
 
- const end=new Date(start);
- end.setDate(end.getDate()+30);
 
- const {error}=await db
+ const end=
+  new Date(start);
+
+
+ end.setDate(
+  end.getDate()+30
+ );
+
+
+ const {error}=
+  await db
   .from("restaurants")
   .update({
 
    subscription_status:"active",
 
-   subscription_start:start.toISOString(),
+   subscription_start:
+    start.toISOString(),
 
-   subscription_end:end.toISOString(),
+   subscription_end:
+    end.toISOString(),
 
    is_active:true,
 
@@ -1044,20 +1969,713 @@ async function activateManual(id){
   })
   .eq("id",id);
 
+
  if(error){
-  alert("❌ "+error.message);
+
+  alert(
+   "❌ "+error.message
+  );
+
   return;
+
  }
+
 
  alert(
   "✅ ₹199 Recharge Activated\n\n"+
-  "Valid Till: "+formatDate(end)
+  "Valid Till: "+
+  formatDate(end)
  );
 
+
  await loadRestaurants();
+
 }
 
 
-/* =========================
+/* =====================================
  RECHARGE REQUESTS
-===
+===================================== */
+
+async function loadRequests(){
+
+ const box=$("requests");
+
+ box.innerHTML=
+  '<div class="loading">'+
+  'Recharge requests load हो रहे हैं...'+
+  '</div>';
+
+
+ try{
+
+  const {
+   data,
+   error
+  }=
+   await db
+   .from("recharge_requests")
+   .select(`
+    id,
+    restaurant_id,
+    amount,
+    status,
+    created_at
+   `)
+   .order(
+    "created_at",
+    {ascending:false}
+   );
+
+
+  if(error)
+   throw error;
+
+
+  requests=
+   Array.isArray(data)
+   ?data
+   :[];
+
+
+  renderRequests();
+
+
+ }catch(e){
+
+  console.error(e);
+
+  requests=[];
+
+  box.innerHTML=
+   '<div class="errorbox">'+
+   '❌ Recharge requests load नहीं हुए।'+
+   '<br><br>'+
+   esc(e.message)+
+   '</div>';
+
+ }
+
+}
+
+
+/* =====================================
+ RENDER REQUESTS
+===================================== */
+
+function renderRequests(){
+
+ const box=$("requests");
+
+
+ if(!requests.length){
+
+  box.innerHTML=
+   '<div class="empty">'+
+   'अभी कोई recharge request नहीं है।'+
+   '</div>';
+
+  return;
+
+ }
+
+
+ box.innerHTML=
+  requests.map(req=>{
+
+   const restaurant=
+    restaurants.find(
+     r=>String(r.id)===
+     String(req.restaurant_id)
+    );
+
+
+   const name=
+    restaurant
+    ?restaurant.name
+    :"Unknown Restaurant";
+
+
+   const status=
+    String(
+     req.status ||
+     "pending"
+    ).toLowerCase();
+
+
+   return `
+
+<div class="request">
+
+ <div class="requestTop">
+
+  <div>
+
+   <b>
+    ${esc(name)}
+   </b>
+
+   <div class="muted">
+
+    Amount:
+    ${money(req.amount)}
+
+   </div>
+
+   <div class="muted">
+
+    ${req.created_at
+     ?formatDate(req.created_at)
+     :""
+    }
+
+   </div>
+
+  </div>
+
+
+  <span class="status ${esc(status)}">
+
+   ${esc(status.toUpperCase())}
+
+  </span>
+
+ </div>
+
+
+ ${
+  status==="pending"
+
+  ?`
+
+  <div class="requestActions">
+
+   <button
+    class="smallBtn approve"
+    onclick="approveRequest(
+     '${js(req.id)}'
+    )">
+
+    ✅ Approve ₹199
+
+   </button>
+
+
+   <button
+    class="smallBtn reject"
+    onclick="rejectRequest(
+     '${js(req.id)}'
+    )">
+
+    ❌ Reject
+
+   </button>
+
+  </div>
+
+  `
+
+  :""
+ }
+
+</div>
+
+`;
+
+  }).join("");
+
+}
+
+
+/* =====================================
+ APPROVE REQUEST
+===================================== */
+
+async function approveRequest(
+ requestId
+){
+
+ const req=
+  requests.find(
+   r=>String(r.id)===
+   String(requestId)
+  );
+
+
+ if(!req){
+
+  alert(
+   "Request नहीं मिली।"
+  );
+
+  return;
+
+ }
+
+
+ if(!confirm(
+  "इस recharge request को approve करें?"
+ )){
+
+  return;
+
+ }
+
+
+ const restaurant=
+  restaurants.find(
+   r=>String(r.id)===
+   String(req.restaurant_id)
+  );
+
+
+ if(!restaurant){
+
+  alert(
+   "❌ Restaurant नहीं मिला।"
+  );
+
+  return;
+
+ }
+
+
+ const now=new Date();
+
+ let start=now;
+
+
+ if(
+  restaurant.subscription_end &&
+  new Date(
+   restaurant.subscription_end
+  )>now
+ ){
+
+  start=
+   new Date(
+    restaurant.subscription_end
+   );
+
+ }
+
+
+ const end=
+  new Date(start);
+
+
+ end.setDate(
+  end.getDate()+30
+ );
+
+
+ const updateRestaurant=
+  await db
+  .from("restaurants")
+  .update({
+
+   subscription_status:"active",
+
+   subscription_start:
+    start.toISOString(),
+
+   subscription_end:
+    end.toISOString(),
+
+   is_active:true,
+
+   customer_qr_active:true
+
+  })
+  .eq(
+   "id",
+   restaurant.id
+  );
+
+
+ if(updateRestaurant.error){
+
+  alert(
+   "❌ "+updateRestaurant.error.message
+  );
+
+  return;
+
+ }
+
+
+ const updateRequest=
+  await db
+  .from("recharge_requests")
+  .update({
+   status:"approved"
+  })
+  .eq(
+   "id",
+   requestId
+  );
+
+
+ if(updateRequest.error){
+
+  alert(
+   "⚠️ Recharge activate हो गया, "+
+   "लेकिन request status update नहीं हुआ:\n\n"+
+   updateRequest.error.message
+  );
+
+ }else{
+
+  alert(
+   "✅ Recharge Approved\n\n"+
+   restaurant.name+
+   "\nValid Till: "+
+   formatDate(end)
+  );
+
+ }
+
+
+ await loadAll();
+
+}
+
+
+/* =====================================
+ REJECT REQUEST
+===================================== */
+
+async function rejectRequest(
+ requestId
+){
+
+ if(!confirm(
+  "इस recharge request को reject करें?"
+ )){
+
+  return;
+
+ }
+
+
+ const {error}=
+  await db
+  .from("recharge_requests")
+  .update({
+   status:"rejected"
+  })
+  .eq(
+   "id",
+   requestId
+  );
+
+
+ if(error){
+
+  alert(
+   "❌ "+error.message
+  );
+
+  return;
+
+ }
+
+
+ await loadRequests();
+
+}
+
+
+/* =====================================
+ COPY URL
+===================================== */
+
+async function copyURL(url){
+
+ try{
+
+  await navigator.clipboard.writeText(url);
+
+  alert(
+   "✅ Link copied!"
+  );
+
+ }catch(e){
+
+  prompt(
+   "Link copy करें:",
+   url
+  );
+
+ }
+
+}
+
+
+/* =====================================
+ SHOW LINKS
+===================================== */
+
+function showLinks(
+ name,
+ ownerURL,
+ customerURL
+){
+
+ alert(
+  "🏪 "+name+
+  "\n\n"+
+  "🔐 Owner Link:\n"+
+  ownerURL+
+  "\n\n"+
+  "📱 Customer Link:\n"+
+  customerURL
+ );
+
+}
+
+
+/* =====================================
+ PRINT QR
+===================================== */
+
+function printQR(
+ name,
+ type,
+ url
+){
+
+ const win=
+  window.open(
+   "",
+   "_blank",
+   "width=600,height=700"
+  );
+
+
+ if(!win){
+
+  alert(
+   "Popup blocked है। Browser में popup allow करें।"
+  );
+
+  return;
+
+ }
+
+
+ win.document.write(`
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+${esc(name)} - ${esc(type)}
+</title>
+
+<style>
+
+body{
+ font-family:Arial,sans-serif;
+ text-align:center;
+ padding:30px
+}
+
+h1{
+ font-size:24px
+}
+
+h2{
+ margin-top:5px
+}
+
+.qr{
+ margin:25px auto;
+ display:flex;
+ justify-content:center
+}
+
+p{
+ word-break:break-all;
+ font-size:12px
+}
+
+@media print{
+
+ button{
+  display:none
+ }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>
+RestaurantQR
+</h1>
+
+<h2>
+${esc(name)}
+</h2>
+
+<h3>
+${esc(type)}
+</h3>
+
+<div class="qr" id="printQR"></div>
+
+<p>
+Scan करके ${
+ type==="Owner QR"
+ ?"Owner Dashboard"
+ :"Customer Menu"
+} खोलें।
+</p>
+
+<p>
+${esc(url)}
+</p>
+
+<button onclick="window.print()">
+🖨️ Print
+</button>
+
+<script>
+
+new QRCode(
+ document.getElementById("printQR"),
+ {
+  text:${JSON.stringify(url)},
+  width:300,
+  height:300
+ }
+);
+
+<\/script>
+
+</body>
+
+</html>
+
+`);
+
+ win.document.close();
+
+}
+
+
+/* =====================================
+ LOAD ALL
+===================================== */
+
+async function loadAll(){
+
+ await loadRestaurants();
+
+ await loadRequests();
+
+}
+
+
+/* =====================================
+ SEARCH
+===================================== */
+
+$("search")
+ .addEventListener(
+  "input",
+  renderRestaurants
+ );
+
+
+/* =====================================
+ BUTTONS
+===================================== */
+
+$("addBtn")
+ .addEventListener(
+  "click",
+  createRestaurant
+ );
+
+
+$("logoutBtn")
+ .addEventListener(
+  "click",
+  logout
+ );
+
+
+$("refreshBtn")
+ .addEventListener(
+  "click",
+  loadAll
+ );
+
+
+/* =====================================
+ AUTH STATE
+===================================== */
+
+db.auth.onAuthStateChange(
+ (event,session)=>{
+
+  console.log(
+   "Auth:",
+   event
+  );
+
+ }
+);
+
+
+/* =====================================
+ START
+===================================== */
+
+(async function(){
+
+ const ok=
+  await protectAdmin();
+
+
+ if(!ok)
+  return;
+
+
+ await loadAll();
+
+})();
+
+
+/* =====================================
+ AUTO REFRESH
+===================================== */
+
+setInterval(
+ ()=>{
+
+  if(
+   document.visibilityState===
+   "visible"
+  ){
+
+   loadAll();
+
+  }
+
+ },
+ 60000
+);
+
+</script>
+
+</body>
+</html>
