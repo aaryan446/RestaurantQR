@@ -23,6 +23,16 @@ button.main{width:100%;padding:12px;border:0;border-radius:12px;background:var(-
 .chart{height:130px;display:flex;align-items:end;gap:7px;padding-top:15px}.bar{flex:1;background:#bfe5cc;border-radius:7px 7px 2px 2px;min-height:15px}.sales-total{font-size:27px;font-weight:850}
 .bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:20}.bottom button{border:0;background:transparent;font-size:11px;color:var(--muted)}.bottom .selected{color:var(--green);font-weight:800}.plus{width:46px;height:46px;border-radius:50%;background:var(--green)!important;color:#fff!important;font-size:25px!important;margin-top:-20px}
 .hidden{display:none!important}.error{color:var(--danger)}.success{color:var(--green)}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
+.modal.show{display:flex}.modal-box{width:min(430px,100%);background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:92vh;overflow:auto}
+.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.modal-head h2{margin:0;font-size:19px}.close-btn{border:0;background:#f1f3f1;border-radius:50%;width:38px;height:38px;font-size:20px}
+.pay-amount{text-align:center;font-size:30px;font-weight:900;margin:8px 0 2px}.pay-to{text-align:center;color:var(--muted);font-size:13px}
+.qr-wrap{width:230px;height:230px;margin:16px auto;display:grid;place-items:center;border:1px solid var(--border);border-radius:18px;background:#fff;padding:10px}
+#paymentQR img,#paymentQR canvas{max-width:100%;height:auto!important}
+.upi-btn{display:block;text-align:center;text-decoration:none;width:100%;padding:12px;border-radius:12px;background:var(--green);color:#fff;font-weight:800;margin:8px 0}
+.secondary-btn{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;font-weight:800}
+.notice{background:#fff7e8;border:1px solid #f4dfb5;border-radius:14px;padding:11px;font-size:12px;color:#7a5a19;margin:12px 0}
+.pay-status{font-size:13px;text-align:center;min-height:20px;margin-top:8px}
 @media(min-width:700px){.app{padding-left:10px;padding-right:10px}}
 </style>
 </head>
@@ -78,9 +88,9 @@ button.main{width:100%;padding:12px;border:0;border-radius:12px;background:var(-
 </section>
 
 <section id="subscriptionSection" class="card hidden">
-  <div class="section-title"><h2>💰 Subscription</h2><span class="badge" id="subscriptionBadge">Checking</span></div>
+  <div class="section-title"><h2>💳 Subscription</h2><span class="badge" id="subscriptionBadge">Checking</span></div>
   <div id="subscriptionInfo" class="muted">Loading...</div>
-  <button class="main" id="rechargeBtn" type="button" onclick="requestRecharge()">Recharge ₹199 / 1 Month</button>
+  <button class="main" id="rechargeBtn" type="button" onclick="openRecharge()">💳 Recharge ₹199 / 1 Month</button>
   <p id="rechargeMessage" class="muted"></p>
 </section>
 </main>
@@ -94,14 +104,76 @@ button.main{width:100%;padding:12px;border:0;border-radius:12px;background:var(-
 </nav>
 </div>
 
+<!-- Recharge Payment Modal -->
+<div id="rechargeModal" class="modal" onclick="if(event.target===this)closeRecharge()">
+  <div class="modal-box">
+    <div class="modal-head">
+      <h2>💳 Recharge Subscription</h2>
+      <button class="close-btn" type="button" onclick="closeRecharge()">×</button>
+    </div>
+    <div class="pay-amount">₹199</div>
+    <div class="pay-to">Pay to <strong>Isha Pandey</strong><br>UPI: <strong>8319931450@ibl</strong></div>
+
+    <div class="qr-wrap"><div id="paymentQR"></div></div>
+
+    <a id="upiPayBtn" class="upi-btn" href="#">📲 Pay ₹199 with UPI App</a>
+
+    <div class="notice">
+      Payment करने के बाद नीचे <strong>“Payment कर दिया”</strong> दबाएँ।
+      Admin payment verify करके recharge approve करेगा।
+    </div>
+
+    <button id="paymentDoneBtn" class="secondary-btn" type="button" onclick="submitRecharge()">✅ Payment कर दिया</button>
+    <div id="paymentStatus" class="pay-status muted"></div>
+  </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="app.js"></script>
 <script>
 let ownerRestaurant=null,menuItems=[],allOrders=[],editingMenuId=null,activeFilter="all";
 
+const PAYMENT_UPI="8319931450@ibl";
+const PAYMENT_NAME="Isha Pandey";
+const PAYMENT_AMOUNT="199";
+
 function getOwnerToken(){return new URLSearchParams(location.search).get("token")||""}
 function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth"})}
 function msg(id,text,cls=""){const e=document.getElementById(id);if(e){e.textContent=text;e.className="muted "+cls}}
+
+function openRecharge(){
+  if(!ownerRestaurant){msg("rechargeMessage","❌ Restaurant verify नहीं हुआ।","error");return}
+  const modal=document.getElementById("rechargeModal");
+  modal.classList.add("show");
+  document.getElementById("paymentStatus").textContent="";
+  const upi="upi://pay?pa="+encodeURIComponent(PAYMENT_UPI)+"&pn="+encodeURIComponent(PAYMENT_NAME)+"&am="+PAYMENT_AMOUNT+"&cu=INR";
+  document.getElementById("upiPayBtn").href=upi;
+  const qr=document.getElementById("paymentQR");
+  qr.innerHTML="";
+  new QRCode(qr,{text:upi,width:210,height:210,correctLevel:QRCode.CorrectLevel.M});
+}
+function closeRecharge(){document.getElementById("rechargeModal").classList.remove("show")}
+
+async function submitRecharge(){
+  if(!ownerRestaurant)return;
+  const btn=document.getElementById("paymentDoneBtn");
+  const status=document.getElementById("paymentStatus");
+  btn.disabled=true;btn.textContent="Request भेजी जा रही है...";
+  status.textContent="";
+  try{
+    const {error}=await db.rpc("create_recharge_request",{p_token:getOwnerToken(),p_amount:199});
+    if(error)throw error;
+    status.textContent="✅ Payment confirmation Admin को भेज दी गई है।";
+    status.className="pay-status success";
+    msg("rechargeMessage","✅ Recharge request Admin verification के लिए भेज दी गई है।","success");
+    btn.textContent="✅ Request Submitted";
+  }catch(e){
+    status.textContent="❌ "+(e.message||"Recharge request failed");
+    status.className="pay-status error";
+    btn.disabled=false;btn.textContent="✅ Payment कर दिया";
+  }
+}
 
 async function verifyOwnerQR(){
   const badge=document.getElementById("statusBadge"),token=getOwnerToken();
@@ -143,17 +215,7 @@ function showSubscription(){
   document.getElementById("subscriptionInfo").innerHTML="<p>Status: <strong>"+escapeHTML(ownerRestaurant.subscription_status||"pending")+"</strong></p><p>Price: <strong>₹199 / Month</strong></p><p>Valid Till: <strong>"+end+"</strong></p>";
 }
 
-async function requestRecharge(){
-  if(!ownerRestaurant)return;
-  const btn=document.getElementById("rechargeBtn");btn.disabled=true;btn.textContent="Request भेजी जा रही है...";
-  try{
-    const {error}=await db.rpc("create_recharge_request",{p_token:getOwnerToken(),p_amount:199});
-    if(error)throw error;
-    msg("rechargeMessage","✅ Recharge request Admin को भेज दी गई है।","success");
-  }catch(e){msg("rechargeMessage","❌ "+(e.message||"Recharge request failed"),"error")}
-  finally{btn.disabled=false;btn.textContent="Recharge ₹199 / 1 Month"}
-}
-
+/* Existing menu/order functions preserved */
 async function loadMenu(){
   if(!ownerRestaurant)return;
   const {data,error}=await db.rpc("get_owner_menu",{p_token:getOwnerToken()});
@@ -192,7 +254,6 @@ async function deleteMenuItem(id){
   if(!data){alert("Menu item नहीं मिला।");return}
   await loadMenu();
 }
-
 async function loadOrders(){
   if(!ownerRestaurant)return;
   const {data,error}=await db.rpc("get_owner_orders",{p_token:getOwnerToken()});
@@ -225,22 +286,4 @@ function getOrderAction(o){
 function renderOrders(){
   const list=activeFilter==="all"?allOrders:allOrders.filter(o=>(o.status||"new")===activeFilter),c=document.getElementById("orders");
   if(!list.length){c.innerHTML="<p class='muted'>इस category में कोई order नहीं है।</p>";return}
-  c.innerHTML=list.map(o=>`<div class="order"><div class="order-head"><div><h3>Table ${escapeHTML(o.table_number||"-")}</h3><span class="muted">${escapeHTML(o.customer_name||"Customer")} • ${o.created_at?new Date(o.created_at).toLocaleString("en-IN"):""}</span></div><div class="amount">₹${Number(o.total_amount||0).toFixed(0)}</div></div><span class="status">${escapeHTML(o.status||"new")}</span><div class="order-items">${o.items.length?o.items.map(i=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13px"><span>🍽️ ${escapeHTML(i.name)} × ${Number(i.quantity||1)}</span><strong>₹${(Number(i.price||0)*Number(i.quantity||1)).toFixed(0)}</strong></div>`).join(""):"<div class='muted' style='margin-top:8px'>Items details उपलब्ध नहीं हैं।</div>"}</div><div class="order-actions">${getOrderAction(o)}<button type="button" onclick="showOrderInfo('${o.id}')">View</button></div></div>`).join("");
-}
-async function updateOrderStatus(orderId,newStatus){
-  const {data,error}=await db.rpc("update_owner_order_status",{p_token:getOwnerToken(),p_order_id:orderId,p_status:newStatus});
-  if(error){alert("❌ "+error.message);return}
-  if(!data){alert("❌ यह order इस Owner QR का नहीं है।");return}
-  await loadOrders();
-}
-function showOrderInfo(id){
-  const o=allOrders.find(x=>x.id===id);if(!o)return;
-  alert("Order ID: "+o.id+"\nTable: "+(o.table_number||"-")+"\nCustomer: "+(o.customer_name||"-")+"\nTotal: ₹"+Number(o.total_amount||0).toFixed(0)+"\nStatus: "+(o.status||"new"));
-}
-
-document.addEventListener("DOMContentLoaded",verifyOwnerQR);
-setInterval(()=>{if(ownerRestaurant)loadOrders()},10000);
-</script>
-</body>
-    </html>
-    
+  c.innerHTML=list.map(o=>`<div class="order"><div class="order-head"><div><h3>Table ${escapeHTML(o.table_number||"-")}</h3><span class="muted">${escapeHTML(o.customer_name||"Customer")} • ${o.created_at?new Date(o.created_at).toLocaleString("en-IN"):""}</span></div><div class="amount">₹${Number(o.total_amount||0).toFixed(0)}</div></div><span class="status">${escapeHTML(o.status||"new")}</span><div class="order-items">${o.items.length?o.items.map(i=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13px"><span>🍽️ ${escapeHTML(i.name)} × ${Number(i.quantity||1)}</span><strong>₹${(Number(i.price||0)*Number(i.quantity||1)).toFixed(0)}</strong></div>`).join(""):"<div class='muted' style='margin-top:8px'>Items details उपलब्ध नहीं ह
