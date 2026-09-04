@@ -2,288 +2,1874 @@
 <html lang="hi">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>RestaurantQR - Owner Dashboard</title>
-<link rel="stylesheet" href="style.css">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>RestaurantQR - Owner</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
 <style>
-:root{--green:#168447;--green2:#eaf7ef;--text:#17201a;--muted:#68736c;--card:#fff;--bg:#f5f7f5;--border:#e5e9e6;--danger:#c73535;--orange:#e98a16}
-*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--text);font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif}
-.app{max-width:760px;margin:auto;padding-bottom:85px}.topbar{position:sticky;top:0;z-index:10;background:rgba(255,255,255,.96);backdrop-filter:blur(10px);border-bottom:1px solid var(--border);padding:14px 16px;display:flex;align-items:center;justify-content:space-between}
-.topbar h1{font-size:19px;margin:0}.topbar small{color:var(--muted)}.icon-btn{border:0;background:var(--green2);border-radius:12px;padding:10px 12px;font-size:18px}
-.page{padding:16px}.hero,.card{background:var(--card);border:1px solid var(--border);border-radius:20px;padding:18px;margin-bottom:14px;box-shadow:0 3px 14px rgba(20,40,25,.04)}
-.hero{display:flex;gap:14px;align-items:center}.avatar{width:58px;height:58px;border-radius:50%;display:grid;place-items:center;background:var(--green2);font-size:27px}
-.hero h2{margin:0 0 4px;font-size:20px}.muted{color:var(--muted);font-size:13px}.badge{display:inline-block;margin-top:8px;background:var(--green2);color:var(--green);font-weight:700;padding:6px 10px;border-radius:999px;font-size:12px}
-.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.stat{border:1px solid var(--border);border-radius:16px;padding:14px;background:#fff}.stat b{display:block;font-size:22px;margin-top:4px}.stat span{font-size:12px;color:var(--muted)}
-.section-title{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}.section-title h2{font-size:17px;margin:0}
-.order-tabs{display:flex;gap:7px;overflow:auto;margin-bottom:12px}.tab{white-space:nowrap;border:1px solid var(--border);background:#fff;border-radius:999px;padding:9px 12px;font-size:12px}.tab.active{background:var(--green);color:#fff;border-color:var(--green)}
-.order{border:1px solid var(--border);border-radius:17px;padding:14px;margin-top:10px}.order-head{display:flex;justify-content:space-between;gap:10px}.order h3{margin:0;font-size:15px}.amount{font-size:18px;font-weight:800}
-.status{display:inline-block;margin-top:6px;padding:4px 8px;border-radius:999px;font-size:11px;font-weight:700;background:#fff3df;color:#a96100}.order-actions{display:flex;gap:8px;margin-top:12px}.order-actions button{flex:1;border:1px solid var(--border);background:#fff;border-radius:11px;padding:9px;font-weight:700}.order-actions .primary{background:var(--green);color:#fff;border-color:var(--green)}
-input{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;margin:5px 0 10px;font-size:15px}button{cursor:pointer}button:disabled{opacity:.6;cursor:not-allowed}
-button.main{width:100%;padding:12px;border:0;border-radius:12px;background:var(--green);color:#fff;font-weight:800}.menu-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-bottom:1px solid var(--border);padding:12px 0}.menu-row:last-child{border-bottom:0}.menu-row h3{margin:0;font-size:15px}.menu-actions button{border:0;background:#f0f3f1;border-radius:9px;padding:7px 9px;margin-left:4px}
-.chart{height:130px;display:flex;align-items:end;gap:7px;padding-top:15px}.bar{flex:1;background:#bfe5cc;border-radius:7px 7px 2px 2px;min-height:15px}.sales-total{font-size:27px;font-weight:850}
-.bottom{position:fixed;bottom:0;left:50%;transform:translateX(-50%);width:min(760px,100%);background:#fff;border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:9px 8px calc(9px + env(safe-area-inset-bottom));z-index:20}.bottom button{border:0;background:transparent;font-size:11px;color:var(--muted)}.bottom .selected{color:var(--green);font-weight:800}.plus{width:46px;height:46px;border-radius:50%;background:var(--green)!important;color:#fff!important;font-size:25px!important;margin-top:-20px}
-.hidden{display:none!important}.error{color:var(--danger)}.success{color:var(--green)}
-.modal{position:fixed;inset:0;background:rgba(0,0,0,.55);display:none;align-items:center;justify-content:center;padding:16px;z-index:100}
-.modal.show{display:flex}.modal-box{width:min(430px,100%);background:#fff;border-radius:24px;padding:20px;box-shadow:0 20px 60px rgba(0,0,0,.25);max-height:92vh;overflow:auto}
-.modal-head{display:flex;align-items:center;justify-content:space-between;gap:10px}.modal-head h2{margin:0;font-size:19px}.close-btn{border:0;background:#f1f3f1;border-radius:50%;width:38px;height:38px;font-size:20px}
-.pay-amount{text-align:center;font-size:30px;font-weight:900;margin:8px 0 2px}.pay-to{text-align:center;color:var(--muted);font-size:13px}
-.qr-wrap{width:230px;height:230px;margin:16px auto;display:grid;place-items:center;border:1px solid var(--border);border-radius:18px;background:#fff;padding:10px}
-#paymentQR img,#paymentQR canvas{max-width:100%;height:auto!important}
-.upi-btn{display:block;text-align:center;text-decoration:none;width:100%;padding:12px;border-radius:12px;background:var(--green);color:#fff;font-weight:800;margin:8px 0}
-.secondary-btn{width:100%;padding:12px;border:1px solid var(--border);border-radius:12px;background:#fff;font-weight:800}
-.notice{background:#fff7e8;border:1px solid #f4dfb5;border-radius:14px;padding:11px;font-size:12px;color:#7a5a19;margin:12px 0}
-.pay-status{font-size:13px;text-align:center;min-height:20px;margin-top:8px}
-@media(min-width:700px){.app{padding-left:10px;padding-right:10px}}
+:root{
+  --green:#168447;
+  --green2:#eaf7ef;
+  --text:#17201a;
+  --muted:#68736c;
+  --bg:#f5f7f5;
+  --card:#fff;
+  --border:#e3e8e4;
+  --red:#c73535;
+  --orange:#e98a16;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+}
+.app{
+  max-width:760px;
+  margin:auto;
+  padding-bottom:90px;
+}
+.topbar{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(255,255,255,.96);
+  backdrop-filter:blur(10px);
+  border-bottom:1px solid var(--border);
+  padding:14px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.topbar h1{margin:0;font-size:19px}
+.topbar small{color:var(--muted)}
+.icon{
+  border:0;
+  background:var(--green2);
+  border-radius:12px;
+  padding:10px 12px;
+  font-size:18px;
+}
+.page{padding:16px}
+.card,.hero{
+  background:#fff;
+  border:1px solid var(--border);
+  border-radius:20px;
+  padding:18px;
+  margin-bottom:14px;
+  box-shadow:0 3px 14px rgba(20,40,25,.04);
+}
+.hero{
+  display:flex;
+  gap:14px;
+  align-items:center;
+}
+.avatar{
+  width:58px;
+  height:58px;
+  border-radius:50%;
+  background:var(--green2);
+  display:grid;
+  place-items:center;
+  font-size:27px;
+}
+.hero h2{margin:0 0 4px;font-size:20px}
+.muted{color:var(--muted);font-size:13px}
+.badge{
+  display:inline-block;
+  margin-top:8px;
+  padding:6px 10px;
+  border-radius:999px;
+  background:var(--green2);
+  color:var(--green);
+  font-weight:800;
+  font-size:12px;
+}
+.badge.warn{
+  background:#fff3df;
+  color:#a96100;
+}
+.badge.danger{
+  background:#ffe9e9;
+  color:var(--red);
+}
+.grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+}
+.stat{
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:14px;
+}
+.stat span{
+  display:block;
+  color:var(--muted);
+  font-size:12px;
+}
+.stat b{
+  display:block;
+  margin-top:4px;
+  font-size:22px;
+}
+.title{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:12px;
+}
+.title h2{margin:0;font-size:17px}
+input{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  margin:5px 0 10px;
+  font-size:15px;
+  outline:none;
+}
+input:focus{border-color:var(--green)}
+button{
+  cursor:pointer;
+}
+button:disabled{
+  opacity:.6;
+  cursor:not-allowed;
+}
+.main{
+  width:100%;
+  padding:12px;
+  border:0;
+  border-radius:12px;
+  background:var(--green);
+  color:#fff;
+  font-weight:800;
+}
+.secondary{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  background:#fff;
+  font-weight:800;
+}
+.hidden{display:none!important}
+.error{color:var(--red)}
+.success{color:var(--green)}
+
+.menu-row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  border-bottom:1px solid var(--border);
+  padding:13px 0;
+}
+.menu-row:last-child{border-bottom:0}
+.menu-row h3{
+  margin:0 0 4px;
+  font-size:15px;
+}
+.menu-actions{
+  display:flex;
+  gap:5px;
+}
+.menu-actions button{
+  border:0;
+  background:#f0f3f1;
+  border-radius:9px;
+  padding:8px 10px;
+  font-weight:700;
+}
+
+.tabs{
+  display:flex;
+  gap:7px;
+  overflow:auto;
+  margin-bottom:12px;
+}
+.tab{
+  white-space:nowrap;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:999px;
+  padding:9px 12px;
+  font-size:12px;
+}
+.tab.active{
+  background:var(--green);
+  color:#fff;
+  border-color:var(--green);
+}
+
+.order{
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:14px;
+  margin-top:10px;
+}
+.order-head{
+  display:flex;
+  justify-content:space-between;
+  gap:10px;
+}
+.order h3{margin:0;font-size:15px}
+.amount{
+  font-size:18px;
+  font-weight:900;
+}
+.status{
+  display:inline-block;
+  margin-top:7px;
+  padding:4px 8px;
+  border-radius:999px;
+  background:#fff3df;
+  color:#a96100;
+  font-size:11px;
+  font-weight:800;
+}
+.order-actions{
+  display:flex;
+  gap:8px;
+  margin-top:12px;
+}
+.order-actions button{
+  flex:1;
+  border:1px solid var(--border);
+  background:#fff;
+  border-radius:11px;
+  padding:9px;
+  font-weight:800;
+}
+.order-actions .primary{
+  background:var(--green);
+  color:#fff;
+  border-color:var(--green);
+}
+
+.sales{
+  font-size:29px;
+  font-weight:900;
+}
+.chart{
+  height:120px;
+  display:flex;
+  align-items:end;
+  gap:7px;
+  padding-top:15px;
+}
+.bar{
+  flex:1;
+  min-height:12px;
+  background:#bfe5cc;
+  border-radius:7px 7px 2px 2px;
+}
+
+.notice{
+  background:#fff7e8;
+  border:1px solid #f4dfb5;
+  border-radius:14px;
+  padding:11px;
+  font-size:12px;
+  color:#7a5a19;
+  margin:12px 0;
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.55);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:16px;
+  z-index:100;
+}
+.modal.show{display:flex}
+.modal-box{
+  width:min(430px,100%);
+  max-height:92vh;
+  overflow:auto;
+  background:#fff;
+  border-radius:24px;
+  padding:20px;
+}
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+}
+.modal-head h2{margin:0;font-size:19px}
+.close{
+  border:0;
+  background:#f1f3f1;
+  border-radius:50%;
+  width:38px;
+  height:38px;
+  font-size:20px;
+}
+.pay-amount{
+  text-align:center;
+  font-size:30px;
+  font-weight:900;
+  margin-top:8px;
+}
+.pay-to{
+  text-align:center;
+  color:var(--muted);
+  font-size:13px;
+}
+.qr{
+  width:230px;
+  height:230px;
+  margin:16px auto;
+  display:grid;
+  place-items:center;
+  border:1px solid var(--border);
+  border-radius:18px;
+  padding:10px;
+}
+.upi{
+  display:block;
+  text-align:center;
+  text-decoration:none;
+  background:var(--green);
+  color:#fff;
+  padding:12px;
+  border-radius:12px;
+  font-weight:800;
+}
+.pay-status{
+  text-align:center;
+  min-height:20px;
+  margin-top:9px;
+  font-size:13px;
+}
+
+.bottom{
+  position:fixed;
+  bottom:0;
+  left:50%;
+  transform:translateX(-50%);
+  width:min(760px,100%);
+  background:#fff;
+  border-top:1px solid var(--border);
+  display:flex;
+  justify-content:space-around;
+  padding:9px 8px calc(9px + env(safe-area-inset-bottom));
+  z-index:50;
+}
+.bottom button{
+  border:0;
+  background:transparent;
+  color:var(--muted);
+  font-size:11px;
+}
+.bottom .selected{
+  color:var(--green);
+  font-weight:900;
+}
+.plus{
+  width:46px;
+  height:46px;
+  border-radius:50%;
+  background:var(--green)!important;
+  color:#fff!important;
+  font-size:25px!important;
+  margin-top:-20px;
+}
 </style>
 </head>
+
 <body>
+
 <div class="app">
+
 <header class="topbar">
-  <div><h1 id="restaurantName">Restaurant</h1><small id="ownerName">Owner verify हो रहा है...</small></div>
-  <button class="icon-btn" type="button" onclick="loadOrders()">🔔</button>
+  <div>
+    <h1 id="restaurantName">Restaurant</h1>
+    <small id="ownerName">Owner verify हो रहा है...</small>
+  </div>
+  <button class="icon" onclick="loadOrders()">🔔</button>
 </header>
 
 <main class="page">
+
 <section class="hero">
   <div class="avatar">👨‍🍳</div>
-  <div><h2>Welcome back!</h2><div id="heroOwner" class="muted">Owner</div><span id="statusBadge" class="badge">Checking...</span></div>
+  <div>
+    <h2>Welcome back!</h2>
+    <div id="heroOwner" class="muted">Owner</div>
+    <span id="statusBadge" class="badge">Checking...</span>
+  </div>
 </section>
 
 <section id="dashboard" class="card hidden">
-  <div class="section-title"><h2>Overview</h2><span class="muted">Today</span></div>
+  <div class="title">
+    <h2>📊 Overview</h2>
+    <span class="muted">Orders</span>
+  </div>
+
   <div class="grid">
-    <div class="stat">💰 <span>Total Sales</span><b id="salesTotal">₹0</b></div>
-    <div class="stat">📦 <span>Total Orders</span><b id="ordersTotal">0</b></div>
-    <div class="stat">🆕 <span>New Orders</span><b id="newTotal">0</b></div>
-    <div class="stat">⏱️ <span>Preparing</span><b id="preparingTotal">0</b></div>
+    <div class="stat">
+      💰
+      <span>Total Sales</span>
+      <b id="salesTotal">₹0</b>
+    </div>
+
+    <div class="stat">
+      📦
+      <span>Total Orders</span>
+      <b id="ordersTotal">0</b>
+    </div>
+
+    <div class="stat">
+      🆕
+      <span>New Orders</span>
+      <b id="newTotal">0</b>
+    </div>
+
+    <div class="stat">
+      ⏱️
+      <span>Preparing</span>
+      <b id="preparingTotal">0</b>
+    </div>
   </div>
 </section>
 
 <section id="analytics" class="card hidden">
-  <div class="section-title"><h2>📊 Sales Summary</h2><span class="muted">Loaded Orders</span></div>
-  <div class="sales-total" id="weekSales">₹0</div>
-  <div class="muted">Total sales from loaded orders</div>
+  <div class="title">
+    <h2>📈 Sales</h2>
+  </div>
+
+  <div class="sales" id="weekSales">₹0</div>
+  <div class="muted">Loaded orders की total sales</div>
+
   <div class="chart" id="salesChart"></div>
 </section>
 
 <section id="ordersSection" class="card hidden">
-  <div class="section-title"><h2>📦 Orders</h2><span class="muted" id="orderCount">0 orders</span></div>
-  <div class="order-tabs">
+
+  <div class="title">
+    <h2>📦 Orders</h2>
+    <span id="orderCount" class="muted">0 orders</span>
+  </div>
+
+  <div class="tabs">
     <button class="tab active" onclick="filterOrders('all',this)">All</button>
     <button class="tab" onclick="filterOrders('new',this)">New</button>
     <button class="tab" onclick="filterOrders('preparing',this)">Preparing</button>
     <button class="tab" onclick="filterOrders('ready',this)">Ready</button>
     <button class="tab" onclick="filterOrders('completed',this)">Completed</button>
   </div>
-  <div id="orders">Loading...</div>
+
+  <div id="orders">
+    Loading...
+  </div>
+
 </section>
 
 <section id="menuSection" class="card hidden">
-  <div class="section-title"><h2>🍽️ Menu Management</h2></div>
-  <input id="menuName" type="text" placeholder="Item name" maxlength="120">
-  <input id="menuPrice" type="number" min="0" step="0.01" placeholder="Price ₹">
-  <button class="main" id="saveMenuBtn" type="button" onclick="saveMenuItem()">Add Menu Item</button>
+
+  <div class="title">
+    <h2>🍽️ Menu Management</h2>
+  </div>
+
+  <input
+    id="menuName"
+    type="text"
+    placeholder="Item name"
+    maxlength="120"
+  >
+
+  <input
+    id="menuPrice"
+    type="number"
+    min="0"
+    step="0.01"
+    placeholder="Price ₹"
+  >
+
+  <button
+    id="saveMenuBtn"
+    class="main"
+    onclick="saveMenuItem()"
+  >
+    Add Menu Item
+  </button>
+
   <p id="menuMessage" class="muted"></p>
-  <div id="menuList">Loading...</div>
+
+  <div id="menuList">
+    Loading...
+  </div>
+
 </section>
 
 <section id="subscriptionSection" class="card hidden">
-  <div class="section-title"><h2>💳 Subscription</h2><span class="badge" id="subscriptionBadge">Checking</span></div>
-  <div id="subscriptionInfo" class="muted">Loading...</div>
-  <button class="main" id="rechargeBtn" type="button" onclick="openRecharge()">💳 Recharge ₹199 / 1 Month</button>
+
+  <div class="title">
+    <h2>💳 Subscription</h2>
+    <span id="subscriptionBadge" class="badge">Checking</span>
+  </div>
+
+  <div id="subscriptionInfo" class="muted">
+    Loading...
+  </div>
+
+  <button
+    id="rechargeBtn"
+    class="main"
+    onclick="openRecharge()"
+  >
+    💳 Recharge ₹199 / 1 Month
+  </button>
+
   <p id="rechargeMessage" class="muted"></p>
+
 </section>
+
 </main>
 
 <nav class="bottom">
-  <button class="selected" onclick="scrollToId('dashboard')">⌂<br>Dashboard</button>
-  <button onclick="scrollToId('ordersSection')">▣<br>Orders</button>
-  <button class="plus" onclick="scrollToId('menuSection')">+</button>
-  <button onclick="scrollToId('menuSection')">▤<br>Menu</button>
-  <button onclick="scrollToId('subscriptionSection')">◯<br>Profile</button>
+
+  <button onclick="scrollToId('dashboard')" class="selected">
+    ⌂<br>Dashboard
+  </button>
+
+  <button onclick="scrollToId('ordersSection')">
+    ▣<br>Orders
+  </button>
+
+  <button class="plus" onclick="scrollToId('menuSection')">
+    +
+  </button>
+
+  <button onclick="scrollToId('menuSection')">
+    ▤<br>Menu
+  </button>
+
+  <button onclick="scrollToId('subscriptionSection')">
+    ◯<br>Profile
+  </button>
+
 </nav>
+
 </div>
 
-<!-- Recharge Payment Modal -->
-<div id="rechargeModal" class="modal" onclick="if(event.target===this)closeRecharge()">
-  <div class="modal-box">
-    <div class="modal-head">
-      <h2>💳 Recharge Subscription</h2>
-      <button class="close-btn" type="button" onclick="closeRecharge()">×</button>
-    </div>
-    <div class="pay-amount">₹199</div>
-    <div class="pay-to">Pay to <strong>Isha Pandey</strong><br>UPI: <strong>8319931450@ibl</strong></div>
 
-    <div class="qr-wrap"><div id="paymentQR"></div></div>
+<!-- RECHARGE MODAL -->
 
-    <a id="upiPayBtn" class="upi-btn" href="#">📲 Pay ₹199 with UPI App</a>
+<div
+  id="rechargeModal"
+  class="modal"
+  onclick="if(event.target===this)closeRecharge()"
+>
 
-    <div class="notice">
-      Payment करने के बाद नीचे <strong>“Payment कर दिया”</strong> दबाएँ।
-      Admin payment verify करके recharge approve करेगा।
-    </div>
+<div class="modal-box">
 
-    <button id="paymentDoneBtn" class="secondary-btn" type="button" onclick="submitRecharge()">✅ Payment कर दिया</button>
-    <div id="paymentStatus" class="pay-status muted"></div>
+  <div class="modal-head">
+    <h2>💳 Recharge</h2>
+    <button class="close" onclick="closeRecharge()">×</button>
   </div>
+
+  <div class="pay-amount">₹199</div>
+
+  <div class="pay-to">
+    Pay to <strong>Isha Pandey</strong><br>
+    UPI: <strong>8319931450@ibl</strong>
+  </div>
+
+  <div class="qr">
+    <div id="paymentQR"></div>
+  </div>
+
+  <a
+    id="upiPayBtn"
+    class="upi"
+    href="#"
+  >
+    📲 Pay ₹199 with UPI App
+  </a>
+
+  <div class="notice">
+    Payment करने के बाद नीचे
+    <strong>“Payment कर दिया”</strong>
+    दबाएँ।<br><br>
+    Admin payment verify करके recharge approve करेगा।
+  </div>
+
+  <button
+    id="paymentDoneBtn"
+    class="secondary"
+    onclick="submitRecharge()"
+  >
+    ✅ Payment कर दिया
+  </button>
+
+  <div id="paymentStatus" class="pay-status muted"></div>
+
+</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-<script src="app.js"></script>
+
 <script>
-let ownerRestaurant=null,menuItems=[],allOrders=[],editingMenuId=null,activeFilter="all";
 
-const PAYMENT_UPI="8319931450@ibl";
-const PAYMENT_NAME="Isha Pandey";
-const PAYMENT_AMOUNT="199";
+/* ================================
+   SUPABASE
+================================ */
 
-function getOwnerToken(){return new URLSearchParams(location.search).get("token")||""}
-function scrollToId(id){document.getElementById(id)?.scrollIntoView({behavior:"smooth"})}
-function msg(id,text,cls=""){const e=document.getElementById(id);if(e){e.textContent=text;e.className="muted "+cls}}
+const SUPABASE_URL =
+"https://ffzxyycnqdzkfwklzasz.supabase.co";
 
-function openRecharge(){
-  if(!ownerRestaurant){msg("rechargeMessage","❌ Restaurant verify नहीं हुआ।","error");return}
-  const modal=document.getElementById("rechargeModal");
-  modal.classList.add("show");
-  document.getElementById("paymentStatus").textContent="";
-  const upi="upi://pay?pa="+encodeURIComponent(PAYMENT_UPI)+"&pn="+encodeURIComponent(PAYMENT_NAME)+"&am="+PAYMENT_AMOUNT+"&cu=INR";
-  document.getElementById("upiPayBtn").href=upi;
-  const qr=document.getElementById("paymentQR");
-  qr.innerHTML="";
-  new QRCode(qr,{text:upi,width:210,height:210,correctLevel:QRCode.CorrectLevel.M});
+const SUPABASE_KEY =
+"sb_publishable_0whZYgrVhvnJw1s9DnP--Q_UcbceYDn";
+
+const db =
+window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+
+/* ================================
+   GLOBALS
+================================ */
+
+let ownerRestaurant = null;
+let menuItems = [];
+let allOrders = [];
+let editingMenuId = null;
+let activeFilter = "all";
+
+const PAYMENT_UPI = "8319931450@ibl";
+const PAYMENT_NAME = "Isha Pandey";
+const PAYMENT_AMOUNT = "199";
+
+
+/* ================================
+   HELPERS
+================================ */
+
+function getOwnerToken(){
+
+  return new URLSearchParams(
+    window.location.search
+  ).get("token") || "";
+
 }
-function closeRecharge(){document.getElementById("rechargeModal").classList.remove("show")}
 
-async function submitRecharge(){
-  if(!ownerRestaurant)return;
-  const btn=document.getElementById("paymentDoneBtn");
-  const status=document.getElementById("paymentStatus");
-  btn.disabled=true;btn.textContent="Request भेजी जा रही है...";
-  status.textContent="";
-  try{
-    const {error}=await db.rpc("create_recharge_request",{p_token:getOwnerToken(),p_amount:199});
-    if(error)throw error;
-    status.textContent="✅ Payment confirmation Admin को भेज दी गई है।";
-    status.className="pay-status success";
-    msg("rechargeMessage","✅ Recharge request Admin verification के लिए भेज दी गई है।","success");
-    btn.textContent="✅ Request Submitted";
-  }catch(e){
-    status.textContent="❌ "+(e.message||"Recharge request failed");
-    status.className="pay-status error";
-    btn.disabled=false;btn.textContent="✅ Payment कर दिया";
-  }
+
+function escapeHTML(value){
+
+  return String(value ?? "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
 }
+
+
+function scrollToId(id){
+
+  document
+    .getElementById(id)
+    ?.scrollIntoView({
+      behavior:"smooth"
+    });
+
+}
+
+
+function show(id){
+
+  document
+    .getElementById(id)
+    ?.classList.remove("hidden");
+
+}
+
+
+function msg(id,text,type=""){
+
+  const el =
+    document.getElementById(id);
+
+  if(!el)return;
+
+  el.textContent = text;
+
+  el.className =
+    type === "error"
+      ? "error"
+      : type === "success"
+        ? "success"
+        : "muted";
+
+}
+
+
+/* ================================
+   OWNER VERIFY
+================================ */
 
 async function verifyOwnerQR(){
-  const badge=document.getElementById("statusBadge"),token=getOwnerToken();
-  if(!token){badge.textContent="❌ Owner QR token नहीं मिला";return}
-  if(!checkSupabase()){badge.textContent="❌ Supabase connection नहीं है";return}
-  badge.textContent="Owner QR verify हो रहा है...";
-  try{
-    const {data,error}=await db.rpc("get_restaurant_by_owner_qr",{p_token:token});
-    if(error)throw error;
-    const row=Array.isArray(data)?data[0]:data;
-    if(!row){badge.textContent="❌ Invalid Owner QR";return}
-    ownerRestaurant=row;
-    document.getElementById("restaurantName").textContent=row.name||"Restaurant";
-    document.getElementById("ownerName").textContent="Owner: "+(row.owner_name||"Not added");
-    document.getElementById("heroOwner").textContent=(row.owner_name||"Owner")+" • Restaurant Owner";
-    if(!row.is_active){badge.textContent="❌ Admin ने restaurant block किया है";showBasicOwnerInfo();return}
-    const active=row.subscription_status==="active"&&(!row.subscription_end||new Date(row.subscription_end)>=new Date());
-    if(!active){badge.textContent="⚠️ Subscription inactive";showBasicOwnerInfo();return}
-    badge.textContent="🟢 Owner verified";
-    ["dashboard","analytics","ordersSection","menuSection","subscriptionSection"].forEach(id=>document.getElementById(id).classList.remove("hidden"));
-    showSubscription();
-    await Promise.all([loadMenu(),loadOrders()]);
-  }catch(e){
-    console.error(e);
-    badge.textContent="❌ Verification error";
-    document.getElementById("heroOwner").textContent=e.message||"Error";
+
+  const token = getOwnerToken();
+
+  const badge =
+    document.getElementById("statusBadge");
+
+  if(!token){
+
+    badge.textContent =
+      "❌ Owner QR token नहीं मिला";
+
+    badge.className =
+      "badge danger";
+
+    return;
   }
-}
 
-function showBasicOwnerInfo(){
-  document.getElementById("subscriptionSection").classList.remove("hidden");
-  showSubscription();
-}
-function showSubscription(){
-  if(!ownerRestaurant)return;
-  const active=ownerRestaurant.subscription_status==="active"&&(!ownerRestaurant.subscription_end||new Date(ownerRestaurant.subscription_end)>=new Date());
-  const end=ownerRestaurant.subscription_end?new Date(ownerRestaurant.subscription_end).toLocaleDateString("en-IN"):"Not active";
-  document.getElementById("subscriptionBadge").textContent=active?"Active":"Inactive";
-  document.getElementById("subscriptionInfo").innerHTML="<p>Status: <strong>"+escapeHTML(ownerRestaurant.subscription_status||"pending")+"</strong></p><p>Price: <strong>₹199 / Month</strong></p><p>Valid Till: <strong>"+end+"</strong></p>";
-}
+  badge.textContent =
+    "Owner QR verify हो रहा है...";
 
-/* Existing menu/order functions preserved */
-async function loadMenu(){
-  if(!ownerRestaurant)return;
-  const {data,error}=await db.rpc("get_owner_menu",{p_token:getOwnerToken()});
-  if(error){document.getElementById("menuList").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';return}
-  menuItems=data||[];renderMenu();
-}
-function renderMenu(){
-  const c=document.getElementById("menuList");
-  if(!menuItems.length){c.innerHTML="<p class='muted'>अभी कोई menu item नहीं है।</p>";return}
-  c.innerHTML=menuItems.map(x=>`<div class="menu-row"><div><h3>${escapeHTML(x.name)}</h3><span class="muted">₹${Number(x.price||0).toFixed(0)}</span></div><div class="menu-actions"><button type="button" onclick="editMenuItem('${x.id}')">Edit</button><button type="button" onclick="deleteMenuItem('${x.id}')">Delete</button></div></div>`).join("");
-}
-async function saveMenuItem(){
-  if(!ownerRestaurant)return;
-  const name=document.getElementById("menuName").value.trim(),price=Number(document.getElementById("menuPrice").value);
-  if(!name||!Number.isFinite(price)||price<0){msg("menuMessage","❌ सही item name और price डालें।","error");return}
-  const btn=document.getElementById("saveMenuBtn");btn.disabled=true;
   try{
-    let result;
-    if(editingMenuId) result=await db.rpc("update_owner_menu_item",{p_token:getOwnerToken(),p_item_id:editingMenuId,p_name:name,p_price:price});
-    else result=await db.rpc("add_owner_menu_item",{p_token:getOwnerToken(),p_name:name,p_price:price});
-    if(result.error)throw result.error;
-    editingMenuId=null;document.getElementById("menuName").value="";document.getElementById("menuPrice").value="";
-    btn.textContent="Add Menu Item";msg("menuMessage","✅ Menu item save हो गया।","success");await loadMenu();
-  }catch(e){msg("menuMessage","❌ "+(e.message||"Menu save failed"),"error")}
-  finally{btn.disabled=false}
+
+    const {data,error} =
+      await db.rpc(
+        "get_restaurant_by_owner_qr",
+        {
+          p_token:token
+        }
+      );
+
+    if(error)throw error;
+
+    const row =
+      Array.isArray(data)
+        ? data[0]
+        : data;
+
+    if(!row){
+
+      badge.textContent =
+        "❌ Invalid Owner QR";
+
+      badge.className =
+        "badge danger";
+
+      return;
+    }
+
+    ownerRestaurant = row;
+
+    document.getElementById(
+      "restaurantName"
+    ).textContent =
+      row.name || "Restaurant";
+
+    document.getElementById(
+      "ownerName"
+    ).textContent =
+      "Owner: " +
+      (row.owner_name || "Not added");
+
+    document.getElementById(
+      "heroOwner"
+    ).textContent =
+      (row.owner_name || "Owner") +
+      " • Restaurant Owner";
+
+
+    /* ADMIN BLOCK */
+
+    if(row.is_active !== true){
+
+      badge.textContent =
+        "❌ Admin ने restaurant block किया है";
+
+      badge.className =
+        "badge danger";
+
+      show("subscriptionSection");
+
+      showSubscription();
+
+      return;
+    }
+
+
+    /* SUBSCRIPTION */
+
+    const end =
+      row.subscription_end
+        ? new Date(row.subscription_end)
+        : null;
+
+    const active =
+      row.subscription_status === "active" &&
+      (!end || end >= new Date());
+
+
+    if(!active){
+
+      badge.textContent =
+        "⚠️ Subscription inactive";
+
+      badge.className =
+        "badge warn";
+
+      show("subscriptionSection");
+
+      showSubscription();
+
+      return;
+    }
+
+
+    /* VERIFIED */
+
+    badge.textContent =
+      "🟢 Owner verified";
+
+    badge.className =
+      "badge";
+
+
+    show("dashboard");
+    show("analytics");
+    show("ordersSection");
+    show("menuSection");
+    show("subscriptionSection");
+
+    showSubscription();
+
+    await Promise.all([
+      loadMenu(),
+      loadOrders()
+    ]);
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    badge.textContent =
+      "❌ Owner verification failed";
+
+    badge.className =
+      "badge danger";
+
+    document.getElementById(
+      "heroOwner"
+    ).textContent =
+      error.message || "Database error";
+
+  }
+
 }
-function editMenuItem(id){
-  const x=menuItems.find(i=>i.id===id);if(!x)return;
-  editingMenuId=id;document.getElementById("menuName").value=x.name||"";document.getElementById("menuPrice").value=x.price??"";
-  document.getElementById("saveMenuBtn").textContent="Update Menu Item";scrollToId("menuSection");
-}
-async function deleteMenuItem(id){
-  if(!confirm("यह menu item delete करना है?"))return;
-  const {data,error}=await db.rpc("delete_owner_menu_item",{p_token:getOwnerToken(),p_item_id:id});
-  if(error){alert(error.message);return}
-  if(!data){alert("Menu item नहीं मिला।");return}
-  await loadMenu();
-}
-async function loadOrders(){
+
+
+/* ================================
+   SUBSCRIPTION
+================================ */
+
+function showSubscription(){
+
   if(!ownerRestaurant)return;
-  const {data,error}=await db.rpc("get_owner_orders",{p_token:getOwnerToken()});
-  if(error){document.getElementById("orders").innerHTML='<p class="error">'+escapeHTML(error.message)+'</p>';return}
-  allOrders=(data||[]).map(o=>({...o,items:Array.isArray(o.items)?o.items:[]}));
+
+  const end =
+    ownerRestaurant.subscription_end
+      ? new Date(
+          ownerRestaurant.subscription_end
+        )
+      : null;
+
+  const active =
+    ownerRestaurant.subscription_status === "active" &&
+    (!end || end >= new Date());
+
+  const badge =
+    document.getElementById(
+      "subscriptionBadge"
+    );
+
+  badge.textContent =
+    active ? "Active" : "Inactive";
+
+  badge.className =
+    active
+      ? "badge"
+      : "badge warn";
+
+
+  let validTill = "Not active";
+
+  if(end){
+
+    validTill =
+      end.toLocaleDateString(
+        "en-IN",
+        {
+          day:"2-digit",
+          month:"2-digit",
+          year:"numeric"
+        }
+      );
+
+  }
+
+
+  document.getElementById(
+    "subscriptionInfo"
+  ).innerHTML = `
+
+    <p>
+      Status:
+      <strong>
+        ${escapeHTML(
+          ownerRestaurant.subscription_status ||
+          "pending"
+        )}
+      </strong>
+    </p>
+
+    <p>
+      Price:
+      <strong>₹199 / Month</strong>
+    </p>
+
+    <p>
+      Valid Till:
+      <strong>${validTill}</strong>
+    </p>
+
+  `;
+
+}
+
+
+/* ================================
+   MENU
+================================ */
+
+async function loadMenu(){
+
+  if(!ownerRestaurant)return;
+
+  const {data,error} =
+    await db.rpc(
+      "get_owner_menu",
+      {
+        p_token:getOwnerToken()
+      }
+    );
+
+  if(error){
+
+    document.getElementById(
+      "menuList"
+    ).innerHTML =
+      `<p class="error">
+        ${escapeHTML(error.message)}
+      </p>`;
+
+    return;
+  }
+
+  menuItems =
+    Array.isArray(data)
+      ? data
+      : [];
+
+  renderMenu();
+
+}
+
+
+function renderMenu(){
+
+  const box =
+    document.getElementById(
+      "menuList"
+    );
+
+  if(!menuItems.length){
+
+    box.innerHTML =
+      `<p class="muted">
+        अभी कोई menu item नहीं है।
+      </p>`;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    menuItems.map(item => `
+
+      <div class="menu-row">
+
+        <div>
+          <h3>
+            ${escapeHTML(item.name)}
+          </h3>
+
+          <span class="muted">
+            ₹${Number(
+              item.price || 0
+            ).toFixed(0)}
+          </span>
+        </div>
+
+        <div class="menu-actions">
+
+          <button
+            onclick="editMenuItem('${item.id}')"
+          >
+            Edit
+          </button>
+
+          <button
+            onclick="deleteMenuItem('${item.id}')"
+          >
+            Delete
+          </button>
+
+        </div>
+
+      </div>
+
+    `).join("");
+
+}
+
+
+async function saveMenuItem(){
+
+  if(!ownerRestaurant)return;
+
+  const name =
+    document.getElementById(
+      "menuName"
+    ).value.trim();
+
+  const price =
+    Number(
+      document.getElementById(
+        "menuPrice"
+      ).value
+    );
+
+
+  if(
+    !name ||
+    !Number.isFinite(price) ||
+    price < 0
+  ){
+
+    msg(
+      "menuMessage",
+      "❌ सही item name और price डालें।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  const btn =
+    document.getElementById(
+      "saveMenuBtn"
+    );
+
+  btn.disabled = true;
+
+
+  try{
+
+    let result;
+
+
+    if(editingMenuId){
+
+      result =
+        await db.rpc(
+          "update_owner_menu_item",
+          {
+            p_token:getOwnerToken(),
+            p_item_id:editingMenuId,
+            p_name:name,
+            p_price:price
+          }
+        );
+
+    }
+    else{
+
+      result =
+        await db.rpc(
+          "add_owner_menu_item",
+          {
+            p_token:getOwnerToken(),
+            p_name:name,
+            p_price:price
+          }
+        );
+
+    }
+
+
+    if(result.error)
+      throw result.error;
+
+
+    editingMenuId = null;
+
+    document.getElementById(
+      "menuName"
+    ).value = "";
+
+    document.getElementById(
+      "menuPrice"
+    ).value = "";
+
+    btn.textContent =
+      "Add Menu Item";
+
+
+    msg(
+      "menuMessage",
+      "✅ Menu item save हो गया।",
+      "success"
+    );
+
+    await loadMenu();
+
+  }
+  catch(error){
+
+    msg(
+      "menuMessage",
+      "❌ " +
+      (error.message ||
+       "Menu save failed"),
+      "error"
+    );
+
+  }
+  finally{
+
+    btn.disabled = false;
+
+  }
+
+}
+
+
+function editMenuItem(id){
+
+  const item =
+    menuItems.find(
+      x => x.id === id
+    );
+
+  if(!item)return;
+
+  editingMenuId = id;
+
+  document.getElementById(
+    "menuName"
+  ).value =
+    item.name || "";
+
+  document.getElementById(
+    "menuPrice"
+  ).value =
+    item.price ?? "";
+
+  document.getElementById(
+    "saveMenuBtn"
+  ).textContent =
+    "Update Menu Item";
+
+  scrollToId("menuSection");
+
+}
+
+
+async function deleteMenuItem(id){
+
+  if(
+    !confirm(
+      "यह menu item delete करना है?"
+    )
+  )return;
+
+
+  try{
+
+    const {data,error} =
+      await db.rpc(
+        "delete_owner_menu_item",
+        {
+          p_token:getOwnerToken(),
+          p_item_id:id
+        }
+      );
+
+    if(error)
+      throw error;
+
+    if(!data){
+
+      alert(
+        "Menu item नहीं मिला।"
+      );
+
+      return;
+    }
+
+    await loadMenu();
+
+  }
+  catch(error){
+
+    alert(
+      error.message ||
+      "Delete failed"
+    );
+
+  }
+
+}
+
+
+/* ================================
+   ORDERS
+================================ */
+
+async function loadOrders(){
+
+  if(!ownerRestaurant)return;
+
+  const box =
+    document.getElementById(
+      "orders"
+    );
+
+  const {data,error} =
+    await db.rpc(
+      "get_owner_orders",
+      {
+        p_token:getOwnerToken()
+      }
+    );
+
+
+  if(error){
+
+    box.innerHTML =
+      `<p class="error">
+        ${escapeHTML(error.message)}
+      </p>`;
+
+    return;
+  }
+
+
+  allOrders =
+    (Array.isArray(data)
+      ? data
+      : []
+    ).map(order => ({
+
+      ...order,
+
+      items:
+        Array.isArray(order.items)
+          ? order.items
+          : []
+
+    }));
+
+
   renderOrders();
-  const total=allOrders.reduce((s,o)=>s+Number(o.total_amount||0),0);
-  document.getElementById("salesTotal").textContent="₹"+total.toFixed(0);
-  document.getElementById("ordersTotal").textContent=allOrders.length;
-  document.getElementById("newTotal").textContent=allOrders.filter(o=>(o.status||"new")==="new").length;
-  document.getElementById("preparingTotal").textContent=allOrders.filter(o=>o.status==="preparing").length;
-  document.getElementById("weekSales").textContent="₹"+total.toFixed(0);
-  document.getElementById("orderCount").textContent=allOrders.length+" orders";
+
+
+  const total =
+    allOrders.reduce(
+      (sum,o) =>
+        sum +
+        Number(
+          o.total_amount || 0
+        ),
+      0
+    );
+
+
+  document.getElementById(
+    "salesTotal"
+  ).textContent =
+    "₹" + total.toFixed(0);
+
+  document.getElementById(
+    "weekSales"
+  ).textContent =
+    "₹" + total.toFixed(0);
+
+  document.getElementById(
+    "ordersTotal"
+  ).textContent =
+    allOrders.length;
+
+  document.getElementById(
+    "newTotal"
+  ).textContent =
+    allOrders.filter(
+      o => (o.status || "new") === "new"
+    ).length;
+
+  document.getElementById(
+    "preparingTotal"
+  ).textContent =
+    allOrders.filter(
+      o => o.status === "preparing"
+    ).length;
+
+  document.getElementById(
+    "orderCount"
+  ).textContent =
+    allOrders.length +
+    " orders";
+
   renderChart();
+
 }
-function renderChart(){
-  const vals=[0,0,0,0,0,0,0];
-  allOrders.forEach(o=>{const d=new Date(o.created_at||Date.now()).getDay();vals[d]+=Number(o.total_amount||0)});
-  const max=Math.max(...vals,1);
-  document.getElementById("salesChart").innerHTML=vals.map(v=>`<div class="bar" style="height:${Math.max(12,(v/max)*100)}%"></div>`).join("");
+
+
+function filterOrders(filter,button){
+
+  activeFilter = filter;
+
+  document
+    .querySelectorAll(".tab")
+    .forEach(
+      x => x.classList.remove("active")
+    );
+
+  button.classList.add("active");
+
+  renderOrders();
+
 }
-function filterOrders(filter,btn){activeFilter=filter;document.querySelectorAll(".tab").forEach(x=>x.classList.remove("active"));btn.classList.add("active");renderOrders()}
-function getOrderAction(o){
-  const s=o.status||"new";
-  if(s==="new")return `<button class="primary" type="button" onclick="updateOrderStatus('${o.id}','preparing')">✅ Accept → Preparing</button>`;
-  if(s==="preparing")return `<button class="primary" type="button" onclick="updateOrderStatus('${o.id}','ready')">🍽️ Mark Ready</button>`;
-  if(s==="ready")return `<button class="primary" type="button" onclick="updateOrderStatus('${o.id}','completed')">✅ Complete Order</button>`;
-  return `<span class="success">✅ Order Completed</span>`;
-}
+
+
 function renderOrders(){
-  const list=activeFilter==="all"?allOrders:allOrders.filter(o=>(o.status||"new")===activeFilter),c=document.getElementById("orders");
-  if(!list.length){c.innerHTML="<p class='muted'>इस category में कोई order नहीं है।</p>";return}
-  c.innerHTML=list.map(o=>`<div class="order"><div class="order-head"><div><h3>Table ${escapeHTML(o.table_number||"-")}</h3><span class="muted">${escapeHTML(o.customer_name||"Customer")} • ${o.created_at?new Date(o.created_at).toLocaleString("en-IN"):""}</span></div><div class="amount">₹${Number(o.total_amount||0).toFixed(0)}</div></div><span class="status">${escapeHTML(o.status||"new")}</span><div class="order-items">${o.items.length?o.items.map(i=>`<div style="display:flex;justify-content:space-between;gap:8px;padding:4px 0;font-size:13px"><span>🍽️ ${escapeHTML(i.name)} × ${Number(i.quantity||1)}</span><strong>₹${(Number(i.price||0)*Number(i.quantity||1)).toFixed(0)}</strong></div>`).join(""):"<div class='muted' style='margin-top:8px'>Items details उपलब्ध नहीं ह
+
+  const list =
+    activeFilter === "all"
+      ? allOrders
+      : allOrders.filter(
+          o =>
+            (o.status || "new") ===
+            activeFilter
+        );
+
+
+  const box =
+    document.getElementById(
+      "orders"
+    );
+
+
+  if(!list.length){
+
+    box.innerHTML =
+      `<p class="muted">
+        इस category में कोई order नहीं है।
+      </p>`;
+
+    return;
+  }
+
+
+  box.innerHTML =
+    list.map(order => {
+
+      const status =
+        order.status || "new";
+
+      const created =
+        order.created_at
+          ? new Date(
+              order.created_at
+            ).toLocaleString("en-IN")
+          : "";
+
+
+      const itemsHTML =
+        order.items.length
+
+        ?
+
+        order.items.map(item => `
+
+          <div style="
+            display:flex;
+            justify-content:space-between;
+            gap:8px;
+            padding:4px 0;
+            font-size:13px;
+          ">
+
+            <span>
+              🍽️
+              ${escapeHTML(item.name)}
+              ×
+              ${Number(
+                item.quantity || 1
+              )}
+            </span>
+
+            <strong>
+              ₹${(
+                Number(item.price || 0) *
+                Number(item.quantity || 1)
+              ).toFixed(0)}
+            </strong>
+
+          </div>
+
+        `).join("")
+
+        :
+
+        `<div class="muted">
+          Items details उपलब्ध नहीं हैं
+        </div>`;
+
+
+      return `
+
+        <div class="order">
+
+          <div class="order-head">
+
+            <div>
+
+              <h3>
+                Table
+                ${escapeHTML(
+                  order.table_number || "-"
+                )}
+              </h3>
+
+              <span class="muted">
+                ${escapeHTML(
+                  order.customer_name ||
+                  "Customer"
+                )}
+                •
+                ${created}
+              </span>
+
+            </div>
+
+            <div class="amount">
+              ₹${Number(
+                order.total_amount || 0
+              ).toFixed(0)}
+            </div>
+
+          </div>
+
+
+          <span class="status">
+            ${escapeHTML(status)}
+          </span>
+
+
+          <div style="margin-top:10px">
+            ${itemsHTML}
+          </div>
+
+
+          <div class="order-actions">
+            ${getOrderAction(order)}
+          </div>
+
+        </div>
+
+      `;
+
+    }).join("");
+
+}
+
+
+function getOrderAction(order){
+
+  const status =
+    order.status || "new";
+
+
+  if(status === "new"){
+
+    return `
+      <button
+        class="primary"
+        onclick="updateOrderStatus(
+          '${order.id}',
+          'preparing'
+        )"
+      >
+        ✅ Accept → Preparing
+      </button>
+    `;
+
+  }
+
+
+  if(status === "preparing"){
+
+    return `
+      <button
+        class="primary"
+        onclick="updateOrderStatus(
+          '${order.id}',
+          'ready'
+        )"
+      >
+        🍽️ Mark Ready
+      </button>
+    `;
+
+  }
+
+
+  if(status === "ready"){
+
+    return `
+      <button
+        class="primary"
+        onclick="updateOrderStatus(
+          '${order.id}',
+          'completed'
+        )"
+      >
+        ✅ Complete Order
+      </button>
+    `;
+
+  }
+
+
+  return `
+    <span class="success">
+      ✅ Order Completed
+    </span>
+  `;
+
+}
+
+
+async function updateOrderStatus(
+  orderId,
+  status
+){
+
+  try{
+
+    const {data,error} =
+      await db.rpc(
+        "update_owner_order_status",
+        {
+          p_token:getOwnerToken(),
+          p_order_id:orderId,
+          p_status:status
+        }
+      );
+
+
+    if(error)
+      throw error;
+
+
+    if(data === false){
+
+      alert(
+        "Order update नहीं हुआ।"
+      );
+
+      return;
+    }
+
+
+    await loadOrders();
+
+  }
+  catch(error){
+
+    alert(
+      error.message ||
+      "Order status update failed"
+    );
+
+  }
+
+}
+
+
+/* ================================
+   SALES CHART
+================================ */
+
+function renderChart(){
+
+  const values =
+    [0,0,0,0,0,0,0];
+
+
+  allOrders.forEach(order => {
+
+    const day =
+      new Date(
+        order.created_at ||
+        Date.now()
+      ).getDay();
+
+    values[day] +=
+      Number(
+        order.total_amount || 0
+      );
+
+  });
+
+
+  const max =
+    Math.max(
+      ...values,
+      1
+    );
+
+
+  document.getElementById(
+    "salesChart"
+  ).innerHTML =
+    values.map(value => `
+
+      <div
+        class="bar"
+        style="
+          height:${Math.max(
+            12,
+            (value / max) * 100
+          )}%
+        "
+      ></div>
+
+    `).join("");
+
+}
+
+
+/* ================================
+   RECHARGE
+================================ */
+
+function openRecharge(){
+
+  if(!ownerRestaurant){
+
+    msg(
+      "rechargeMessage",
+      "❌ Restaurant verify नहीं हुआ।",
+      "error"
+    );
+
+    return;
+  }
+
+
+  document
+    .getElementById(
+      "rechargeModal"
+    )
+    .classList.add("show");
+
+
+  document.getElementById(
+    "paymentStatus"
+  ).textContent = "";
+
+
+  const upi =
+    "upi://pay?" +
+    "pa=" +
+    encodeURIComponent(PAYMENT_UPI) +
+    "&pn=" +
+    encodeURIComponent(PAYMENT_NAME) +
+    "&am=" +
+    PAYMENT_AMOUNT +
+    "&cu=INR";
+
+
+  document.getElementById(
+    "upiPayBtn"
+  ).href = upi;
+
+
+  const qr =
+    document.getElementById(
+      "paymentQR"
+    );
+
+  qr.innerHTML = "";
+
+
+  new QRCode(
+    qr,
+    {
+      text:upi,
+      width:210,
+      height:210,
+      correctLevel:
+        QRCode.CorrectLevel.M
+    }
+  );
+
+}
+
+
+function closeRecharge(){
+
+  document
+    .getElementById(
+      "rechargeModal"
+    )
+    .classList.remove("show");
+
+}
+
+
+async function submitRecharge(){
+
+  if(!ownerRestaurant)return;
+
+
+  const btn =
+    document.getElementById(
+      "paymentDoneBtn"
+    );
+
+  const status =
+    document.getElementById(
+      "paymentStatus"
+    );
+
+
+  btn.disabled = true;
+
+  btn.textContent =
+    "Request भेजी जा रही है...";
+
+
+  status.textContent = "";
+
+
+  try{
+
+    const {data,error} =
+      await db.rpc(
+        "create_recharge_request",
+        {
+          p_token:getOwnerToken(),
+          p_amount:199
+        }
+      );
+
+
+    if(error)
+      throw error;
+
+
+    status.textContent =
+      "✅ Recharge request Admin को भेज दी गई है।";
+
+    status.className =
+      "pay-status success";
+
+
+    msg(
+      "rechargeMessage",
+      "✅ Recharge request Admin verification के लिए भेज दी गई है।",
+      "success"
+    );
+
+
+    btn.textContent =
+      "✅ Request Submitted";
+
+
+  }
+  catch(error){
+
+    console.error(error);
+
+    status.textContent =
+      "❌ " +
+      (
+        error.message ||
+        "Recharge request failed"
+      );
+
+    status.className =
+      "pay-status error";
+
+
+    btn.disabled = false;
+
+    btn.textContent =
+      "✅ Payment कर दिया";
+
+  }
+
+}
+
+
+/* ================================
+   START
+================================ */
+
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+
+    verifyOwnerQR();
+
+    /* हर 30 sec orders refresh */
+    setInterval(
+      () => {
+
+        if(ownerRestaurant)
+          loadOrders();
+
+      },
+      30000
+    );
+
+  }
+);
+
+</script>
+
+</body>
+</html>
